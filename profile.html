@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr" data-title="prof_title">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARKAT — Profil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0612;--panel:#150c26;--line:#3a2a5c;--ink:#f5f0ff;--dim:#9c8fc4;
+    --cyan:#00fff2;--magenta:#ff2a6d;--amber:#ffb000}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323','DotGothic16',monospace;font-size:20px;line-height:1.35}
+  h1,h2,.btn{font-family:'Press Start 2P','DotGothic16',system-ui;line-height:1.6}
+  .crt{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 4px);mix-blend-mode:multiply}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 160px 40px rgba(0,0,0,.75)}
+  .backdrop{position:fixed;inset:0;z-index:-1;background:
+    radial-gradient(60vw 40vh at 15% -10%, rgba(47,139,255,.14), transparent 60%),
+    radial-gradient(55vw 40vh at 95% 10%, rgba(255,42,109,.12), transparent 60%), var(--bg)}
+  main{max-width:640px;margin:0 auto;padding:36px 22px 70px}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+  a.back{color:var(--dim);text-decoration:none;font-size:13px}
+  a.back:hover{color:var(--ink)}
+  h1{font-size:clamp(20px,5vw,30px);margin:0 0 28px;text-shadow:-2px 0 var(--magenta),2px 0 var(--cyan)}
+  h2.section{font-size:12px;color:var(--amber);margin:34px 0 18px;border-bottom:3px solid var(--line);padding-bottom:12px}
+  .card{background:var(--panel);border:3px solid var(--line);padding:18px;display:flex;gap:18px;align-items:center}
+  .pic{width:84px;height:84px;border:3px solid var(--amber);object-fit:cover;background:var(--line);flex:0 0 auto;box-shadow:0 0 14px #ffb00066}
+  .info{min-width:0}
+  .name{font-family:'Press Start 2P','DotGothic16';font-size:14px;margin:0 0 12px;word-break:break-word;line-height:1.5}
+  .info p{margin:0 0 4px;color:var(--dim);font-size:18px;word-break:break-all}
+  .info b{color:var(--cyan);font-weight:400}
+  .row{display:flex;justify-content:space-between;background:var(--panel);border:3px solid var(--line);padding:12px 16px;margin-bottom:10px}
+  .row span{color:var(--dim)} .row b{color:var(--ink);font-weight:400;font-size:24px}
+  .msg{color:var(--dim);background:var(--panel);border:3px dashed var(--line);padding:22px;text-align:center}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--panel);color:var(--ink);
+    border:3px solid var(--cyan);padding:14px 22px;font-size:12px;box-shadow:5px 5px 0 var(--magenta);cursor:pointer;margin-top:18px}
+  .btn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--magenta)}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="backdrop"></div><div class="vignette"></div><div class="crt"></div>
+
+<main>
+  <div class="top">
+    <a class="back" href="index.html" data-i18n="back_home">◂ ANA SAYFA</a>
+    <div id="arkat-bar"></div>
+  </div>
+  <h1 data-i18n="prof_h">PROFİL</h1>
+
+  <div id="loading" class="msg" data-i18n="loading">YÜKLENİYOR…</div>
+
+  <div id="guest" class="msg" hidden>
+    <p data-i18n="prof_need" style="margin:0">Profilini görmek için Google ile giriş yap.</p>
+    <button class="btn" id="gbtn"><span data-i18n="login">GİRİŞ YAP</span></button>
+  </div>
+
+  <div id="me" hidden>
+    <div class="card">
+      <img id="pic" class="pic" alt="" referrerpolicy="no-referrer">
+      <div class="info">
+        <div class="name" id="uname"></div>
+        <p><b data-i18n="f_email">E-POSTA</b> · <span id="umail"></span></p>
+        <p><b data-i18n="f_joined">KATILIM</b> · <span id="ujoin">—</span></p>
+        <p><b data-i18n="f_lastseen">SON GİRİŞ</b> · <span id="useen">—</span></p>
+      </div>
+    </div>
+
+    <h2 class="section" data-i18n="best_h">EN YÜKSEK PUANLAR · NEON DÜŞÜŞ</h2>
+    <div id="scores"></div>
+  </div>
+</main>
+
+<script src="arkat.js" data-root=""></script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var lastData=null;
+  function fmt(ts){
+    if(!ts||!ts.toDate) return '—';
+    var l=ARKAT.getLang(); var loc=l==='ja'?'ja-JP':(l==='en'?'en-GB':'tr-TR');
+    return ts.toDate().toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'});
+  }
+  function render(u,data){
+    $('loading').hidden=true;
+    if(!u){ $('me').hidden=true; $('guest').hidden=false; return; }
+    $('guest').hidden=true; $('me').hidden=false;
+    $('uname').textContent=u.displayName||'';
+    $('umail').textContent=u.email||'';
+    if(u.photoURL){$('pic').src=u.photoURL;$('pic').style.visibility='visible'}else{$('pic').style.visibility='hidden'}
+    data=data||{};
+    $('ujoin').textContent=fmt(data.createdAt);
+    $('useen').textContent=fmt(data.lastLogin);
+    var b=(data.best&&data.best.neon)||{}, box=$('scores'), any=false;
+    box.innerHTML='';
+    [['e','easy'],['m','medium'],['d','hard']].forEach(function(p){
+      var v=b[p[0]]; if(!v) return; any=true;
+      var r=document.createElement('div'); r.className='row';
+      var s=document.createElement('span'); s.textContent=ARKAT.t(p[1]);
+      var n=document.createElement('b'); n.textContent=v;
+      r.appendChild(s); r.appendChild(n); box.appendChild(r);
+    });
+    if(!any){var m=document.createElement('div');m.className='msg';m.textContent=ARKAT.t('no_score');box.appendChild(m)}
+  }
+  function load(u){
+    if(!u){ lastData=null; render(null); return; }
+    var db=ARKAT.getDb();
+    if(!db){ render(u,null); return; }
+    // giriş sonrası belge oluşana kadar kısa bir süre bekleyebilir; hata olursa boş göster
+    db.collection('users').doc(u.uid).get().then(function(s){ lastData=s.exists?s.data():{}; render(u,lastData); })
+      .catch(function(){ render(u,null); });
+  }
+  $('gbtn').addEventListener('click',function(){ARKAT.signIn()});
+  document.addEventListener('arkat:auth',function(e){load(e.detail)});
+  document.addEventListener('arkat:lang',function(){ if(ARKAT.getUser()) render(ARKAT.getUser(),lastData) });
+  if(!ARKAT.isConfigured()){ $('loading').hidden=true; $('guest').hidden=false; }
+})();
+</script>
+</body>
+</html>
