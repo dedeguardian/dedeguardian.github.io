@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-title="idx_title" data-desc="idx_desc">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
 <meta name="description" content="Tarayıcıda ücretsiz oynanan retro oyunlar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0612;
@@ -25,10 +25,11 @@
   html{scroll-behavior:smooth}
   body{
     margin:0;background:var(--bg);color:var(--ink);
-    font-family:'VT323',monospace;font-size:20px;line-height:1.35;
+    font-family:'VT323','DotGothic16',monospace;font-size:20px;line-height:1.35;
     -webkit-font-smoothing:none;
   }
-  h1,h2,h3,.pixel,button,.btn{font-family:'Press Start 2P',system-ui;line-height:1.6}
+  h1,h2,h3,.pixel,button,.btn{font-family:'Press Start 2P','DotGothic16',system-ui;line-height:1.6}
+  :lang(ja) h1,:lang(ja) h2,:lang(ja) h3,:lang(ja) .btn,:lang(ja) .tag{letter-spacing:0;line-height:1.5}
 
   /* CRT: taramalı çizgiler + kenarlarda vinyet */
   .crt{position:fixed;inset:0;z-index:2;pointer-events:none;
@@ -44,7 +45,7 @@
     var(--bg);
   }
 
-  header{max-width:1080px;margin:0 auto;padding:26px 24px 0;display:flex;align-items:center;justify-content:space-between}
+  header{max-width:1080px;margin:0 auto;padding:26px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--cyan);
     text-shadow:0 0 6px var(--cyan),0 0 16px var(--cyan)}
   .brand .dot{width:10px;height:10px;background:var(--amber);box-shadow:0 0 8px var(--amber),0 0 16px var(--amber);
@@ -113,28 +114,28 @@
 
 <header>
   <div class="brand"><span class="dot"></span>ARKAT</div>
-  <nav><a href="#oyunlar">OYUNLAR</a></nav>
+  <nav style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end"><a href="#oyunlar" data-i18n="nav_games">OYUNLAR</a><div id="arkat-bar"></div></nav>
 </header>
 
 <div class="hero">
-  <h1>INSERT COIN<br>TO PLAY</h1>
-  <p>Tarayıcıda oynanan, indirmesiz retro oyunlar. Telefonda da masaüstünde de çalışır.</p>
-  <a class="btn" href="#oyunlar">▸ OYUNLARA GİT</a>
+  <h1 data-i18n="hero">INSERT COIN<br>TO PLAY</h1>
+  <p data-i18n="hero_p">Tarayıcıda oynanan, indirmesiz retro oyunlar. Telefonda da masaüstünde de çalışır.</p>
+  <a class="btn" href="#oyunlar" data-i18n="go_games">▸ OYUNLARA GİT</a>
 </div>
 
 <section id="oyunlar">
   <div class="section-head">
-    <h2>OYUNLAR</h2>
-    <span>1 OYUN</span>
+    <h2 data-i18n="sec_games">OYUNLAR</h2>
+    <span data-i18n="count">1 OYUN</span>
   </div>
   <div class="grid">
 
     <a class="card c1" href="games/neon-dusus/info.html">
       <div class="thumb"><b></b><b></b><b></b></div>
       <div class="body">
-        <h3>NEON DÜŞÜŞ</h3>
-        <p>Çizgi çizerek düşen renkli kutuları yönlendir, aynı renkten dördünü bir araya getirip patlat.</p>
-        <span class="tag">ARCADE</span>
+        <h3 data-i18n="g_neon_t">NEON DÜŞÜŞ</h3>
+        <p data-i18n="g_neon_d">Çizgi çizerek düşen renkli kutuları yönlendir, aynı renkten dördünü bir araya getirip patlat.</p>
+        <span class="tag" data-i18n="tag_arcade">ARCADE</span>
       </div>
     </a>
 
@@ -152,14 +153,15 @@
     <div class="card placeholder">
       <div class="thumb"><span>+</span></div>
       <div class="body">
-        <h3 style="color:var(--dim)">SIRADA</h3>
-        <p>Yeni bir oyun buraya eklenecek.</p>
+        <h3 style="color:var(--dim)" data-i18n="soon_t">SIRADA</h3>
+        <p data-i18n="soon_d">Yeni bir oyun buraya eklenecek.</p>
       </div>
     </div>
 
   </div>
 </section>
 
-<footer>ARKAT · kişisel retro oyun koleksiyonu</footer>
+<footer data-i18n="footer">ARKAT · kişisel retro oyun koleksiyonu</footer>
+<script src="arkat.js" data-root=""></script>
 </body>
 </html>
