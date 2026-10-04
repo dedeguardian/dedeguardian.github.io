@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-title="info_title">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Neon Düşüş — Nasıl Oynanır</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0a0612;--panel:#150c26;--line:#3a2a5c;--ink:#f5f0ff;--dim:#9c8fc4;
@@ -14,8 +14,10 @@
     --blue:#2f8bff;--yellow:#ffe600;--green:#39ff14;--red:#ff2a55;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323',monospace;font-size:20px;line-height:1.35}
-  h1,h2,.pixel,.btn{font-family:'Press Start 2P',system-ui;line-height:1.6}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323','DotGothic16',monospace;font-size:20px;line-height:1.35}
+  h1,h2,.pixel,.btn{font-family:'Press Start 2P','DotGothic16',system-ui;line-height:1.6}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+  .top a.back{margin-bottom:0}
 
   .crt{position:fixed;inset:0;z-index:2;pointer-events:none;
     background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 4px);mix-blend-mode:multiply}
@@ -63,37 +65,38 @@
 <div class="crt"></div>
 
 <main>
-  <a class="back" href="../../index.html">◂ ARKAT'A DÖN</a>
-  <h1>NEON DÜŞÜŞ</h1>
-  <p class="tagline">Çizgi çiz, kutuları yönlendir, aynı renkleri patlat.</p>
+  <div class="top"><a class="back" href="../../index.html" data-i18n="back_arkat">◂ ARKAT'A DÖN</a><div id="arkat-bar"></div></div>
+  <h1 data-i18n="game_name">NEON DÜŞÜŞ</h1>
+  <p class="tagline" data-i18n="tagline">Çizgi çiz, kutuları yönlendir, aynı renkleri patlat.</p>
 
-  <h2 class="section">KUTULARIN HALLERİ</h2>
+  <h2 class="section" data-i18n="sec_states">KUTULARIN HALLERİ</h2>
 
   <div class="trow">
     <div class="ticon" style="border-color:#2f8bff;background:#2f8bff22;box-shadow:0 0 8px #2f8bff88">▼</div>
-    <p>Düşüyor — henüz hiçbir şeye değmedi.</p>
+    <p data-i18n="s1">Düşüyor — henüz hiçbir şeye değmedi.</p>
   </div>
   <div class="trow">
     <div class="ticon" style="border-color:#39ff14;background:#39ff1444;box-shadow:0 0 16px #39ff14">■</div>
-    <p>Havadayken çizgine değince aktif olur ve parlar.</p>
+    <p data-i18n="s2">Havadayken çizgine değince aktif olur ve parlar.</p>
   </div>
   <div class="trow">
     <div class="ticon" style="border-color:#ff2a55;background:#ff2a5522;box-shadow:0 0 8px #ff2a5588">×</div>
-    <p>Çizgine değmeden inerse × olur, bir daha aktif olmaz.</p>
+    <p data-i18n="s3">Çizgine değmeden inerse × olur, bir daha aktif olmaz.</p>
   </div>
   <div class="trow">
     <div class="ticon" style="border-color:#ffe600;background:#ffe60044;box-shadow:0 0 16px #ffe600">★</div>
-    <p>Aynı renkten 4 aktif kutu birleşince hepsi patlar.</p>
+    <p data-i18n="s4">Aynı renkten 4 aktif kutu birleşince hepsi patlar.</p>
   </div>
 
-  <h2 class="section">KONTROLLER</h2>
+  <h2 class="section" data-i18n="sec_controls">KONTROLLER</h2>
   <div class="controls">
-    <p><b>Parmak / fare:</b> ekrana basılı tutup sürükleyerek çizgi çiz.</p>
-    <p><b>En fazla 2 çizgi:</b> 3. çizgiyi çizince en eski çizgi hemen silinir.</p>
-    <p><b>Kaybetme:</b> kutu yığını kırmızı çizgiye ulaşıp orada kalırsa oyun biter.</p>
+    <p data-i18n="c1"><b>Parmak / fare:</b> ekrana basılı tutup sürükleyerek çizgi çiz.</p>
+    <p data-i18n="c2"><b>En fazla 2 çizgi:</b> 3. çizgiyi çizince en eski çizgi hemen silinir.</p>
+    <p data-i18n="c3"><b>Kaybetme:</b> kutu yığını kırmızı çizgiye ulaşıp orada kalırsa oyun biter.</p>
   </div>
 
-  <a class="btn" href="play.html">▸ OYUNA BAŞLA</a>
+  <a class="btn" href="play.html" data-i18n="start">▸ OYUNA BAŞLA</a>
 </main>
+<script src="../../arkat.js" data-root="../../"></script>
 </body>
 </html>
