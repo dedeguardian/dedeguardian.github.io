@@ -189,7 +189,8 @@ function gameOver(){
   sndOver();vibe([30,50,30,50,60]);
   newRec=score>0&&score>(scores[0]?scores[0].s:0);
   if(score>0){scores.push({s:score,d:diff});scores.sort((a,b)=>b.s-a.s);scores=scores.slice(0,10);
-    try{localStorage.setItem('neon-top10',JSON.stringify(scores))}catch(e){}}
+    try{localStorage.setItem('neon-top10',JSON.stringify(scores))}catch(e){}
+    try{window.ARKAT&&ARKAT.saveScore('neon',diff,score)}catch(e){}}
   show('over');
 }
 function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
@@ -275,7 +276,8 @@ ja:["スタート","ハイスコア","ランク戦","終了","かんたん","ふ
 ko:["시작","최고 점수","랭킹","종료","쉬움","보통","어려움","난이도 선택","뒤로","점수","다음","위험","계속","메인 메뉴","게임 오버","선을 그려 상자를 유도하세요. 떨어지는 중 선에 닿은 상자는 활성(■)이 되고, 닿지 않고 착지하면 ×가 됩니다. 같은 색 활성 상자 4개가 모이면 폭발합니다. 더미가 빨간 선에 닿으면 패배합니다.","또 만나요!","신기록!","선은 최대 2개: 3번째 선을 그리면 첫 번째가 사라집니다.","소리","진동","플레이 방법","낙하 중 — 아직 아무것도 닿지 않음","떨어지는 동안 선에 닿으면 활성화되어 빛난다","선에 닿지 않고 착지하면 ×가 되어 다시는 활성화되지 않음","같은 색 활성 상자 4개가 모이면 모두 폭발한다"]};
 const MIN=4; // patlama için gereken aktif kutu sayısı
 const DIFF={e:[4200,2600],m:[3200,1800],d:[2400,1300]};
-let curK=0,newRec=false,muted=false,vibOn=true,lang='en',diff='m',st='lang',scores=[],pauseAt=0;
+let curK=0,newRec=false,muted=false,vibOn=true,lang='en',diff='m',st='lang',scores=[],pauseAt=0,siteLang=null;
+try{const sl=localStorage.getItem('arkat-lang');if(sl&&T[sl]){lang=sl;siteLang=sl}}catch(e){}
 try{scores=JSON.parse(localStorage.getItem('neon-top10')||'[]')}catch(e){}
 try{muted=localStorage.getItem('neon-muted')==='1'}catch(e){}
 try{const v=localStorage.getItem('neon-vibe');if(v!==null)vibOn=v==='1'}catch(e){}
@@ -317,6 +319,8 @@ function act(a){
 ov.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled){ac();sndClick();act(b.dataset.a)}});
 document.getElementById('pb').addEventListener('click',()=>{ac();sndClick();if(st==='play')show('pause')});
 addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P'){if(st==='play')show('pause');else if(st==='pause')act('resume')}});
-resize();reset();show('lang');requestAnimationFrame(frame);
+document.documentElement.lang=lang;
+resize();reset();show(siteLang?'menu':'lang');requestAnimationFrame(frame);
 </script>
+<script src="../../arkat.js" data-root="../../"></script>
 </body></html>
