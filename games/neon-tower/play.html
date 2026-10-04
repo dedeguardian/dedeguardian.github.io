@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NEON TOWER</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#07001a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+body{display:flex;justify-content:center;align-items:center;font-family:'Courier New',monospace}
+#w{position:relative;height:100%;max-width:100%;aspect-ratio:420/640}
+canvas{width:100%;height:100%;display:block}
+.b{position:absolute;bottom:14px;width:64px;height:64px;border-radius:50%;border:2px solid #0ff;color:#0ff;background:rgba(0,255,255,.08);font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px #0ff8;opacity:.55}
+.b:active{opacity:1;background:rgba(0,255,255,.3)}
+#w:not(.play):not(.layout) .b{display:none}#w.layout #bp{display:none}#w.layout .b{opacity:.95;outline:2px dashed #ffd23f;outline-offset:3px;cursor:grab}#bp{top:10px;bottom:auto;left:50%;margin-left:-20px;width:40px;height:40px;font-size:15px;border-color:#ffd23f;color:#ffd23f;box-shadow:0 0 10px #ffd23f88;background:rgba(255,210,63,.08)}
+#bl{left:12px}#br{left:86px}#bj{right:14px;width:84px;height:84px;border-color:#f0f;color:#f0f;box-shadow:0 0 12px #f0f8;background:rgba(255,0,255,.08)}
+</style></head><body>
+<div id="w"><canvas id="c" width="420" height="640"></canvas>
+<div class="b" id="bl">◀</div><div class="b" id="br">▶</div><div class="b" id="bj">▲</div><div class="b" id="bp">❚❚</div></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+const W=420,H=640,WL=26;
+let S='menu',P,plats,items,parts,camY,t,score,crys,fl,topN,topY,toast={s:'',t:0},best=0,ac;
+let snd=true,sel=0,conf=0,hs=[],lastRank=-1,my0=300,mode='classic',lv=0,goal=0,prog=1,done=[],obs=[],lvSel=0,bonus=0,wallet=0,own=[0],selCh=0,cv=0,msgT=0,msgS='';
+try{hs=JSON.parse(localStorage.getItem('nt_hs')||'[]');snd=localStorage.getItem('nt_snd')!=='0'}catch(e){}
+try{wallet=+localStorage.getItem('nt_w')||0;own=JSON.parse(localStorage.getItem('nt_own')||'[0]');selCh=+localStorage.getItem('nt_ch')||0;if(!own.includes(selCh))selCh=0;const o=JSON.parse(localStorage.getItem('nt_lv')||'{}');prog=o.p||1;done=o.d||[]}catch(e){}
+const K={l:0,r:0,j:0};
+const stars=Array.from({length:60},()=>({x:Math.random()*W,y:Math.random()*H*.65,s:Math.random()*1.6+.4}));
+const TY={jet:{c:'#ff9d00',l:'J',n:'JETPACK!'},dj:{c:'#39ff14',l:'2',n:'ÇİFT ZIPLAMA!'},mag:{c:'#ff2bd6',l:'M',n:'MIKNATIS!'}};
+
+function beep(f,d,ty,v){if(!snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty||'square';o.frequency.value=f;g.gain.value=v||.04;g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+
+function reset(){
+ P={x:W/2-11,y:-28,vx:0,vy:0,w:22,h:28,g:true,jet:0,dj:0,mag:0,used:false,jetting:false,face:1};
+ plats=[{x:WL,y:0,w:W-2*WL,n:0}];obs=[];buildMap();items=[];parts=[];camY=-H+90;t=0;score=0;crys=0;fl=0;topN=0;topY=0;
+ while(topY>camY-120)gen();
+  P.offer=200;
+ if(CH[selCh].pk==='nova')startCarry();
+}
+function gen(){
+ topN++;const n=topN,y=-n*88;topY=y;
+ if(mode==='level'&&n===goal){plats.push({x:WL,y,w:W-2*WL,n,goal:1});return}
+ if(n%10===0){plats.push({x:WL,y,w:W-2*WL,n});return}
+ const w=Math.max(64,140-n*.7)+Math.random()*30,px=WL+Math.random()*(W-2*WL-w);
+ const p={x:px,y,w,n};
+ if(mode==='level'&&n>2){const D=DF(),q=Math.random();if(q<D.mv)p.mv=(Math.random()<.5?-1:1)*(.8+lv*.12);else if(Math.random()<D.cr)p.cr=1}
+ plats.push(p);
+ const r=(p.mv||p.cr)?9:Math.random(),cx=px+w/2;
+ if(r<.5)items.push({x:cx,y:y-26,k:'cr'});
+ else if(r<(mode==='level'?.53:.58)){const ks=['jet','mag'];items.push({x:cx,y:y-28,k:ks[Math.random()*2|0]})}
+ if(n>2&&!p.mv&&!p.cr&&Math.random()<(mode==='level'?.04:.14))items.push({x:px+16+Math.random()*(w-32),y:y-8,k:'sp',a:0});
+ if(mode==='level'&&n>2&&n<goal){const D=DF(),m=y+44;
+  if(Math.random()<D.dr)obs.push({k:'dr',x:WL+20+Math.random()*(W-2*WL-40),y:m,vx:(Math.random()<.5?-1:1)*(1.2+lv*.15),ph:Math.random()*6});
+  else if(Math.random()<D.ls)obs.push({k:'ls',y:m,ph:Math.random()*200|0})}
+}
+function burst(px,py,col,n){for(let i=0;i<n;i++)parts.push({x:px,y:py,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,l:25+Math.random()*15,c:col})}
+function jump(){
+ if(S!=='play')return;
+ if(P.g){P.offer=0;P.vy=-11.5-Math.abs(P.vx)*.4;P.g=false;beep(380+Math.abs(P.vx)*20,.12,'square')}
+ 
+}
+function start(){mode='classic';hard=0;reset();S='play';beep(520,.2,'sawtooth')}
+
+function upd(){
+ t++;
+ for(const p of plats){if(p.mv){p.x+=p.mv;if(p.x<WL||p.x+p.w>W-WL){p.mv*=-1;p.x=Math.max(WL,Math.min(p.x,W-WL-p.w))}}
+  if(p.crt>0&&!p.fall&&--p.crt===0){p.fall=1;p.fv=0}if(p.fall){p.fv+=.4;p.y+=p.fv}}
+ if(P.g&&P.on&&P.on.mv)P.x+=P.on.mv;
+ if(P.carry){P.jet=Math.max(P.jet,2);P.imm=Math.max(P.imm||0,3);fl=Math.max(fl,Math.min(P.carryN,Math.floor(-P.y/88)));if(P.y<=P.carryY){P.carry=0;P.jet=0;P.imm=120}}
+ if(K.l){P.vx-=.6;P.face=-1}if(K.r){P.vx+=.6;P.face=1}
+ P.vx*=P.g?.8:.94;const vm=CH[selCh].pk==='fast'?5.8:5.2;P.vx=Math.max(-vm,Math.min(vm,P.vx));
+ P.x+=P.vx;
+ if(P.x<WL){P.x=WL;P.vx=Math.abs(P.vx)*.5;beep(180,.06,'triangle')}
+ if(P.x+P.w>W-WL){P.x=W-WL-P.w;P.vx=-Math.abs(P.vx)*.5;beep(180,.06,'triangle')}
+ if(P.jet>0){P.vy=Math.max(P.vy-1.1,-7);P.jet--;
+  parts.push({x:P.x+11+(Math.random()-.5)*8,y:P.y+30,vx:(Math.random()-.5)*1.5,vy:2+Math.random()*2,l:18,c:Math.random()<.5?'#ff9d00':'#ff2bd6'})}
+ else P.vy=Math.min(P.vy+.5,14);
+ const prev=P.y+P.h;P.y+=P.vy;P.g=false;
+ if(P.vy>=0)for(const p of plats){
+  if(!p.fall&&P.x+P.w>p.x&&P.x<p.x+p.w&&prev<=p.y+1&&P.y+P.h>=p.y){
+   P.y=p.y-P.h;P.vy=0;P.g=true;P.used=false;P.on=p;if(p.cr&&!p.crt&&!NC())p.crt=CH[selCh].pk==='luna'?75:45;
+   if(p.n>fl){fl=p.n;if(fl%10===0){toast={s:'KAT '+fl+' // HIZLANIYOR',t:90};beep(880,.25,'sawtooth')}}
+  }}
+ if(mode==='level'&&fl>=goal&&P.g){winLevel();return}
+ if(P.imm>0)P.imm--;if(P.offer>0)P.offer--;if(P.dj>0)P.dj--;if(P.mag>0)P.mag--;if(CH[selCh].pk==='zero')P.mag=600;
+ const px=P.x+11,py=P.y+14;
+ for(const it of items){if(it.d)continue;
+  if(it.k==='sp'){if(P.vy>=0&&Math.abs(P.x+11-it.x)<18&&P.y+P.h>it.y-8&&P.y+P.h<it.y+12){P.vy=CH[selCh].pk==='yuki'?-20:-17.5;P.imm=70;if(mode==='level')toast={s:'KALKAN AKTİF!',t:60};P.g=false;it.a=8;burst(it.x,it.y,'#ffd23f',16);beep(300,.2,'sine',.07);beep(900,.15,'triangle',.05)}continue}
+  if((P.mag>0||CH[selCh].pk==='mika')&&it.k==='cr'){const dx=px-it.x,dy=py-it.y,d=Math.hypot(dx,dy);if(d<(P.mag>0?160:75)){it.x+=dx/d*6;it.y+=dy/d*6}}
+  if(Math.hypot(px-it.x,py-it.y)<22){it.d=1;
+   if(it.k==='cr'){crys++;wallet++;if(CH[selCh].pk==='yuki'&&Math.random()<.2)wallet++;sv();burst(it.x,it.y,'#0ff',8);beep(1000+Math.min(crys,30)*15,.08,'square')}
+   else{if(it.k==='jet')P.jet=CH[selCh].pk==='jet'?120:CH[selCh].pk==='vega'?135:90,P.imm=150;if(it.k==='dj')P.dj=720;if(it.k==='mag')P.mag=CH[selCh].pk==='mag'?900:600;toast={s:TY[it.k].n,t:80};burst(it.x,it.y,TY[it.k].c,20);beep(1200,.25,'triangle',.06)}}}
+
+ if(mode==='level'){const px2=P.x+11,py2=P.y+14;
+  if(lv>=5&&t%Math.max(45,170-(lv-5)*22)===0)obs.push({k:'db',x:WL+10+Math.random()*(W-2*WL-20),y:camY-20,vy:3+lv*.3});
+  for(const o of obs){let h=0;
+   if(o.k==='dr'){o.x+=o.vx;if(o.x<WL+10||o.x>W-WL-10)o.vx*=-1;o.yy=o.y+Math.sin(t*.05+o.ph)*10;h=Math.hypot(px2-o.x,py2-o.yy)<16}
+   else if(o.k==='db'){o.y+=o.vy;h=Math.hypot(px2-o.x,py2-o.y)<15}
+   else h=((t+o.ph)%200)<70&&Math.abs(py2-o.y)<12&&!(P.jet>0||P.imm>0||CH[selCh].pk==='nova');
+   if(h&&!(P.jet>0||P.imm>0)){burst(px2,py2,'#ff3b5c',30);die();return}}
+  obs=obs.filter(o=>o.y<camY+H+100)}
+ const spd=sp();
+ camY-=spd;if(P.y<camY+H*.4)camY=P.y-H*.4;
+ while(topY>camY-120)gen();
+ plats=plats.filter(p=>p.y<camY+H+100);items=items.filter(i=>!i.d&&i.y<camY+H+100);
+ for(const q of parts){q.x+=q.vx;q.y+=q.vy;q.l--}parts=parts.filter(q=>q.l>0);
+ if(toast.t>0)toast.t--;
+ score=fl*10+crys*50;
+ if(P.y>camY+H+30){die()}
+}
+
+function glow(col,b){x.shadowColor=col;x.shadowBlur=b}
+function txt(s,px,py,sz,col,al,mw){x.font='bold '+sz+'px "Courier New",monospace';x.textAlign=al||'center';x.fillStyle=col;x.fillText(tr(s),px,py,mw||380)}
+
+function draw(){
+ bg();walls();
+ for(const p of plats){const y=p.y-camY;if(y<-20||y>H+20)continue;
+  plat(p,y)}
+ for(const it of items){const y=it.y-camY+Math.sin(t*.08+it.x)*3;if(y<-20||y>H+20)continue;
+  if(it.k==='cr'){glow('#0ff',14);const w=2+6*Math.abs(Math.cos(t*.07+it.x));x.fillStyle='rgba(25,230,255,.55)';x.beginPath();x.moveTo(it.x,y-10);x.lineTo(it.x+w,y);x.lineTo(it.x,y+10);x.lineTo(it.x-w,y);x.fill();x.strokeStyle='#fff';x.lineWidth=1.5;x.stroke()}
+  else if(it.k==='sp'){const yy=it.y-camY,hh=10-(it.a>0?(it.a--,5):0);glow('#ffd23f',12);x.fillStyle='#ffd23f';x.strokeStyle='#ffd23f';x.lineWidth=2;x.fillRect(it.x-14,yy+5,28,3);x.beginPath();x.moveTo(it.x-8,yy+5);x.lineTo(it.x+8,yy+5-hh/3);x.lineTo(it.x-8,yy+5-hh*2/3);x.lineTo(it.x,yy+5-hh);x.stroke();x.fillStyle='#ff2bd6';x.fillRect(it.x-16,yy+2-hh,32,3)}
+  else{const T=TY[it.k];glow(T.c,16);x.strokeStyle=T.c;x.lineWidth=2;x.beginPath();x.arc(it.x,y,12,0,7);x.stroke();txt(T.l,it.x,y+5,14,T.c)}
+  x.shadowBlur=0}
+ drawObs();
+ for(const q of parts){x.globalAlpha=Math.min(1,q.l/15);x.fillStyle=q.c;glow(q.c,8);x.fillRect(q.x-2,q.y-camY-2,4,4)}x.globalAlpha=1;x.shadowBlur=0;
+ if(S==='play'||S==='pause'||S==='over'||S==='win'||S==='revive'){
+  const px=P.x,py=P.y-camY;
+  if(P.mag>0){x.strokeStyle='#ff2bd6';x.globalAlpha=.3;x.lineWidth=1;x.beginPath();x.arc(px+11,py+14,160,0,7);x.stroke();x.globalAlpha=1}
+  if(mode==='level'&&(P.jet>0||P.imm>0)){x.globalAlpha=.5+.3*Math.sin(t*.4);x.strokeStyle='#19e6ff';glow('#19e6ff',14);x.lineWidth=2;x.beginPath();x.arc(px+11,py+14,22,0,7);x.stroke();x.shadowBlur=0;x.globalAlpha=1}
+  robot(px,py)}
+ if(S==='play'||S==='pause'||S==='revive')hud();
+}
+function hud(){
+ glow('#0ff',8);txt('SKOR '+score,WL+8,26,16,'#0ff','left');txt(mode==='level'&&!hard?'KAT '+fl+'/'+goal:'KAT '+fl,W-WL-8,26,16,'#ff2bd6','right');x.shadowBlur=0;
+ txt('◆ '+crys,WL+8,46,12,'#cfe','left');{const bt=(hard?hh:hs)[0];if((mode==='classic'||hard)&&score>0&&(!bt||score>bt.s))txt('★ YENİ YÜKSEK SKOR! ★',WL+8,80,10,'#ffd23f','left',200)}
+ if(mode==='level')txt(hard?'ZOR MOD':'SEVİYE '+(lv+1)+' · '+TH[lv].n,WL+8,62,10,'#9bd','left');
+ const spd=sp();txt('HIZ',W-WL-70,46,10,'#cfe','right');
+ x.strokeStyle='#ff2bd6';x.strokeRect(W-WL-66,38,58,8);x.fillStyle='#ff2bd6';x.fillRect(W-WL-66,38,58*spd/2.6,8);
+ let by=H-18;const bar=(l,v,col)=>{if(v<=0)return;x.fillStyle=col;x.font='10px monospace';x.textAlign='left';x.fillText(l,WL+8,by+8);x.strokeStyle=col;x.strokeRect(WL+30,by,60,8);x.fillRect(WL+30,by,60*v,8);by-=14};
+ bar('JET',Math.min(1,P.jet/90),'#ff9d00');bar('2x',P.dj/720,'#39ff14');bar('MIK',Math.min(1,P.mag/600),'#ff2bd6');
+ if(P.offer>0){const a=P.offer/200;glow('#ffd23f',16);x.strokeStyle='#ffd23f';x.lineWidth=3;x.beginPath();x.arc(W/2,130,26,-Math.PI/2,-Math.PI/2+6.283*a);x.stroke();x.shadowBlur=0;x.fillStyle='rgba(255,210,63,.12)';x.beginPath();x.arc(W/2,130,26,0,7);x.fill();txt('J',W/2,140,28,'#ffd23f');txt('ÖZEL J!',W/2,176,12,'#ffd23f');txt('DOKUN VEYA J TUŞU',W/2,192,10,'#cfe');if(CH[selCh].pk!=='nova')txt('300 ◆',W/2,210,12,wallet>=300?'#0ff':'#ff3b5c')}
+ if(toast.t>0){x.globalAlpha=Math.min(1,toast.t/25);glow('#ffe14d',14);txt(toast.s,W/2,120,22,'#ffe14d');x.shadowBlur=0;x.globalAlpha=1}
+}
+
+
+let bl;function buildBl(c1,w1,c2,w2){bl=[[.05,c1,w1,.4],[.14,c2,w2,.6]].map(([k,c,w,a],L)=>{const arr=[];let px=-10;while(px<W){const bw=30+Math.random()*50;arr.push({x:px,w:bw,h:140+Math.random()*(L?260:200)});px+=bw+2}return{k,c,w,a,arr}})}
+const rain=Array.from({length:45},()=>({x:Math.random()*W,y:Math.random()*H,s:6+Math.random()*6}));
+function bg(){
+ const h0=HB(),g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#03000f');g.addColorStop(.6,'hsl('+h0+',70%,14%)');g.addColorStop(1,'#2a0840');x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.fillStyle='#fff';for(const s of stars){x.globalAlpha=.3+.4*Math.sin(t*.03+s.x);x.fillRect(s.x,(s.y+(-camY)*.03)%(H*.6),s.s,s.s)}x.globalAlpha=1;
+ const py=150+(-camY)*.02,pg=x.createRadialGradient(295,py-15,5,310,py,56);pg.addColorStop(0,mode==='level'?'hsl('+(h0+30)+',100%,72%)':'#ff8ae2');pg.addColorStop(1,mode==='level'?'hsl('+h0+',70%,20%)':'#3a0a6a');
+ x.fillStyle=pg;x.beginPath();x.arc(310,py,56,0,7);x.fill();x.strokeStyle='#19e6ff';x.lineWidth=2;glow('#19e6ff',10);x.beginPath();x.ellipse(310,py,98,20,-.4,0,7);x.stroke();x.shadowBlur=0;
+ for(const L of bl){const yb=H+(-camY)*L.k-10;x.fillStyle=L.c;L.arr.forEach((b,i)=>{if(yb-b.h>H)return;x.fillRect(b.x,yb-b.h,b.w,b.h+400)});
+  x.fillStyle=L.w;x.globalAlpha=L.a;x.beginPath();L.arr.forEach((b,i)=>{for(let r=0,yy=yb-b.h+8;yy<H;yy+=12,r++){if(yy<-10)continue;for(let xx=b.x+4,q=0;xx<b.x+b.w-5;xx+=9,q++)if((i*7+r*13+q*5)%9<3)x.rect(xx,yy,4,6)}});x.fill();x.globalAlpha=1}
+ const sy=H*.45+(-camY)*.14;if((t%120)>6){glow('#19e6ff',16);txt('ネオン',66,sy,22,'#19e6ff')}x.shadowBlur=0;
+ x.strokeStyle='rgba(150,220,255,.25)';x.lineWidth=1;x.beginPath();for(const r of rain){r.y+=r.s;r.x-=1;if(r.y>H){r.y=-10;r.x=Math.random()*W}x.moveTo(r.x,r.y);x.lineTo(r.x-1.5,r.y+9)}x.stroke();
+}
+function walls(){
+ const hu=mode==='level'?(TH[lv].h+20)%360:(300+fl*3)%360,col='hsl('+hu+',100%,60%)';
+ x.fillStyle='#0a0320';x.fillRect(0,0,WL,H);x.fillRect(W-WL,0,WL,H);
+ const o=((-camY)%18+18)%18;
+ for(let yy=-18+o;yy<H;yy+=18){const id=Math.round((yy+camY)/18);
+  for(let q=0;q<2;q++){if((id*7+q*3)%5<2){x.fillStyle=(id+q)%3?'#ffd23f':'#19e6ff';x.globalAlpha=.7;x.fillRect(5+q*10,yy,6,8);x.fillRect(W-WL+5+q*10,yy,6,8)}}}
+ x.globalAlpha=.75+.25*Math.sin(t*.1);x.strokeStyle=col;x.lineWidth=3;glow(col,14);x.beginPath();x.moveTo(WL,0);x.lineTo(WL,H);x.moveTo(W-WL,0);x.lineTo(W-WL,H);x.stroke();x.globalAlpha=1;x.shadowBlur=0;
+}
+function plat(p,y){if(p.crt>0&&!p.fall)y+=Math.random()*2-1;const big=p.n%10===0||p.goal,col=p.goal?'#39ff14':p.cr?'#ff7a00':big?'#ffd23f':'hsl('+((PB()+p.n*9)%360)+',100%,60%)';
+ x.lineCap='round';glow(col,16);x.strokeStyle=col;x.lineWidth=6;x.beginPath();x.moveTo(p.x+6,y+5);x.lineTo(p.x+p.w-6,y+5);x.stroke();
+ x.shadowBlur=0;x.strokeStyle='#fff';x.lineWidth=2;x.stroke();x.lineCap='butt';
+ x.fillStyle='#2a1a55';x.fillRect(p.x,y,4,12);x.fillRect(p.x+p.w-4,y,4,12);x.fillRect(p.x+p.w/2-2,y+8,4,6);
+ if(p.mv){x.fillStyle=col;x.fillRect(p.x+8,y+1,3,8);x.fillRect(p.x+p.w-11,y+1,3,8)}
+ if(big&&p.n>0)txt(p.goal?'★ BİTİŞ ★':'KAT '+p.n,p.x+p.w/2,y+26,11,col)}
+function robot(px,py,ci){
+ const C=CH[ci===undefined?selCh:ci],cx=px+P.w/2,hc=C.rb?'hsl('+(t*3%360)+',100%,68%)':C.hc,ac=P.jet>0?'#ff9d00':C.ac,air=!P.g,bk=(t%170)<7,sw=Math.sin(t*.15)*2,dr=-Math.sign(P.vx)*Math.min(Math.abs(P.vx),5)*.9,run=Math.abs(P.vx)>1&&P.g?Math.sin(t*.5)*3:0,hy=py+9,f=P.face;
+ x.lineCap='round';
+ if(P.jet>0){glow('#ff9d00',12);x.fillStyle='#ff9d00';x.fillRect(cx-8,py+17,16,8)}
+ glow(hc,10);x.strokeStyle=hc;x.lineWidth=5;
+ for(const s of C.tl){x.beginPath();x.moveTo(cx+s*9,hy-2);x.quadraticCurveTo(cx+s*14+dr*2,hy+8,cx+s*12+dr*5+sw*s,hy+(air?5:15));x.stroke()}
+ if(!C.tl.length){x.fillStyle=hc;x.fillRect(cx-11,hy-2,3,10);x.fillRect(cx+8,hy-2,3,10)}
+ x.fillStyle='#1b1040';x.strokeStyle=ac;x.lineWidth=2;glow(ac,8);x.beginPath();x.roundRect(cx-6,py+19,12,8,3);x.fill();x.stroke();
+ x.fillStyle=ac;x.fillRect(cx-5,py+26,4,2+run);x.fillRect(cx+1,py+26,4,2-run);
+ x.shadowBlur=0;x.fillStyle=C.sk;x.beginPath();x.arc(cx,hy,10,0,7);x.fill();
+ glow(hc,8);x.fillStyle=hc;x.beginPath();x.arc(cx,hy,10.5,Math.PI,0);x.lineTo(cx+10,hy-1);x.lineTo(cx+6,hy+2);x.lineTo(cx+3,hy-2);x.lineTo(cx,hy+3);x.lineTo(cx-4,hy-2);x.lineTo(cx-7,hy+2);x.lineTo(cx-10,hy-1);x.fill();
+ if(C.halo){const hl=C.halc||'#ffd23f';glow(hl,10);x.strokeStyle=hl;x.lineWidth=2;x.beginPath();x.ellipse(cx,hy-17+Math.sin(t*.1),8,2.5,0,0,7);x.stroke()}
+ if(C.ear){x.fillStyle=hc;for(const s of[-1,1]){x.beginPath();x.moveTo(cx+s*3,hy-9);x.lineTo(cx+s*8,hy-17);x.lineTo(cx+s*10,hy-5);x.fill()}}
+ x.strokeStyle=hc;x.lineWidth=2;x.beginPath();x.moveTo(cx,hy-10);x.quadraticCurveTo(cx+5,hy-15+Math.sin(t*.1),cx+1,hy-15);x.stroke();
+ x.shadowBlur=0;x.fillStyle=ac;x.fillRect(cx+6,hy-7,3,3);
+ for(const s of[-1,1]){const ex=cx+s*4.2;
+  if(bk){x.strokeStyle='#4a1a5a';x.lineWidth=1.5;x.beginPath();x.moveTo(ex-2.5,hy+4);x.lineTo(ex+2.5,hy+4);x.stroke()}
+  else{x.fillStyle='#fff';x.beginPath();x.ellipse(ex,hy+3,2.9,3.7,0,0,7);x.fill();x.fillStyle=C.ey;x.beginPath();x.ellipse(ex+f*.5,hy+3.4,2,3,0,0,7);x.fill();x.fillStyle='#1b1040';x.beginPath();x.arc(ex+f*.5,hy+3.6,1,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(ex-.4,hy+1.8,.9,0,7);x.fill()}
+  x.fillStyle='rgba(255,90,160,.55)';x.beginPath();x.ellipse(cx+s*7.2,hy+7,2,1.2,0,0,7);x.fill()}
+ x.strokeStyle='#a0305a';x.lineWidth=1.2;x.beginPath();if(air&&P.vy<0)x.arc(cx,hy+7.6,1.3,0,7);else x.arc(cx,hy+6,2,.25*Math.PI,.75*Math.PI);x.stroke();x.lineCap='butt'}
+const sl=document.createElement('canvas');sl.width=4;sl.height=3;{const g=sl.getContext('2d');g.fillStyle='rgba(0,0,0,.25)';g.fillRect(0,2,4,1)}
+const slp=x.createPattern(sl,'repeat'),vg=x.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');
+const _d=draw;draw=function(){_d();ov();x.fillStyle=slp;x.fillRect(0,0,W,H);x.fillStyle=vg;x.fillRect(0,0,W,H)};
+const CH=[
+{n:'NEO',p:0,hc:'#ff7ad9',ac:'#19e6ff',ey:'#19e6ff',sk:'#ffe3d6',tl:[-1,1],pk:'',d:'Kulenin ilk kaşifi',pd:'Standart · dengeli'},
+{n:'KAI',p:300,hc:'#19e6ff',ac:'#ff2bd6',ey:'#ff2bd6',sk:'#f6d3c0',tl:[1],pk:'fast',d:'Tek kuyruklu hızlı kurye',pd:'Koşu hızı +%10'},
+{n:'SORA',p:700,hc:'#ffd23f',ac:'#ff9d00',ey:'#ff7a00',sk:'#ffe3d6',tl:[-1,1],pk:'jet',d:'Güneş gibi parlayan pilot',pd:'Jetpack süresi +%33'},
+{n:'REI',p:1400,hc:'#e8f0ff',ac:'#ff3b5c',ey:'#ff3b5c',sk:'#f3e1e6',tl:[],pk:'mag',d:'Soğukkanlı gümüş saçlı hacker',pd:'Mıknatıs süresi +%50'},
+{n:'YUKI',p:2800,hc:'#39ff14',ac:'#b45cff',ey:'#b45cff',sk:'#ffe3d6',tl:[-1,1],pk:'yuki',d:'Efsanevi toksik neon ruhu',pd:'Yaylar +%15 · %20 çifte kristal'},
+{n:'LUNA',p:1000,hc:'#b45cff',ac:'#ffd23f',ey:'#ffd23f',sk:'#ffe3d6',tl:[-1,1],ear:1,pk:'luna',d:'Kedi kulaklı gece avcısı',pd:'Çöken platformlar daha geç düşer'},
+{n:'MIKA',p:2000,hc:'#ff8a5c',ac:'#39ff14',ey:'#39ff14',sk:'#f6d3c0',tl:[-1],pk:'mika',d:'Tek örgülü kristal avcısı',pd:'Kristalleri hafifçe kendine çeker'},
+{n:'ZERO',p:4000,hc:'#3a5bff',ac:'#ffffff',ey:'#ff2bd6',sk:'#e8e0f0',tl:[],pk:'zero',d:'Sessiz gece uçucusu',pd:'Mıknatıs her zaman açık'},
+{n:'VEGA',p:10000,hc:'#ffffff',ac:'#ff2bd6',ey:'#19e6ff',sk:'#ffe3d6',tl:[-1,1],rb:1,ear:1,pk:'vega',d:'Efsanevi gökkuşağı yıldızı',pd:'Platformlar çökmez · En uzun jetpack'},
+{n:'NOVA',p:60000,hc:'#ff3b5c',ac:'#ffd23f',ey:'#ffd23f',sk:'#ffe3d6',tl:[-1,1],halo:1,pk:'nova',d:'Işık halkalı özel ajan',pd:'Platformlar çökmez · Lazer öldürmez · Bedava J'},
+{n:'NOVA AZUR',p:60000,hc:'#19e6ff',ac:'#ffffff',ey:'#ff2bd6',sk:'#f6d3c0',tl:[-1,1],halo:1,halc:'#19e6ff',pk:'nova',d:'Mavi halkalı özel ajan',pd:'Platformlar çökmez · Lazer öldürmez · Bedava J'},
+{n:'NOVA MİNT',p:60000,hc:'#00ffb3',ac:'#ff2bd6',ey:'#ff2bd6',sk:'#ffe3d6',tl:[1],ear:1,halo:1,halc:'#ff2bd6',pk:'nova',d:'Pembe halkalı özel ajan',pd:'Platformlar çökmez · Lazer öldürmez · Bedava J'}];
+const TH=[{n:'NEON ŞEHİR',h:290,o:'Engelsiz giriş · yolu öğren'},{n:'SİBER KANAL',h:200,o:'Kayan platformlar'},{n:'KIZIL ÇÖL',h:18,o:'+ Çöken platformlar'},{n:'BUZ DEVRESİ',h:185,o:'+ Devriye dronları'},{n:'TOKSİK ARITMA',h:100,o:'+ Lazer bariyerleri'},{n:'MOR ORMAN',h:265,o:'+ Düşen enkaz'},{n:'ALTIN HAT',h:48,o:'Hızlı kayma · yoğun engeller'},{n:'DERİN VOLT',h:225,o:'Daha sık dron ve lazer'},{n:'KOZMİK DOK',h:330,o:'Her engel bir arada · zor'},{n:'SON KULE',h:355,o:'Final · maksimum zorluk'}];
+function HB(){return mode==='level'?TH[lv].h:(285+fl*2)%360}
+function PB(){return mode==='level'?TH[lv].h+170:170}
+function DF(){const L=lv;return{mv:L>=1?Math.min(.5,.12+.04*(L-1)):0,cr:L>=2?Math.min(.3,.08+.03*(L-2)):0,dr:L>=3?Math.min(.28,.07+.03*(L-3)):0,ls:L>=4?Math.min(.28,.06+.03*(L-4)):0}}
+function sp(){if(fl<3)return 0;return mode==='level'?.5+lv*.12+Math.min(hard?1.2:.5,t*(hard?.0002:.00012)):Math.min(2.6,.5+t*.00018)}
+function buildMap(){if(mode==='level'){const h=TH[lv].h;buildBl('hsl('+h+',55%,14%)','hsl('+((h+60)%360)+',100%,60%)','hsl('+h+',60%,8%)','hsl('+((h+180)%360)+',100%,60%)')}else buildBl('#1c0b45','#ff2bd6','#0f0630','#19e6ff')}
+function drawObs(){for(const o of obs){
+ if(o.k==='dr'){const sy=(o.yy||o.y)-camY;if(sy<-20||sy>H+20)continue;glow('#ff3b5c',14);x.fillStyle='#2a0010';x.strokeStyle='#ff3b5c';x.lineWidth=2;x.beginPath();x.arc(o.x,sy,9,0,7);x.fill();x.stroke();x.fillStyle='#ff3b5c';x.fillRect(o.x-5,sy-1.5,10,3);x.fillStyle='#fff';x.fillRect(o.x+(o.vx>0?2:-4),sy-1,2,2)}
+ else if(o.k==='db'){const sy=o.y-camY;glow('#ff9d00',14);x.fillStyle='rgba(255,157,0,.3)';x.fillRect(o.x-3,sy-28,6,20);x.fillStyle='#ff7a00';x.save();x.translate(o.x,sy);x.rotate(t*.1);x.fillRect(-7,-7,14,14);x.restore()}
+ else{const sy=o.y-camY;if(sy<-10||sy>H+10)continue;const ph=(t+o.ph)%200,on=ph<70;
+  x.fillStyle='#ff3b5c';x.fillRect(WL,sy-5,6,10);x.fillRect(W-WL-6,sy-5,6,10);
+  if(on||(ph>=170&&t%6<3)){glow('#ff3b5c',on?16:0);x.strokeStyle=on?'#ff3b5c':'rgba(255,59,92,.4)';x.lineWidth=on?4:1;x.beginPath();x.moveTo(WL+6,sy);x.lineTo(W-WL-6,sy);x.stroke();if(on){x.strokeStyle='#fff';x.lineWidth=1.5;x.stroke()}}}
+ x.shadowBlur=0}}
+function fail(){go('over');beep(120,.5,'sawtooth',.07);if(mode==='classic'||hard)addScore()}
+function startLevel(i){mode='level';hard=0;lv=i;goal=25+10*i;reset();go('play');beep(520,.2,'sawtooth')}
+function winLevel(){bonus=0;if(!done[lv]){bonus=30+lv*15;wallet+=bonus}done[lv]=1;try{window.ARKAT&&ARKAT.saveScore('tower','lv',done.filter(Boolean).length)}catch(e){}prog=Math.max(prog,Math.min(10,lv+2));sv();go('win');beep(880,.15,'square');setTimeout(()=>beep(1320,.3,'square'),150)}
+function cell(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W-39,py=(e.clientY-r.top)/r.height*H-120,co=Math.floor(px/70),ro=Math.floor(py/76);if(px<0||py<0||co>4||ro>1||px-co*70>62||py-ro*76>62)return -1;return ro*5+co}
+function sv(){try{if(!TEST_MONEY)localStorage.setItem('nt_w',wallet);localStorage.setItem('nt_own',JSON.stringify(own));localStorage.setItem('nt_ch',selCh);localStorage.setItem('nt_lv',JSON.stringify({p:prog,d:done}))}catch(e){}}
+function chAct(){const c=CH[cv];
+ if(own.includes(cv)){selCh=cv;sv();beep(900,.12,'triangle');return}
+ if(wallet>=c.p){wallet-=c.p;own.push(cv);selCh=cv;sv();msgS='SATIN ALINDI!';beep(1100,.3,'sawtooth',.06)}
+ else{msgS='YETERSİZ ◆ ('+(c.p-wallet)+' eksik)';beep(150,.2,'square')}
+ msgT=Date.now()+1500}
+const KT="KLASİK MOD|SEVİYE MODU|KARAKTERLER|YÜKSEK SKORLAR|ÇIKIŞ|SES: AÇIK|SES: KAPALI|DURAKLATILDI|EMİN MİSİN?|Skor kaydedilmeyecek, kristallerin korunur|DEVAM ET|ANA MENÜYE DÖN|EVET, ANA MENÜYE DÖN|HAYIR, DEVAM ET|TEKRAR OYNA|ANA MENÜ|TEKRAR DENE|SEVİYELER|SONRAKİ SEVİYE|GERİ|SEÇ|✓ SEÇİLİ|◀ ÖNCEKİ|SONRAKİ ▶|✓ TAMAM|SIFIRLA|KONTROL|SİSTEM ÇÖKTÜ|GÖREV BAŞARISIZ|SKOR {0}|KAT {0}|KAT {0}/{1}|KAT {0} · ◆ {1}|SIRALAMA #{0}|EN YÜKSEK {0}|★ YENİ YÜKSEK SKOR! ★|+{0} ◆ cüzdana eklendi|SEVİYE {0} · {1}|SEVİYE TAMAM!|İLK GEÇİŞ BONUSU +{0} ◆|TÜM SEVİYELERİ BİTİRDİN!|SEVİYE {0} AÇILDI|HEDEF: {0}. KATA ULAŞ|Önceki seviyeyi bitirerek aç|Başlamak için dokun · Enter|J ve yay: kısa süre tüm engellerden korur|SATIN AL — {0} ◆|SEÇİLİ KARAKTER|SAHİPSİN|KİLİTLİ · FİYAT {0} ◆|PERK: {0}|YETERSİZ ◆ ({0} eksik)|SATIN ALINDI!|KONTROL DÜZENİ|Butonları parmağınla sürükleyip yerleştir|◀ ▶ yön · ▲ zıpla|OYUN KAPATILDI|Sekmeyi kapatabilirsin|◀ ▶ / A D hareket · BOŞLUK / ▲ zıpla · P duraklat|JETPACK!|MIKNATIS!|KALKAN AKTİF!|KAT {0} // HIZLANIYOR|HIZ|★ BİTİŞ ★|AÇIK|KİLİTLİ|Standart · dengeli|Koşu hızı +%10|Jetpack süresi +%33|Mıknatıs süresi +%50|Yaylar +%15 · %20 çifte kristal|Çöken platformlar daha geç düşer|Kristalleri hafifçe kendine çeker|Mıknatıs her zaman açık|Platformlar çökmez · En uzun jetpack|HAREKET|ZIPLA|DURAKLAT|DOKUNMATİK|KONTROLLER|DİL|Engelsiz giriş · yolu öğren|Kayan platformlar|+ Çöken platformlar|+ Devriye dronları|+ Lazer bariyerleri|+ Düşen enkaz|Hızlı kayma · yoğun engeller|Daha sık dron ve lazer|Her engel bir arada · zor|Final · maksimum zorluk|NEON ŞEHİR|SİBER KANAL|KIZIL ÇÖL|BUZ DEVRESİ|TOKSİK ARITMA|MOR ORMAN|ALTIN HAT|DERİN VOLT|KOZMİK DOK|SON KULE".split("|");
+const DT={};
+DT.en="CLASSIC MODE|LEVEL MODE|CHARACTERS|HIGH SCORES|EXIT|SOUND: ON|SOUND: OFF|PAUSED|ARE YOU SURE?|Score won't be saved, crystals are kept|RESUME|BACK TO MAIN MENU|YES, BACK TO MENU|NO, KEEP PLAYING|PLAY AGAIN|MAIN MENU|TRY AGAIN|LEVELS|NEXT LEVEL|BACK|SELECT|✓ SELECTED|◀ PREV|NEXT ▶|✓ DONE|RESET|CONTROLS|SYSTEM CRASH|MISSION FAILED|SCORE {0}|FLOOR {0}|FLOOR {0}/{1}|FLOOR {0} · ◆ {1}|RANK #{0}|BEST {0}|★ NEW HIGH SCORE! ★|+{0} ◆ added to wallet|LEVEL {0} · {1}|LEVEL COMPLETE!|FIRST CLEAR BONUS +{0} ◆|YOU BEAT ALL LEVELS!|LEVEL {0} UNLOCKED|GOAL: REACH FLOOR {0}|Clear the previous level to unlock|Tap or press Enter to start|J and spring: brief shield from all hazards|BUY — {0} ◆|SELECTED CHARACTER|OWNED|LOCKED · PRICE {0} ◆|PERK: {0}|NOT ENOUGH ◆ ({0} short)|PURCHASED!|CONTROL LAYOUT|Drag the buttons to where you want them|◀ ▶ move · ▲ jump|GAME CLOSED|You can close the tab|◀ ▶ / A D move · SPACE / ▲ jump · P pause|JETPACK!|MAGNET!|SHIELD ON!|FLOOR {0} // SPEEDING UP|SPEED|★ FINISH ★|OPEN|LOCKED|Standard · balanced|Run speed +10%|Jetpack time +33%|Magnet time +50%|Springs +15% · 20% double crystals|Crumbling platforms fall later|Gently pulls crystals to you|Magnet always on|Platforms never crumble · Longest jetpack|MOVE|JUMP|PAUSE|TOUCH|CONTROLS|LANG|No hazards · learn the way|Moving platforms|+ Crumbling platforms|+ Patrol drones|+ Laser barriers|+ Falling debris|Faster scroll · dense hazards|More drones and lasers|Every hazard at once · hard|Final · maximum difficulty|NEON CITY|CYBER CANAL|CRIMSON DESERT|ICE CIRCUIT|TOXIC PLANT|VIOLET FOREST|GOLD LINE|DEEP VOLT|COSMIC DOCK|LAST TOWER".split("|");
+DT.ja="クラシックモード|レベルモード|キャラクター|ハイスコア|終了|サウンド: オン|サウンド: オフ|一時停止|本当によろしいですか？|スコアは保存されません（クリスタルは保持）|再開|メインメニューへ|はい、メニューへ|いいえ、続ける|もう一度|メインメニュー|リトライ|レベル選択|次のレベル|戻る|選択|✓ 選択中|◀ 前へ|次へ ▶|✓ 完了|リセット|操作|システムクラッシュ|ミッション失敗|スコア {0}|{0}階|{0}/{1}階|{0}階 · ◆ {1}|{0}位|ベスト {0}|★ ハイスコア更新！ ★|+{0} ◆ ウォレットに追加|レベル {0} · {1}|レベルクリア！|初回クリアボーナス +{0} ◆|全レベルクリア！|レベル {0} 解放|目標：{0}階に到達|前のレベルをクリアして解放|タップまたはEnterで開始|Jとバネ：短時間すべての障害物から守る|購入 — {0} ◆|使用中のキャラクター|所持済み|ロック中 · 価格 {0} ◆|特性：{0}|◆が足りません（あと{0}）|購入しました！|操作レイアウト|ボタンをドラッグして配置|◀ ▶ 移動 · ▲ ジャンプ|ゲームを終了しました|タブを閉じても大丈夫です|◀ ▶ / A D 移動 · スペース / ▲ ジャンプ · P 一時停止|ジェットパック！|マグネット！|シールド作動！|{0}階 // 加速中|速度|★ ゴール ★|解放|ロック|標準 · バランス型|走る速さ +10%|ジェットパック時間 +33%|マグネット時間 +50%|バネ +15% · 20%でクリスタル2倍|崩れる足場が遅く落ちる|クリスタルを少し引き寄せる|マグネット常時オン|足場が崩れない · 最長ジェットパック|移動|ジャンプ|一時停止|タッチ|操作方法|言語".split("|");
+DT.it="MODALITÀ CLASSICA|MODALITÀ LIVELLI|PERSONAGGI|RECORD|ESCI|AUDIO: ON|AUDIO: OFF|IN PAUSA|SEI SICURO?|Il punteggio non sarà salvato, i cristalli restano|RIPRENDI|TORNA AL MENU|SÌ, TORNA AL MENU|NO, CONTINUA|GIOCA ANCORA|MENU PRINCIPALE|RIPROVA|LIVELLI|LIVELLO SUCCESSIVO|INDIETRO|SCEGLI|✓ SCELTO|◀ PREC.|SUCC. ▶|✓ FATTO|RIPRISTINA|COMANDI|SISTEMA IN TILT|MISSIONE FALLITA|PUNTI {0}|PIANO {0}|PIANO {0}/{1}|PIANO {0} · ◆ {1}|POSIZIONE #{0}|RECORD {0}|★ NUOVO RECORD! ★|+{0} ◆ aggiunti al portafoglio|LIVELLO {0} · {1}|LIVELLO COMPLETATO!|BONUS PRIMA VITTORIA +{0} ◆|HAI COMPLETATO TUTTI I LIVELLI!|LIVELLO {0} SBLOCCATO|OBIETTIVO: RAGGIUNGI IL PIANO {0}|Completa il livello precedente per sbloccare|Tocca o premi Invio per iniziare|J e molla: breve scudo contro ogni pericolo|ACQUISTA — {0} ◆|PERSONAGGIO SCELTO|POSSEDUTO|BLOCCATO · PREZZO {0} ◆|BONUS: {0}|◆ INSUFFICIENTI (ne mancano {0})|ACQUISTATO!|DISPOSIZIONE COMANDI|Trascina i pulsanti dove vuoi|◀ ▶ muovi · ▲ salta|GIOCO CHIUSO|Puoi chiudere la scheda|◀ ▶ / A D muovi · SPAZIO / ▲ salta · P pausa|JETPACK!|MAGNETE!|SCUDO ATTIVO!|PIANO {0} // ACCELERA|VELOCITÀ|★ TRAGUARDO ★|APERTO|BLOCCATO|Standard · bilanciato|Velocità di corsa +10%|Durata jetpack +33%|Durata magnete +50%|Molle +15% · 20% cristalli doppi|Le piattaforme friabili cadono più tardi|Attira dolcemente i cristalli|Magnete sempre attivo|Le piattaforme non crollano · Jetpack più lungo|MUOVI|SALTA|PAUSA|TOUCH|COMANDI|LINGUA".split("|");
+DT.fr="MODE CLASSIQUE|MODE NIVEAUX|PERSONNAGES|MEILLEURS SCORES|QUITTER|SON : OUI|SON : NON|PAUSE|ÊTES-VOUS SÛR ?|Le score ne sera pas enregistré, les cristaux sont conservés|REPRENDRE|MENU PRINCIPAL|OUI, RETOUR AU MENU|NON, CONTINUER|REJOUER|MENU PRINCIPAL|RÉESSAYER|NIVEAUX|NIVEAU SUIVANT|RETOUR|CHOISIR|✓ CHOISI|◀ PRÉC.|SUIV. ▶|✓ OK|RÉINITIALISER|COMMANDES|PLANTAGE SYSTÈME|MISSION ÉCHOUÉE|SCORE {0}|ÉTAGE {0}|ÉTAGE {0}/{1}|ÉTAGE {0} · ◆ {1}|RANG #{0}|RECORD {0}|★ NOUVEAU RECORD ! ★|+{0} ◆ ajoutés au portefeuille|NIVEAU {0} · {1}|NIVEAU TERMINÉ !|BONUS PREMIÈRE VICTOIRE +{0} ◆|TOUS LES NIVEAUX TERMINÉS !|NIVEAU {0} DÉBLOQUÉ|OBJECTIF : ÉTAGE {0}|Terminez le niveau précédent pour débloquer|Touchez ou appuyez sur Entrée|J et ressort : bouclier bref contre tous les dangers|ACHETER — {0} ◆|PERSONNAGE CHOISI|POSSÉDÉ|VERROUILLÉ · PRIX {0} ◆|BONUS : {0}|PAS ASSEZ DE ◆ (il manque {0})|ACHETÉ !|DISPOSITION DES COMMANDES|Faites glisser les boutons où vous voulez|◀ ▶ bouger · ▲ sauter|JEU FERMÉ|Vous pouvez fermer l'onglet|◀ ▶ / A D bouger · ESPACE / ▲ sauter · P pause|JETPACK !|AIMANT !|BOUCLIER ACTIF !|ÉTAGE {0} // ACCÉLÉRATION|VITESSE|★ ARRIVÉE ★|OUVERT|VERROUILLÉ|Standard · équilibré|Vitesse de course +10 %|Durée du jetpack +33 %|Durée de l'aimant +50 %|Ressorts +15 % · 20 % de cristaux doubles|Les plateformes fragiles tombent plus tard|Attire doucement les cristaux|Aimant toujours actif|Plateformes indestructibles · Jetpack le plus long|BOUGER|SAUTER|PAUSE|TACTILE|COMMANDES|LANGUE".split("|");
+DT.ko="클래식 모드|레벨 모드|캐릭터|최고 점수|종료|사운드: 켜짐|사운드: 꺼짐|일시정지|정말 나갈까요?|점수는 저장되지 않지만 크리스털은 유지됩니다|계속하기|메인 메뉴로|예, 메뉴로 이동|아니요, 계속하기|다시 하기|메인 메뉴|다시 도전|레벨 선택|다음 레벨|뒤로|선택|✓ 선택됨|◀ 이전|다음 ▶|✓ 완료|초기화|조작|시스템 다운|임무 실패|점수 {0}|{0}층|{0}/{1}층|{0}층 · ◆ {1}|{0}위|최고 {0}|★ 신기록! ★|+{0} ◆ 지갑에 추가|레벨 {0} · {1}|레벨 클리어!|첫 클리어 보너스 +{0} ◆|모든 레벨을 클리어했습니다!|레벨 {0} 해금|목표: {0}층 도달|이전 레벨을 클리어하면 열립니다|터치 또는 Enter로 시작|J와 스프링: 잠시 모든 장애물로부터 보호|구매 — {0} ◆|선택된 캐릭터|보유 중|잠김 · 가격 {0} ◆|특성: {0}|◆가 부족합니다 ({0} 부족)|구매 완료!|조작 배치|버튼을 드래그해서 원하는 곳에 놓으세요|◀ ▶ 이동 · ▲ 점프|게임이 종료되었습니다|탭을 닫아도 됩니다|◀ ▶ / A D 이동 · 스페이스 / ▲ 점프 · P 일시정지|제트팩!|자석!|보호막 작동!|{0}층 // 가속 중|속도|★ 결승 ★|열림|잠김|기본 · 균형형|달리기 속도 +10%|제트팩 시간 +33%|자석 시간 +50%|스프링 +15% · 20% 확률로 크리스털 2배|무너지는 발판이 늦게 떨어짐|크리스털을 살짝 끌어당김|자석 항상 켜짐|발판이 무너지지 않음 · 가장 긴 제트팩|이동|점프|일시정지|터치|조작법|언어".split("|");
+DT.zh="经典模式|关卡模式|角色|最高分|退出|声音：开|声音：关|已暂停|确定吗？|分数不会保存，水晶会保留|继续|返回主菜单|是，返回菜单|否，继续游戏|再玩一次|主菜单|重试|关卡|下一关|返回|选择|✓ 已选择|◀ 上一个|下一个 ▶|✓ 完成|重置|操作|系统崩溃|任务失败|分数 {0}|第{0}层|第{0}/{1}层|第{0}层 · ◆ {1}|第{0}名|最高 {0}|★ 新纪录！ ★|+{0} ◆ 已存入钱包|第{0}关 · {1}|通关！|首次通关奖励 +{0} ◆|你通关了所有关卡！|第{0}关已解锁|目标：到达第{0}层|通关上一关即可解锁|点击或按回车开始|J和弹簧：短时间免疫所有障碍|购买 — {0} ◆|当前角色|已拥有|未解锁 · 价格 {0} ◆|特性：{0}|◆不足（还差{0}）|购买成功！|按键布局|拖动按钮到你想要的位置|◀ ▶ 移动 · ▲ 跳跃|游戏已关闭|你可以关闭此标签页|◀ ▶ / A D 移动 · 空格 / ▲ 跳跃 · P 暂停|喷气背包！|磁铁！|护盾开启！|第{0}层 // 加速中|速度|★ 终点 ★|开放|锁定|标准 · 均衡|奔跑速度 +10%|喷气背包时间 +33%|磁铁时间 +50%|弹簧 +15% · 20%几率水晶翻倍|崩塌平台坠落更慢|轻轻吸引水晶|磁铁常开|平台不会崩塌 · 最长喷气背包|移动|跳跃|暂停|触屏|操作方式|语言".split("|");
+DT.ru="КЛАССИКА|РЕЖИМ УРОВНЕЙ|ПЕРСОНАЖИ|РЕКОРДЫ|ВЫХОД|ЗВУК: ВКЛ|ЗВУК: ВЫКЛ|ПАУЗА|ВЫ УВЕРЕНЫ?|Счёт не сохранится, кристаллы останутся|ПРОДОЛЖИТЬ|В ГЛАВНОЕ МЕНЮ|ДА, В МЕНЮ|НЕТ, ПРОДОЛЖИТЬ|ИГРАТЬ СНОВА|ГЛАВНОЕ МЕНЮ|ЕЩЁ РАЗ|УРОВНИ|СЛЕДУЮЩИЙ УРОВЕНЬ|НАЗАД|ВЫБРАТЬ|✓ ВЫБРАН|◀ НАЗАД|ДАЛЕЕ ▶|✓ ГОТОВО|СБРОС|УПРАВЛЕНИЕ|СБОЙ СИСТЕМЫ|МИССИЯ ПРОВАЛЕНА|СЧЁТ {0}|ЭТАЖ {0}|ЭТАЖ {0}/{1}|ЭТАЖ {0} · ◆ {1}|МЕСТО #{0}|РЕКОРД {0}|★ НОВЫЙ РЕКОРД! ★|+{0} ◆ добавлено в кошелёк|УРОВЕНЬ {0} · {1}|УРОВЕНЬ ПРОЙДЕН!|БОНУС ЗА ПЕРВОЕ ПРОХОЖДЕНИЕ +{0} ◆|ВСЕ УРОВНИ ПРОЙДЕНЫ!|УРОВЕНЬ {0} ОТКРЫТ|ЦЕЛЬ: ДОБЕРИСЬ ДО ЭТАЖА {0}|Пройдите предыдущий уровень, чтобы открыть|Коснитесь или нажмите Enter|J и пружина: краткая защита от всех угроз|КУПИТЬ — {0} ◆|ВЫБРАННЫЙ ПЕРСОНАЖ|ЕСТЬ|ЗАКРЫТО · ЦЕНА {0} ◆|БОНУС: {0}|НЕ ХВАТАЕТ ◆ (нужно ещё {0})|КУПЛЕНО!|РАСКЛАДКА УПРАВЛЕНИЯ|Перетащите кнопки, куда удобно|◀ ▶ движение · ▲ прыжок|ИГРА ЗАКРЫТА|Можно закрыть вкладку|◀ ▶ / A D движение · ПРОБЕЛ / ▲ прыжок · P пауза|РЕАКТИВНЫЙ РАНЕЦ!|МАГНИТ!|ЩИТ ВКЛЮЧЁН!|ЭТАЖ {0} // УСКОРЕНИЕ|СКОРОСТЬ|★ ФИНИШ ★|ОТКРЫТ|ЗАКРЫТ|Стандарт · баланс|Скорость бега +10%|Время ранца +33%|Время магнита +50%|Пружины +15% · 20% двойных кристаллов|Рушащиеся платформы падают позже|Слегка притягивает кристаллы|Магнит всегда включён|Платформы не рушатся · Самый долгий ранец|ДВИЖЕНИЕ|ПРЫЖОК|ПАУЗА|СЕНСОР|УПРАВЛЕНИЕ|ЯЗЫК".split("|");
+DT.uk="КЛАСИКА|РЕЖИМ РІВНІВ|ПЕРСОНАЖІ|РЕКОРДИ|ВИХІД|ЗВУК: УВІМК.|ЗВУК: ВИМК.|ПАУЗА|ВИ ВПЕВНЕНІ?|Рахунок не збережеться, кристали залишаться|ПРОДОВЖИТИ|ДО ГОЛОВНОГО МЕНЮ|ТАК, ДО МЕНЮ|НІ, ПРОДОВЖИТИ|ГРАТИ ЗНОВУ|ГОЛОВНЕ МЕНЮ|ЩЕ РАЗ|РІВНІ|НАСТУПНИЙ РІВЕНЬ|НАЗАД|ОБРАТИ|✓ ОБРАНО|◀ НАЗАД|ДАЛІ ▶|✓ ГОТОВО|СКИНУТИ|КЕРУВАННЯ|ЗБІЙ СИСТЕМИ|МІСІЮ ПРОВАЛЕНО|РАХУНОК {0}|ПОВЕРХ {0}|ПОВЕРХ {0}/{1}|ПОВЕРХ {0} · ◆ {1}|МІСЦЕ #{0}|РЕКОРД {0}|★ НОВИЙ РЕКОРД! ★|+{0} ◆ додано до гаманця|РІВЕНЬ {0} · {1}|РІВЕНЬ ПРОЙДЕНО!|БОНУС ЗА ПЕРШЕ ПРОХОДЖЕННЯ +{0} ◆|ВСІ РІВНІ ПРОЙДЕНО!|РІВЕНЬ {0} ВІДКРИТО|МЕТА: ДОСЯГНИ ПОВЕРХУ {0}|Пройдіть попередній рівень, щоб відкрити|Торкніться або натисніть Enter|J і пружина: короткочасний захист від усіх загроз|КУПИТИ — {0} ◆|ОБРАНИЙ ПЕРСОНАЖ|Є|ЗАБЛОКОВАНО · ЦІНА {0} ◆|БОНУС: {0}|НЕ ВИСТАЧАЄ ◆ (ще {0})|КУПЛЕНО!|РОЗКЛАДКА КЕРУВАННЯ|Перетягніть кнопки, куди зручно|◀ ▶ рух · ▲ стрибок|ГРУ ЗАКРИТО|Можна закрити вкладку|◀ ▶ / A D рух · ПРОБІЛ / ▲ стрибок · P пауза|РЕАКТИВНИЙ РАНЕЦЬ!|МАГНІТ!|ЩИТ УВІМКНЕНО!|ПОВЕРХ {0} // ПРИСКОРЕННЯ|ШВИДКІСТЬ|★ ФІНІШ ★|ВІДКРИТО|ЗАКРИТО|Стандарт · баланс|Швидкість бігу +10%|Час ранця +33%|Час магніта +50%|Пружини +15% · 20% подвійних кристалів|Платформи, що руйнуються, падають пізніше|Трохи притягує кристали|Магніт завжди ввімкнений|Платформи не руйнуються · Найдовший ранець|РУХ|СТРИБОК|ПАУЗА|СЕНСОР|КЕРУВАННЯ|МОВА".split("|");
+DT.ar="الوضع الكلاسيكي|وضع المراحل|الشخصيات|أعلى النتائج|خروج|الصوت: يعمل|الصوت: متوقف|إيقاف مؤقت|هل أنت متأكد؟|لن تُحفظ النتيجة وتبقى البلورات|متابعة|العودة للقائمة الرئيسية|نعم، العودة للقائمة|لا، تابع اللعب|العب مجددًا|القائمة الرئيسية|حاول مجددًا|المراحل|المرحلة التالية|رجوع|اختيار|✓ مختار|◀ السابق|التالي ▶|✓ تم|إعادة ضبط|التحكم|انهيار النظام|فشلت المهمة|النتيجة {0}|الطابق {0}|الطابق {0}/{1}|الطابق {0} · ◆ {1}|المركز #{0}|الأفضل {0}|★ رقم قياسي جديد! ★|+{0} ◆ أُضيفت إلى المحفظة|المرحلة {0} · {1}|اكتملت المرحلة!|مكافأة أول إنجاز +{0} ◆|أنهيت جميع المراحل!|فُتحت المرحلة {0}|الهدف: بلوغ الطابق {0}|أنهِ المرحلة السابقة للفتح|المس أو اضغط Enter للبدء|J والنابض: درع قصير ضد كل الأخطار|شراء — {0} ◆|الشخصية المختارة|مملوكة|مقفلة · السعر {0} ◆|الميزة: {0}|◆ غير كافية (ينقص {0})|تم الشراء!|تخطيط التحكم|اسحب الأزرار إلى المكان الذي تريده|◀ ▶ حركة · ▲ قفز|أُغلقت اللعبة|يمكنك إغلاق التبويب|◀ ▶ / A D حركة · المسافة / ▲ قفز · P إيقاف|حقيبة نفاثة!|مغناطيس!|الدرع يعمل!|الطابق {0} // تسارع|السرعة|★ النهاية ★|مفتوحة|مقفلة|عادي · متوازن|سرعة الجري +10%|مدة الحقيبة النفاثة +33%|مدة المغناطيس +50%|النوابض +15% · 20% بلورات مضاعفة|المنصات المتهالكة تسقط لاحقًا|يجذب البلورات بلطف|المغناطيس يعمل دائمًا|المنصات لا تنهار · أطول حقيبة نفاثة|حركة|قفز|إيقاف|لمس|طريقة التحكم|اللغة".split("|");
+DT.es="MODO CLÁSICO|MODO NIVELES|PERSONAJES|RÉCORDS|SALIR|SONIDO: SÍ|SONIDO: NO|PAUSA|¿ESTÁS SEGURO?|La puntuación no se guardará, los cristales se conservan|CONTINUAR|AL MENÚ PRINCIPAL|SÍ, AL MENÚ|NO, SEGUIR|JUGAR DE NUEVO|MENÚ PRINCIPAL|REINTENTAR|NIVELES|SIGUIENTE NIVEL|ATRÁS|ELEGIR|✓ ELEGIDO|◀ ANT.|SIG. ▶|✓ LISTO|RESTABLECER|CONTROLES|FALLO DEL SISTEMA|MISIÓN FALLIDA|PUNTOS {0}|PISO {0}|PISO {0}/{1}|PISO {0} · ◆ {1}|PUESTO #{0}|RÉCORD {0}|★ ¡NUEVO RÉCORD! ★|+{0} ◆ añadidos a la cartera|NIVEL {0} · {1}|¡NIVEL COMPLETADO!|BONO DE PRIMERA VEZ +{0} ◆|¡COMPLETASTE TODOS LOS NIVELES!|NIVEL {0} DESBLOQUEADO|META: LLEGA AL PISO {0}|Completa el nivel anterior para desbloquear|Toca o pulsa Intro para empezar|J y resorte: escudo breve contra todo peligro|COMPRAR — {0} ◆|PERSONAJE ELEGIDO|TUYO|BLOQUEADO · PRECIO {0} ◆|VENTAJA: {0}|◆ INSUFICIENTES (faltan {0})|¡COMPRADO!|DISEÑO DE CONTROLES|Arrastra los botones donde quieras|◀ ▶ mover · ▲ saltar|JUEGO CERRADO|Puedes cerrar la pestaña|◀ ▶ / A D mover · ESPACIO / ▲ saltar · P pausa|¡JETPACK!|¡IMÁN!|¡ESCUDO ACTIVO!|PISO {0} // ACELERANDO|VELOCIDAD|★ META ★|ABIERTO|BLOQUEADO|Estándar · equilibrado|Velocidad de carrera +10%|Duración del jetpack +33%|Duración del imán +50%|Resortes +15% · 20% cristales dobles|Las plataformas frágiles caen más tarde|Atrae suavemente los cristales|Imán siempre activo|Plataformas que no se rompen · Jetpack más largo|MOVER|SALTAR|PAUSA|TÁCTIL|CONTROLES|IDIOMA".split("|");
+DT.de="KLASSISCH|LEVEL-MODUS|FIGUREN|BESTENLISTE|BEENDEN|TON: AN|TON: AUS|PAUSIERT|BIST DU SICHER?|Punktzahl wird nicht gespeichert, Kristalle bleiben|WEITER|ZUM HAUPTMENÜ|JA, ZUM MENÜ|NEIN, WEITER|NOCHMAL SPIELEN|HAUPTMENÜ|NOCHMAL VERSUCHEN|LEVEL|NÄCHSTES LEVEL|ZURÜCK|WÄHLEN|✓ GEWÄHLT|◀ ZURÜCK|WEITER ▶|✓ FERTIG|ZURÜCKSETZEN|STEUERUNG|SYSTEMABSTURZ|MISSION GESCHEITERT|PUNKTE {0}|ETAGE {0}|ETAGE {0}/{1}|ETAGE {0} · ◆ {1}|PLATZ #{0}|REKORD {0}|★ NEUER REKORD! ★|+{0} ◆ zur Geldbörse hinzugefügt|LEVEL {0} · {1}|LEVEL GESCHAFFT!|ERSTSIEG-BONUS +{0} ◆|ALLE LEVEL GESCHAFFT!|LEVEL {0} FREIGESCHALTET|ZIEL: ETAGE {0} ERREICHEN|Schließe das vorige Level ab zum Freischalten|Tippen oder Enter drücken|J und Feder: kurzer Schutz vor allen Gefahren|KAUFEN — {0} ◆|GEWÄHLTE FIGUR|IM BESITZ|GESPERRT · PREIS {0} ◆|BONUS: {0}|ZU WENIG ◆ ({0} fehlen)|GEKAUFT!|STEUERUNGSLAYOUT|Ziehe die Tasten an die gewünschte Stelle|◀ ▶ bewegen · ▲ springen|SPIEL BEENDET|Du kannst den Tab schließen|◀ ▶ / A D bewegen · LEERTASTE / ▲ springen · P Pause|JETPACK!|MAGNET!|SCHILD AKTIV!|ETAGE {0} // SCHNELLER|TEMPO|★ ZIEL ★|OFFEN|GESPERRT|Standard · ausgewogen|Lauftempo +10 %|Jetpack-Dauer +33 %|Magnet-Dauer +50 %|Federn +15 % · 20 % doppelte Kristalle|Brüchige Plattformen fallen später|Zieht Kristalle sanft an|Magnet immer aktiv|Plattformen brechen nie · Längster Jetpack|BEWEGEN|SPRINGEN|PAUSE|TOUCH|STEUERUNG|SPRACHE".split("|");
+KT.push("Platformlar çökmez · Lazer öldürmez · Bedava J","ÖZEL J!","DOKUN VEYA J TUŞU");
+DT.en.push("Platforms never crumble · Lasers harmless · Free J","SPECIAL J!","TAP OR PRESS J");
+DT.ja.push(...Array(20).fill(''),"足場が崩れない · レーザー無効 · J無料","特別J！","タップまたはJキー");
+DT.it.push(...Array(20).fill(''),"Piattaforme solide · Laser innocui · J gratis","J SPECIALE!","TOCCA O PREMI J");
+DT.fr.push(...Array(20).fill(''),"Plateformes solides · Lasers inoffensifs · J gratuit","J SPÉCIAL !","TOUCHEZ OU APPUYEZ SUR J");
+DT.ko.push(...Array(20).fill(''),"발판이 무너지지 않음 · 레이저 무효 · J 무료","특별 J!","터치 또는 J 키");
+DT.zh.push(...Array(20).fill(''),"平台不崩塌 · 免疫激光 · 免费J","特殊J！","点击或按J键");
+DT.ru.push(...Array(20).fill(''),"Платформы не рушатся · Лазеры безвредны · J бесплатно","ОСОБЫЙ J!","КОСНИСЬ ИЛИ НАЖМИ J");
+DT.uk.push(...Array(20).fill(''),"Платформи не руйнуються · Лазери нешкідливі · J безкоштовно","ОСОБЛИВИЙ J!","ТОРКНИСЬ АБО НАТИСНИ J");
+DT.ar.push(...Array(20).fill(''),"المنصات لا تنهار · الليزر غير مؤذٍ · J مجاني","J خاص!","المس أو اضغط J");
+DT.es.push(...Array(20).fill(''),"Plataformas firmes · Láseres inofensivos · J gratis","¡J ESPECIAL!","TOCA O PULSA J");
+DT.de.push(...Array(20).fill(''),"Plattformen stabil · Laser harmlos · Gratis-J","SPEZIAL-J!","TIPPEN ODER J DRÜCKEN");
+KT.push("ZOR MOD","ZOR MOD · KİLİTLİ","BAŞLAT","SKORLAR","Önce seviye modunu bitir","MÜZİK");
+DT.en.push("HARD MODE","HARD MODE · LOCKED","START","SCORES","Finish level mode first","MUSIC");
+DT.ja.push("ハードモード","ハードモード · ロック","スタート","スコア","先にレベルモードをクリアしてください","音楽");
+DT.it.push("MODALITÀ DIFFICILE","DIFFICILE · BLOCCATO","INIZIA","PUNTEGGI","Completa prima la modalità livelli","MUSICA");
+DT.fr.push("MODE DIFFICILE","DIFFICILE · VERROUILLÉ","COMMENCER","SCORES","Terminez d'abord le mode niveaux","MUSIQUE");
+DT.ko.push("하드 모드","하드 모드 · 잠김","시작","점수","먼저 레벨 모드를 클리어하세요","음악");
+DT.zh.push("困难模式","困难模式 · 锁定","开始","分数","请先通关关卡模式","音乐");
+DT.ru.push("СЛОЖНЫЙ РЕЖИМ","СЛОЖНЫЙ · ЗАКРЫТ","СТАРТ","СЧЕТА","Сначала пройдите режим уровней","МУЗЫКА");
+DT.uk.push("СКЛАДНИЙ РЕЖИМ","СКЛАДНИЙ · ЗАКРИТО","СТАРТ","РЕЗУЛЬТАТИ","Спочатку пройдіть режим рівнів","МУЗИКА");
+DT.ar.push("الوضع الصعب","الصعب · مقفل","ابدأ","النتائج","أنهِ وضع المراحل أولًا","الموسيقى");
+DT.es.push("MODO DIFÍCIL","DIFÍCIL · BLOQUEADO","EMPEZAR","PUNTUACIONES","Termina primero el modo niveles","MÚSICA");
+DT.de.push("SCHWER-MODUS","SCHWER · GESPERRT","START","PUNKTE","Beende zuerst den Level-Modus","MUSIK");
+KT.push("DİRİL — {0} ◆","VAZGEÇ","DİRİLMEK İSTER MİSİN?","Normal J ile devam et · bir kez");
+DT.en.push("REVIVE — {0} ◆","GIVE UP","REVIVE?","Continue with a normal J · once per run");
+DT.ja.push("復活 — {0} ◆","あきらめる","復活しますか？","通常のJで続行 · 1回のみ");
+DT.it.push("RIVIVI — {0} ◆","ARRENDITI","VUOI RIVIVERE?","Continua con un J normale · una volta");
+DT.fr.push("RESSUSCITER — {0} ◆","ABANDONNER","RESSUSCITER ?","Continuez avec un J normal · une fois");
+DT.ko.push("부활 — {0} ◆","포기","부활할까요?","일반 J로 계속 · 1회");
+DT.zh.push("复活 — {0} ◆","放弃","要复活吗？","用普通J继续 · 仅限一次");
+DT.ru.push("ВОСКРЕСНУТЬ — {0} ◆","СДАТЬСЯ","ВОСКРЕСНУТЬ?","Продолжить с обычным J · один раз");
+DT.uk.push("ВОСКРЕСНУТИ — {0} ◆","ЗДАТИСЯ","ВОСКРЕСНУТИ?","Продовжити зі звичайним J · один раз");
+DT.ar.push("إحياء — {0} ◆","استسلام","هل تريد الإحياء؟","تابع بـ J عادي · مرة واحدة");
+DT.es.push("REVIVIR — {0} ◆","RENDIRSE","¿REVIVIR?","Continúa con un J normal · una vez");
+DT.de.push("WIEDERBELEBEN — {0} ◆","AUFGEBEN","WIEDERBELEBEN?","Weiter mit normalem J · einmal");
+KT.push("MAĞAZA","{0} · SAHİPSİN","TEST MODU · gerçek para yok","SATIN ALMA BAŞARISIZ");
+DT.en.push("SHOP","{0} · OWNED","TEST MODE · no real money","PURCHASE FAILED");
+DT.ja.push("ショップ","{0} · 所持済み","テストモード · 実際の課金なし","購入に失敗しました");
+DT.it.push("NEGOZIO","{0} · POSSEDUTO","MODALITÀ TEST · nessun denaro reale","ACQUISTO FALLITO");
+DT.fr.push("BOUTIQUE","{0} · POSSÉDÉ","MODE TEST · aucun argent réel","ACHAT ÉCHOUÉ");
+DT.ko.push("상점","{0} · 보유 중","테스트 모드 · 실제 결제 없음","구매 실패");
+DT.zh.push("商店","{0} · 已拥有","测试模式 · 无真实付款","购买失败");
+DT.ru.push("МАГАЗИН","{0} · ЕСТЬ","ТЕСТ · без реальных денег","ПОКУПКА НЕ УДАЛАСЬ");
+DT.uk.push("МАГАЗИН","{0} · Є","ТЕСТ · без справжніх грошей","ПОКУПКА НЕ ВДАЛАСЯ");
+DT.ar.push("المتجر","{0} · مملوكة","وضع الاختبار · بدون مال حقيقي","فشلت عملية الشراء");
+DT.es.push("TIENDA","{0} · TUYO","MODO PRUEBA · sin dinero real","COMPRA FALLIDA");
+DT.de.push("SHOP","{0} · IM BESITZ","TESTMODUS · kein echtes Geld","KAUF FEHLGESCHLAGEN");
+const LG=[['tr','Türkçe'],['en','English'],['ja','日本語'],['it','Italiano'],['fr','Français'],['ko','한국어'],['zh','中文'],['ru','Русский'],['uk','Українська'],['ar','العربية'],['es','Español'],['de','Deutsch']];
+const KI={};KT.forEach((k,i)=>KI[k]=i);
+const TP=KT.map((k,i)=>[k,i]).filter(([k])=>k.includes('{')).map(([k,i])=>({i,n:k.length,re:new RegExp('^'+k.split(/\{\d\}/).map(p=>p.replace(/[.*+?^$()[\]\\|]/g,'\\$&')).join('(.+?)')+'$')})).sort((a,b)=>b.n-a.n);
+let lang='en',langSet=0,lsel=1,langBack='menu';
+try{const sv=localStorage.getItem('nt_lang');if(sv&&LG.some(g=>g[0]===sv)){lang=sv;langSet=1}else if(typeof navigator!=='undefined'){const nl=(navigator.language||'en').slice(0,2),j=LG.findIndex(g=>g[0]===nl);if(j>=0)lang=nl}}catch(e){}
+try{const _sl=localStorage.getItem('arkat-lang'),_seen=localStorage.getItem('nt_sitelang');if(_sl&&LG.some(g=>g[0]===_sl)&&_sl!==_seen){lang=_sl;langSet=1;localStorage.setItem('nt_lang',_sl);localStorage.setItem('nt_sitelang',_sl)}}catch(e){}
+lsel=Math.max(0,LG.findIndex(g=>g[0]===lang));
+function tr(s,l){l=l||lang;if(l==='tr'||typeof s!=='string')return s;const d=DT[l]||DT.en,g=i=>d[i]||DT.en[i]||KT[i];
+ const i=KI[s];if(i!==undefined)return g(i);
+ for(const p of TP){const m=s.match(p.re);if(m)return g(p.i).replace(/\{(\d)\}/g,(_,n)=>tr(m[+n+1],l))}
+ return s}
+function pickLang(i){lang=LG[i][0];lsel=i;langSet=1;try{localStorage.setItem('nt_lang',lang)}catch(e){}beep(900,.1);try{document.documentElement.lang=lang}catch(e){}go(langBack)}
+function lcell(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W,py=(e.clientY-r.top)/r.height*H,col=px>=25&&px<200?0:px>=220&&px<395?1:-1,ro=Math.floor((py-64)/40);
+ if(col<0||ro<0||py-64-ro*40>34)return -1;const i=ro*2+col;return i<LG.length?i:-1}
+function keycap(l,cx,cy,w){x.fillStyle='#14002e';glow('#19e6ff',6);x.strokeStyle='#19e6ff';x.lineWidth=2;x.beginPath();x.roundRect(cx-w/2,cy-13,w,26,5);x.fill();x.stroke();x.shadowBlur=0;txt(l,cx,cy+5,12,'#fff','center',w-6)}
+function ctl(l){const T=k=>tr(k,l);
+ txt(T('KONTROLLER'),W/2,338,13,'#ffd23f');
+ [[372,[['A',34,26],['D',66,26],['←',112,26],['→',144,26]],'HAREKET'],[410,[['SPACE',56,72],['↑',114,26],['W',146,26]],'ZIPLA'],[448,[['P',34,26],['ESC',76,42]],'DURAKLAT']].forEach(r=>{r[1].forEach(k=>keycap(k[0],k[1],r[0],k[2]));txt(T(r[2]),205,r[0]+5,13,'#cfe','left',200)});
+ [[40,20,'◀','#19e6ff'],[88,20,'▶','#19e6ff'],[150,26,'▲','#ff2bd6'],[204,14,'❚❚','#ffd23f']].forEach(b=>{glow(b[3],10);x.strokeStyle=b[3];x.lineWidth=2;x.beginPath();x.arc(b[0],508,b[1],0,7);x.stroke();x.shadowBlur=0;txt(b[2],b[0],513,b[1]>18?15:9,b[3])});
+ txt(T('DOKUNMATİK'),240,513,13,'#cfe','left',170)}
+let layBack='menu',lay={};
+try{lay=JSON.parse(localStorage.getItem('nt_lay')||'{}')}catch(e){}
+const LB=['bl','br','bj'];
+function applyLay(){LB.forEach(id=>{const e=document.getElementById(id),p=lay[id];if(p){e.style.left=p[0]*100+'%';e.style.top=p[1]*100+'%';e.style.right='auto';e.style.bottom='auto'}else{e.style.left=e.style.top=e.style.right=e.style.bottom=''}})}
+LB.forEach(id=>{const e=document.getElementById(id),w=document.getElementById('w');let d=null;
+ e.addEventListener('pointerdown',ev=>{if(S!=='layout')return;const r=e.getBoundingClientRect();d={dx:ev.clientX-r.left,dy:ev.clientY-r.top};try{e.setPointerCapture(ev.pointerId)}catch(_){}});
+ e.addEventListener('pointermove',ev=>{if(!d||S!=='layout')return;const r=w.getBoundingClientRect();let l=(ev.clientX-d.dx-r.left)/r.width,tp=(ev.clientY-d.dy-r.top)/r.height;l=Math.max(0,Math.min(1-e.offsetWidth/r.width,l));tp=Math.max(0,Math.min(1-e.offsetHeight/r.height,tp));lay[id]=[l,tp];applyLay()});
+ e.addEventListener('pointerup',()=>{if(d){d=null;try{localStorage.setItem('nt_lay',JSON.stringify(lay))}catch(_){}}})});
+function icn(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W,py=(e.clientY-r.top)/r.height*H;return py<70?(px<58?1:px<106?2:px<154?3:px<202?4:0):0}
+let hard=0,hh=[],mus=true;
+try{hh=JSON.parse(localStorage.getItem('nt_hhs')||'[]');mus=localStorage.getItem('nt_mus')!=='0'}catch(e){}
+let mG,mTm,mNext=0,mSt=0,nb;
+const MN=m=>440*Math.pow(2,(m-69)/12),PR=[[45,52,57,60],[41,48,53,57],[48,55,60,64],[43,50,55,59]];
+function mv(f,t0,d,ty,v,lp){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;let n=o;if(lp){const b=ac.createBiquadFilter();b.type='lowpass';b.frequency.value=lp;o.connect(b);n=b}
+ g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+d);n.connect(g);g.connect(mG);o.start(t0);o.stop(t0+d+.05)}
+function mnz(t0,d,v,hp){const s=ac.createBufferSource(),g=ac.createGain(),b=ac.createBiquadFilter();s.buffer=nb;b.type='highpass';b.frequency.value=hp;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+d);s.connect(b);b.connect(g);g.connect(mG);s.start(t0);s.stop(t0+d+.02)}
+function mstep(t0,s){const ch=PR[(s>>4)&3],st=s&15;
+ if(st%4===0){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(150,t0);o.frequency.exponentialRampToValueAtTime(40,t0+.12);g.gain.setValueAtTime(.5,t0);g.gain.exponentialRampToValueAtTime(.001,t0+.15);o.connect(g);g.connect(mG);o.start(t0);o.stop(t0+.2)}
+ if(st===4||st===12)mnz(t0,.12,.22,1500);
+ if(st%2===1)mnz(t0,.04,.07,7000);
+ if(st%2===0)mv(MN(ch[0]-12+(st%8===6?12:0)),t0,.22,'sawtooth',.16,380);
+ mv(MN([ch[1],ch[2],ch[3],ch[2]][st&3]+(st&4?12:0)),t0,.11,'square',.045,2400);
+ if(st===0)for(const n of ch)mv(MN(n),t0,2.2,'sawtooth',.03,900)}
+function musTick(){if(!ac||!mG||!(snd&&mus))return;if(mNext<ac.currentTime-.1)mNext=ac.currentTime+.05;while(mNext<ac.currentTime+.25){mstep(mNext,mSt++);mNext+=60/112/4}}
+function setMusGain(){if(mG)mG.gain.setTargetAtTime(snd&&mus?.3:0,ac.currentTime,.05)}
+function ensureMusic(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();if(!mG){mG=ac.createGain();mG.gain.value=snd&&mus?.3:0;mG.connect(ac.destination);nb=ac.createBuffer(1,ac.sampleRate*.5,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;mTm=setInterval(musTick,50)}}catch(e){}}
+function togMus(){mus=!mus;try{localStorage.setItem('nt_mus',mus?1:0)}catch(e){}ensureMusic();setMusGain();beep(800,.08)}
+['pointerdown','keydown','touchstart'].forEach(n=>addEventListener(n,ensureMusic,{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(ac){if(document.hidden)ac.suspend();else ac.resume()}});
+function startCarry(){P.carry=1;P.carryN=(mode==='level'&&goal<1e8)?Math.min(30,goal-1):30;P.carryY=-P.carryN*88-60;P.offer=0;toast={s:'ÖZEL J!',t:80}}
+function startHard(){mode='level';hard=1;lv=9;goal=1e9;reset();go('play');beep(520,.2,'sawtooth')}
+const TEST_MONEY=false;if(TEST_MONEY)wallet=1e9;
+function WS(){return wallet>=1e8?'∞':wallet}
+let reviveT=0;
+function recInfo(){if(mode==='level'&&!hard)return null;const a=hard?hh:hs,top=a[0]?a[0].s:0;if(score<=0)return{t:'EN YÜKSEK '+top,c:'#9bd',big:0};let r=0;for(const e of a)if(e.s>=score)r++;
+ if(r===0)return{t:'★ YENİ YÜKSEK SKOR! ★',c:'#ffd23f',big:1};if(r<5)return{t:'SIRALAMA #'+(r+1),c:'#ffd23f',big:0};return{t:'EN YÜKSEK '+top,c:'#9bd',big:0}}
+function endRun(){if(mode==='classic'||hard)addScore()}
+function again(){if(hard)startHard();else if(mode==='level')startLevel(lv);else start()}
+function die(){if(!P.revived){reviveT=Date.now()+700;go('revive')}else fail()}
+function revive(){wallet-=850;sv();P.revived=1;P.jet=90;P.imm=150;P.vy=-8;P.g=false;P.vx=0;P.carry=0;if(P.y>camY+H-80)P.y=camY+H*.55;beep(1000,.3,'triangle');toast={s:'JETPACK!',t:60};go('play')}
+function NC(){const k=CH[selCh].pk;return k==='vega'||k==='nova'}
+function takeJ(){if(S!=='play'||!(P.offer>0))return;
+ if(CH[selCh].pk!=='nova'){if(wallet<300){toast={s:'YETERSİZ ◆ ('+(300-wallet)+' eksik)',t:60};beep(150,.2,'square');return}wallet-=300;sv()}
+ startCarry();burst(P.x+11,P.y+14,'#ffd23f',24);beep(1200,.25,'triangle',.06)}
+function go(s){S=s;K.l=K.r=K.j=0;sel=(s==='pause'&&conf)?1:0;document.getElementById('w').className=s}
+function start(){reset();go('play');beep(520,.2,'sawtooth')}
+function pause(){conf=0;go('pause')}
+function resume(){conf=0;go('play')}
+function toMenu(){conf=0;mode='classic';hard=0;reset();go('menu')}
+function togSnd(){snd=!snd;setMusGain();try{localStorage.setItem('nt_snd',snd?1:0)}catch(e){}beep(700,.1)}
+function quit(){try{location.href='../../index.html'}catch(e){go('bye')}}
+function addScore(){lastRank=-1;if(score>0){try{window.ARKAT&&ARKAT.saveScore('tower',hard?'h':'c',score)}catch(e){}const e={s:score,f:fl,c:crys};let a=hard?hh:hs;a.push(e);a.sort((p,q)=>q.s-p.s);lastRank=a.indexOf(e);a=a.slice(0,5);if(lastRank>4)lastRank=-1;if(hard)hh=a;else hs=a;try{localStorage.setItem(hard?'nt_hhs':'nt_hs',JSON.stringify(a))}catch(e){}}}
+function items_(){
+ const sn=['SES: '+(snd?'AÇIK':'KAPALI'),togSnd];
+ if(S==='menu')return[['KLASİK MOD',start],[done[9]?'ZOR MOD':'ZOR MOD · KİLİTLİ',()=>{if(done[9])go('hard');else{go('warn');beep(150,.2,'square')}}],['SEVİYE MODU',()=>{lvSel=Math.min(prog-1,9);go('levels')}],['KARAKTERLER',()=>{cv=selCh;go('chars')}],['YÜKSEK SKORLAR',()=>go('scores')],sn,['ÇIKIŞ',quit]];
+ if(S==='pause')return conf?[['EVET, ANA MENÜYE DÖN',toMenu],['HAYIR, DEVAM ET',()=>{conf=0;sel=0}]]:[['DEVAM ET',resume],sn,['ANA MENÜYE DÖN',()=>{conf=1;sel=1}]];
+ if(S==='over')return mode==='level'&&!hard?[['TEKRAR DENE',()=>startLevel(lv)],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['TEKRAR OYNA',hard?startHard:start],['ANA MENÜ',toMenu]];
+ if(S==='win')return lv<9?[['SONRAKİ SEVİYE',()=>startLevel(lv+1)],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]];
+ if(S==='levels')return[['GERİ',toMenu]];
+ if(S==='chars'){const c=CH[cv],o=own.includes(cv);return[[o?(selCh===cv?'✓ SEÇİLİ':'SEÇ'):'SATIN AL — '+c.p+' ◆',chAct],['◀ ÖNCEKİ',()=>{cv=(cv+CH.length-1)%CH.length}],['SONRAKİ ▶',()=>{cv=(cv+1)%CH.length}],['GERİ',toMenu]]}
+ if(S==='layout')return[['✓ TAMAM',()=>{conf=0;go(layBack)}],['SIFIRLA',()=>{lay={};try{localStorage.removeItem('nt_lay')}catch(e){}applyLay()}]];
+ if(S==='warn')return[['✓ TAMAM',()=>go('menu')]];
+ if(S==='revive')return[['DİRİL — 850 ◆',()=>{if(Date.now()<reviveT)return;if(wallet>=850)revive();else{msgS='YETERSİZ ◆ ('+(850-wallet)+' eksik)';msgT=Date.now()+2000;beep(150,.2,'square')}}],['TEKRAR OYNA',()=>{if(Date.now()<reviveT)return;endRun();again()}],['ANA MENÜ',()=>{if(Date.now()<reviveT)return;endRun();toMenu()}]];
+ if(S==='hard')return[['BAŞLAT',startHard],['SKORLAR',()=>go('hscores')],['ANA MENÜ',toMenu]];
+ if(S==='hscores')return[['GERİ',()=>go('hard')]];
+ if(S==='scores')return[['GERİ',toMenu]];
+ if(S==='bye')return[['ANA MENÜYE DÖN',toMenu]];return[]}
+function ov(){
+ if(S==='play')return;
+ x.fillStyle='rgba(5,0,26,.62)';x.fillRect(0,0,W,H);
+ if(S==='menu'){glow('#f0f',22);txt('NEON',W/2,170,60,'#ff2bd6');glow('#0ff',22);txt('TOWER',W/2,230,60,'#0ff');x.shadowBlur=0;my0=262;
+  txt('◀ ▶ / A D hareket · BOŞLUK / ▲ zıpla · P duraklat',W/2,H-24,11,'#9bd')}
+ else if(S==='pause'){glow('#0ff',16);txt(conf?'EMİN MİSİN?':'DURAKLATILDI',W/2,190,30,'#0ff');x.shadowBlur=0;
+  if(conf)txt('Skor kaydedilmeyecek, kristallerin korunur',W/2,225,11,'#cfe');my0=270}
+ else if(S==='over'){glow('#f0f',20);txt(mode==='level'?'GÖREV BAŞARISIZ':'SİSTEM ÇÖKTÜ',W/2,180,36,'#ff2bd6');x.shadowBlur=0;
+  if(mode==='level'&&!hard){txt('SEVİYE '+(lv+1)+' · '+TH[lv].n,W/2,225,16,'#cfe');txt('KAT '+fl+'/'+goal,W/2,262,26,'#0ff');txt('+'+crys+' ◆ cüzdana eklendi',W/2,300,12,'#9bd');my0=340}else{
+  if(hard)txt('ZOR MOD',W/2,205,12,'#ff3b5c');txt('SKOR '+score,W/2,225,28,'#0ff');txt('KAT '+fl+' · ◆ '+crys,W/2,255,15,'#cfe');
+  if(lastRank===0){glow('#ffd23f',20);txt('★ YENİ YÜKSEK SKOR! ★',W/2,292,20,'#ffd23f');x.shadowBlur=0}else txt(lastRank>0?'SIRALAMA #'+(lastRank+1):'EN YÜKSEK '+(hs[0]?hs[0].s:0),W/2,292,14,'#ffd23f');
+  txt('+'+crys+' ◆ cüzdana eklendi',W/2,318,12,'#9bd');txt('◆ '+WS(),W/2,336,13,'#0ff');my0=345}}
+ else if(S==='scores'||S==='hscores'){glow('#ffd23f',16);txt('YÜKSEK SKORLAR',W/2,130,28,'#ffd23f');x.shadowBlur=0;if(S==='hscores')txt('ZOR MOD',W/2,160,14,'#ff3b5c');
+  for(let i=0;i<5;i++){const y=200+i*46,h=(S==='hscores'?hh:hs)[i];x.strokeStyle='rgba(255,43,214,.35)';x.strokeRect(50,y-26,W-100,36);
+   txt((i+1)+'.',64,y,20,'#ff2bd6','left');if(h){txt(String(h.s),W/2+30,y,22,'#0ff','right');txt('KAT '+h.f,W-64,y,12,'#cfe','right')}else txt('- - -',W/2+30,y,18,'#456','right')}my0=470}
+ else if(S==='chars'){const c=CH[cv],o=own.includes(cv);glow('#ff2bd6',16);txt('KARAKTERLER',W/2,70,28,'#ff2bd6');x.shadowBlur=0;
+  x.strokeStyle=c.hc;x.lineWidth=1;x.strokeRect(W/2-70,95,140,130);
+  const sP=P;P={x:0,y:0,vx:0,vy:0,w:22,h:28,g:true,jet:0,face:1};x.save();x.translate(W/2-33,125);x.scale(3,3);robot(0,0,cv);x.restore();P=sP;
+  if(!o){x.fillStyle='rgba(5,0,26,.5)';x.fillRect(W/2-69,96,138,128)}
+  glow(c.hc,12);txt(c.n,W/2,252,24,c.hc);x.shadowBlur=0;txt('PERK: '+c.pd,W/2,288,11,c.ac);
+  txt(o?(selCh===cv?'SEÇİLİ KARAKTER':'SAHİPSİN'):'KİLİTLİ · FİYAT '+c.p+' ◆',W/2,309,14,o?'#39ff14':'#ffd23f');
+  for(let i=0;i<CH.length;i++){x.fillStyle=i===cv?'#19e6ff':(own.includes(i)?'#7a5':'#345');x.fillRect(W/2-CH.length*10+i*20,317,12,4)}
+  if(Date.now()<msgT)txt(msgS,W/2,H-34,15,'#ffd23f');my0=335}
+ else if(S==='win'){glow('#39ff14',22);txt('SEVİYE TAMAM!',W/2,180,34,'#39ff14');x.shadowBlur=0;txt('SEVİYE '+(lv+1)+' · '+TH[lv].n,W/2,222,15,'#cfe');txt('+'+crys+' ◆ cüzdana eklendi',W/2,256,16,'#0ff');
+  if(bonus)txt('İLK GEÇİŞ BONUSU +'+bonus+' ◆',W/2,286,14,'#ffd23f');
+  if(lv===9)txt('TÜM SEVİYELERİ BİTİRDİN!',W/2,316,16,'#ff2bd6');else txt('SEVİYE '+(lv+2)+' AÇILDI',W/2,316,13,'#9bd');my0=345}
+ else if(S==='levels'){glow('#19e6ff',16);txt('SEVİYE MODU',W/2,70,28,'#19e6ff');x.shadowBlur=0;
+  for(let i=0;i<10;i++){const cx=39+(i%5)*70,cy=120+((i/5)|0)*76,lk=i>=prog,on=i===lvSel,col=lk?'#556':done[i]?'#39ff14':'#19e6ff';
+   x.fillStyle=on?'rgba(25,230,255,.16)':'rgba(255,255,255,.03)';x.fillRect(cx,cy,62,62);glow(col,on?14:3);x.strokeStyle=col;x.lineWidth=2;x.strokeRect(cx,cy,62,62);x.shadowBlur=0;
+   txt(String(i+1),cx+31,cy+30,24,col);txt(lk?'KİLİTLİ':done[i]?'✓ TAMAM':'AÇIK',cx+31,cy+50,9,col,'center',58)}
+  glow('#ff2bd6',10);txt('SEVİYE '+(lvSel+1)+' · '+TH[lvSel].n,W/2,300,18,'#ff2bd6');x.shadowBlur=0;
+  txt('HEDEF: '+(25+10*lvSel)+'. KATA ULAŞ',W/2,326,14,'#ffd23f');txt(TH[lvSel].o,W/2,350,12,'#cfe');
+  txt(lvSel>=prog?'Önceki seviyeyi bitirerek aç':'Başlamak için dokun · Enter',W/2,380,11,'#9bd');txt('J ve yay: kısa süre tüm engellerden korur',W/2,402,11,'#39ff14');my0=520}
+ else if(S==='layout'){glow('#ffd23f',16);txt('KONTROL DÜZENİ',W/2,80,26,'#ffd23f');x.shadowBlur=0;txt('Butonları parmağınla sürükleyip yerleştir',W/2,108,12,'#cfe');txt('◀ ▶ yön · ▲ zıpla',W/2,126,11,'#9bd');my0=150}
+ else if(S==='lang'){glow('#19e6ff',14);txt('LANGUAGE · DİL · 言語',W/2,40,20,'#19e6ff');x.shadowBlur=0;
+  LG.forEach((g,i)=>{const cx=25+(i%2)*195,cy=64+((i/2)|0)*40,on=i===lsel;
+   x.fillStyle=on?'rgba(25,230,255,.16)':'rgba(255,43,214,.06)';x.fillRect(cx,cy,175,34);glow(on?'#19e6ff':'#ff2bd6',on?12:3);x.strokeStyle=on?'#19e6ff':'#ff2bd6';x.lineWidth=2;x.strokeRect(cx,cy,175,34);x.shadowBlur=0;
+   txt(g[1],cx+87,cy+23,15,on?'#fff':'#d9a','center',140);if(g[0]===lang&&langSet)txt('✓',cx+160,cy+22,13,'#39ff14')});
+  ctl(LG[lsel][0])}
+ else if(S==='hard'){glow('#ff3b5c',20);txt('ZOR MOD',W/2,160,38,'#ff3b5c');x.shadowBlur=0;txt('EN YÜKSEK '+(hh[0]?hh[0].s:0),W/2,205,15,'#ffd23f');my0=250}
+ else if(S==='warn'){glow('#ffd23f',20);txt('!',W/2,190,64,'#ffd23f');x.shadowBlur=0;txt('Önce seviye modunu bitir',W/2,250,17,'#fff');my0=300}
+ else if(S==='revive'){glow('#ff3b5c',20);txt('DİRİLMEK İSTER MİSİN?',W/2,120,22,'#ff3b5c');x.shadowBlur=0;
+  if(hard)txt('ZOR MOD',W/2,148,12,'#ff3b5c');
+  const ri=recInfo();
+  if(ri){txt('SKOR '+score,W/2,186,30,'#0ff');if(ri.big){glow('#ffd23f',22);txt(ri.t,W/2,220,19,ri.c);x.shadowBlur=0}else txt(ri.t,W/2,220,15,ri.c);txt('KAT '+fl+' · ◆ '+crys,W/2,246,13,'#cfe')}
+  else{txt('KAT '+fl+'/'+goal,W/2,200,28,'#0ff');txt('+'+crys+' ◆ cüzdana eklendi',W/2,236,12,'#9bd')}
+  txt('Normal J ile devam et · bir kez',W/2,276,12,'#cfe');txt('◆ '+WS(),W/2,298,15,'#0ff');if(Date.now()<msgT)txt(msgS,W/2,490,14,'#ff3b5c');my0=318}
+ else if(S==='bye'){glow('#0ff',16);txt('OYUN KAPATILDI',W/2,230,28,'#0ff');x.shadowBlur=0;txt('Sekmeyi kapatabilirsin',W/2,262,13,'#cfe');my0=320}
+ if((S==='menu'||S==='pause')&&!conf){glow('#ffd23f',8);x.strokeStyle='#ffd23f';x.lineWidth=2;x.strokeRect(14,14,40,40);x.shadowBlur=0;x.fillStyle='#ffd23f';x.fillRect(22,30,14,4);x.fillRect(27,25,4,14);x.beginPath();x.arc(45,28,3.5,0,7);x.fill();x.beginPath();x.arc(40,38,3.5,0,7);x.fill();txt('KONTROL',34,66,8,'#ffd23f','center',46);glow('#19e6ff',8);x.strokeStyle='#19e6ff';x.lineWidth=2;x.strokeRect(62,14,40,40);x.shadowBlur=0;txt(lang.toUpperCase(),82,40,15,'#19e6ff');txt('DİL',82,66,8,'#19e6ff','center',46);glow('#ff2bd6',8);x.strokeStyle='#ff2bd6';x.lineWidth=2;x.strokeRect(110,14,40,40);x.shadowBlur=0;txt('♪',130,44,24,mus&&snd?'#ff2bd6':'#556');if(!(mus&&snd)){x.strokeStyle='#ff3b5c';x.beginPath();x.moveTo(114,50);x.lineTo(146,18);x.stroke()}txt('MÜZİK',130,66,8,'#ff2bd6','center',46);}
+ if(S==='menu'||S==='chars')txt('◆ '+WS(),W-20,32,16,'#0ff','right');
+ const it=items_();it.forEach((m,i)=>{const y=my0+i*48,on=i===sel,col=on?'#19e6ff':'#ff2bd6';
+  x.fillStyle=on?'rgba(25,230,255,.14)':'rgba(255,43,214,.06)';x.fillRect(W/2-140,y,280,40);
+  glow(col,on?14:4);x.strokeStyle=col;x.lineWidth=2;x.strokeRect(W/2-140,y,280,40);x.shadowBlur=0;
+  txt(m[0],W/2,y+26,15,on?'#fff':'#d9a','center',230);if(on){txt('▶',W/2-126,y+26,13,col,'left')}})}
+function hit(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W,py=(e.clientY-r.top)/r.height*H,n=items_().length;
+ for(let i=0;i<n;i++)if(Math.abs(px-W/2)<140&&py>my0+i*48&&py<my0+i*48+40)return i;return -1}
+c.addEventListener('pointermove',e=>{if(S==='lang'){const i=lcell(e);if(i>=0)lsel=i;return}if(S==='levels'){const i=cell(e);if(i>=0)lvSel=i}if(S!=='play'){const i=hit(e);if(i>=0)sel=i}});
+c.addEventListener('pointerdown',e=>{if(S==='play'){if(P.offer>0){const r=c.getBoundingClientRect();if(Math.hypot((e.clientX-r.left)/r.width*W-W/2,(e.clientY-r.top)/r.height*H-130)<46)takeJ()}return}if((S==='menu'||S==='pause')&&!conf){const q=icn(e);if(q===1){layBack=S;go('layout');return}if(q===2){langBack=S;go('lang');return}if(q===3){togMus();return}}if(S==='lang'){const i=lcell(e);if(i>=0)pickLang(i);return}if(S==='levels'){const i=cell(e);if(i>=0){lvSel=i;if(i<prog)startLevel(i);return}}const i=hit(e);if(i>=0){sel=i;items_()[i][1]()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&S==='play')pause()});
+const kd={ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r'};
+addEventListener('keydown',e=>{const k=e.key;
+ if(k==='m'||k==='M'){togSnd();return}
+ if(k==='n'||k==='N'){togMus();return}
+ if((k==='c'||k==='C')&&(S==='menu'||S==='pause')&&!conf){layBack=S;go('layout');return}
+ if((k==='l'||k==='L')&&(S==='menu'||S==='pause')&&!conf){langBack=S;go('lang');return}
+ if(k==='p'||k==='P'||k==='Escape'){e.preventDefault();if(e.repeat)return;if(S==='play')pause();else if(S==='pause'){if(conf){conf=0;sel=0}else resume()}else if(S==='layout'){conf=0;go(layBack)}else if(S==='lang'&&langSet)go(langBack);else if(S==='warn')go('menu');else if(S==='hscores')go('hard');else if(S==='levels'||S==='chars'||S==='scores'||S==='hard')toMenu();return}
+ if(S==='play'){if(k==='j'||k==='J'){takeJ();return}if(kd[k]){K[kd[k]]=1;e.preventDefault()}
+  if(k===' '||k==='ArrowUp'||k==='w'||k==='W'){e.preventDefault();if(!K.j)jump();K.j=1}return}
+ if(S==='levels'){const d={ArrowLeft:-1,a:-1,A:-1,ArrowRight:1,d:1,D:1,ArrowUp:-5,w:-5,W:-5,ArrowDown:5,s:5,S:5}[k];
+  if(d)lvSel=Math.max(0,Math.min(9,lvSel+d));else if((k==='Enter'||k===' ')&&!e.repeat){if(lvSel<prog)startLevel(lvSel)}e.preventDefault();return}
+ if(S==='lang'){const d={ArrowLeft:-1,a:-1,A:-1,ArrowRight:1,d:1,D:1,ArrowUp:-2,w:-2,W:-2,ArrowDown:2,s:2,S:2}[k];if(d)lsel=Math.max(0,Math.min(LG.length-1,lsel+d));else if((k==='Enter'||k===' ')&&!e.repeat)pickLang(lsel);e.preventDefault();return}
+ if(S==='chars'&&(k==='ArrowLeft'||k==='a'||k==='A')){cv=(cv+CH.length-1)%CH.length;e.preventDefault();return}
+ if(S==='chars'&&(k==='ArrowRight'||k==='d'||k==='D')){cv=(cv+1)%CH.length;e.preventDefault();return}
+ const it=items_(),n=it.length;if(!n)return;
+ if(k==='ArrowUp'||k==='w'||k==='W')sel=(sel+n-1)%n;
+ else if(k==='ArrowDown'||k==='s'||k==='S')sel=(sel+1)%n;
+ else if((k==='Enter'||k===' ')&&!e.repeat)it[sel][1]();
+ e.preventDefault()});
+addEventListener('keyup',e=>{if(kd[e.key])K[kd[e.key]]=0;if(e.key===' '||e.key==='ArrowUp'||e.key==='w'||e.key==='W')K.j=0});
+function bind(id,f){const b=document.getElementById(id);
+ b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();f(1)});
+ ['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,e=>f(0)))}
+bind('bl',v=>K.l=v);bind('br',v=>K.r=v);
+bind('bj',v=>{if(S!=='play')return;if(v&&!K.j)jump();K.j=v});
+bind('bp',v=>{if(v&&S==='play')pause()});
+
+applyLay();
+let last=performance.now(),acc=0;
+function loop(n){acc+=Math.min(100,n-last);last=n;
+ while(acc>=1000/60){if(S==='play')upd();else t++;acc-=1000/60}
+ draw();requestAnimationFrame(loop)}
+reset();langBack='menu';go(langSet?'menu':'lang');requestAnimationFrame(loop);
+</script>
+<script src="../../arkat.js" data-root="../../"></script>
+</body></html>

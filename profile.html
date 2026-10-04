@@ -68,8 +68,11 @@
       </div>
     </div>
 
-    <h2 class="section" data-i18n="best_h">EN YÜKSEK PUANLAR · NEON DÜŞÜŞ</h2>
+    <h2 class="section" data-i18n="best_drop">EN YÜKSEK PUANLAR · NEON DÜŞÜŞ</h2>
     <div id="scores"></div>
+
+    <h2 class="section" data-i18n="best_tower">NEON TOWER</h2>
+    <div id="scores2"></div>
   </div>
 </main>
 
@@ -103,6 +106,16 @@
       r.appendChild(s); r.appendChild(n); box.appendChild(r);
     });
     if(!any){var m=document.createElement('div');m.className='msg';m.textContent=ARKAT.t('no_score');box.appendChild(m)}
+    var tw=(data.best&&data.best.tower)||{}, box2=$('scores2'), any2=false;
+    box2.innerHTML='';
+    [['c','mode_classic'],['h','mode_hard'],['lv','lv_done']].forEach(function(p){
+      var v=tw[p[0]]; if(!v) return; any2=true;
+      var r=document.createElement('div'); r.className='row';
+      var s=document.createElement('span'); s.textContent=ARKAT.t(p[1]);
+      var n=document.createElement('b'); n.textContent=p[0]==='lv'?(v+' / 10'):v;
+      r.appendChild(s); r.appendChild(n); box2.appendChild(r);
+    });
+    if(!any2){var m2=document.createElement('div');m2.className='msg';m2.textContent=ARKAT.t('no_score');box2.appendChild(m2)}
   }
   function load(u){
     if(!u){ lastData=null; render(null); return; }

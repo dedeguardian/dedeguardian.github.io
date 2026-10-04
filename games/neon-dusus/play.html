@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Neon Düşüş</title>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#07040f;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#g{position:fixed;overflow:hidden;background:#07040f;touch-action:none;user-select:none;-webkit-user-select:none;outline:1px solid rgba(140,90,255,.55);box-shadow:0 0 40px rgba(120,80,255,.35)}
+canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+#hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 18px 0;color:#fff;font-weight:700;letter-spacing:.1em;pointer-events:none;text-shadow:0 0 10px #0ff,0 0 20px #0ff}
+#hud span{flex:1}#nx{text-align:center;font-size:11px}#rt{text-align:right}#lv{margin-right:8px}
+#pb{pointer-events:auto;font:700 14px system-ui;color:#fff;background:#0000;border:2px solid #0ff;border-radius:8px;width:32px;height:32px;padding:0;box-shadow:0 0 10px #0ff8;text-shadow:0 0 8px #0ff;cursor:pointer;vertical-align:middle}
+#ov{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;background:rgba(7,4,15,.9);padding:24px;overflow:auto}
+#ov h1{font-size:clamp(30px,9vw,52px);margin:0 0 18px;letter-spacing:.1em;text-shadow:0 0 12px #ff2a55,0 0 28px #2f8bff,0 0 44px #39ff14}
+#ov h2{font-size:22px;letter-spacing:.1em;margin:0 0 14px;text-shadow:0 0 12px #0ff}
+#ov p{max-width:320px;line-height:1.5;color:#cfd;font-size:14px;margin:4px 0 12px}
+#ov button{font:700 16px system-ui;color:#fff;background:#0000;border:2px solid #0ff;border-radius:10px;padding:12px 20px;margin:6px;min-width:210px;letter-spacing:.06em;box-shadow:0 0 14px #0ff8,inset 0 0 10px #0ff4;text-shadow:0 0 8px #0ff;cursor:pointer}
+#ov button:disabled{opacity:.3;box-shadow:none;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:min(320px,82vw);margin:0 auto}
+.grid button{min-width:0;width:100%;margin:0;padding:11px 6px;font-size:13.5px;white-space:nowrap}
+.row{display:flex;justify-content:space-between;gap:16px;width:min(280px,80vw);padding:5px 0;border-bottom:1px solid #fff2;font-size:15px}
+.trow{display:flex;align-items:center;gap:14px;text-align:left;width:min(320px,84vw);margin:0 auto 14px}
+.ticon{flex:0 0 auto;width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px}
+.trow p{margin:0;font-size:13.5px;line-height:1.4;color:#e6e2f5}
+</style></head>
+<body>
+<div id="g"><canvas id="cv"></canvas>
+<div id="hud"><span id="sc"></span><span id="nx"></span><span id="rt"><b id="lv"></b><button id="pb">P</button></span></div>
+<div id="ov"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<script>
+const {Engine,Bodies,Body,Composite,Events}=Matter;
+
+// ---- Ses (Web Audio API, dosya yok, kod içinde üretiliyor) ----
+let actx=null;
+function ac(){if(muted)return null;if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(actx&&actx.state==='suspended')actx.resume();return actx}
+function tone(freq,dur,type,vol,delay,slideTo){
+  const c=ac();if(!c)return;const t0=c.currentTime+(delay||0);
+  const o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(freq,t0);
+  if(slideTo)o.frequency.exponentialRampToValueAtTime(Math.max(20,slideTo),t0+dur);
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(vol||.2,t0+.008);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+  o.connect(g);g.connect(c.destination);o.start(t0);o.stop(t0+dur+.02);
+}
+function noiseBurst(dur,vol,delay){
+  const c=ac();if(!c)return;const t0=c.currentTime+(delay||0);
+  const n=Math.floor(c.sampleRate*dur),buf=c.createBuffer(1,n,c.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  const src=c.createBufferSource();src.buffer=buf;
+  const g=c.createGain();g.gain.setValueAtTime(vol||.25,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+  const f=c.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(900,t0);f.frequency.exponentialRampToValueAtTime(180,t0+dur);
+  src.connect(f);f.connect(g);g.connect(c.destination);src.start(t0);
+}
+function sndSpawn(){if(muted)return;tone(520,.16,'sine',.09,0,300)} // yeni kutu çıktı
+function sndActivate(){if(muted)return;tone(700,.09,'triangle',.14,0,1000)} // çizgiye değdi
+function sndLock(){if(muted)return;tone(160,.12,'sawtooth',.08,0,90)} // × kilitlendi
+function sndLand(){if(muted)return;tone(120,.08,'sine',.07,0,60)} // zemine/yığına değdi
+function sndPop(n){if(muted)return; // patlama, grup büyüdükçe daha zengin
+  noiseBurst(.32,.28);
+  const base=440;for(let i=0;i<Math.min(n,7);i++)tone(base*Math.pow(1.19,i),.22,'triangle',.12,i*.02,base*Math.pow(1.19,i)*.4);
+}
+function sndDanger(){if(muted)return;tone(200,.1,'square',.06,0,180)}
+function sndOver(){if(muted)return;tone(300,.5,'sawtooth',.16,0,60)}
+function sndClick(){if(muted)return;tone(600,.05,'square',.08,0,500)}
+function vibe(pattern){if(!vibOn)return;try{if(navigator.vibrate)navigator.vibrate(pattern)}catch(e){}}
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const COLORS=['#2f8bff','#ffe600','#39ff14','#ff2a55','#d13bff'];
+const LIFE=5000,STEP=1000/60;
+let W=360,H=0,S=45,k=1,dpr,engine,walls=[];
+const g=document.getElementById('g');
+let boxes,segs,parts,pops,score,spawnT,nxt,danger=0,dangerY,running=false,drawing=false,lastPt=null,best=0;
+try{best=+localStorage.getItem('neon-best')||0}catch(e){}
+
+function resize(){
+  const vw=innerWidth,vh=innerHeight;
+  // cihazın gerçek en-boy oranını yakalar: telefonda ekranı uçtan uca doldurur (9:16 ile 9:20 arası),
+  // masaüstünde/genişte ise 9:16 oranını koruyup ortalar, kenarlarda boşluk bırakır. Sayfa ilk açıldığında hesaplanır.
+  if(!H)H=Math.round(W*Math.min(20/9,Math.max(16/9,vh/vw)));
+  let cw=vw,ch=vw*H/W;if(ch>vh){ch=vh;cw=vh*W/H}
+  g.style.width=cw+'px';g.style.height=ch+'px';g.style.left=(vw-cw)/2+'px';g.style.top=(vh-ch)/2+'px';
+  dpr=Math.min(devicePixelRatio||1,2);k=cw/W;
+  cv.width=Math.round(cw*dpr);cv.height=Math.round(ch*dpr);ctx.setTransform(dpr*k,0,0,dpr*k,0,0);
+  dangerY=S*3.5;
+}
+function makeWalls(){
+  walls=[Bodies.rectangle(-30,-H,60,H*4,{isStatic:true,label:'wall'}),Bodies.rectangle(W+30,-H,60,H*4,{isStatic:true,label:'wall'}),
+    Bodies.rectangle(W/2,H-4+30,W+200,60,{isStatic:true,label:'floor',friction:.7,restitution:0})];
+  Composite.add(engine.world,walls);
+}
+function reset(){
+  engine=Engine.create({positionIterations:8,velocityIterations:6});engine.gravity.y=0.8;makeWalls();
+  engine.world.gravity.y=0.8;
+  // s: 0 = düşüyor, 1 = havadayken çizgiye değdi (aktif), 2 = çizgiye değmeden yere/yığına oturdu (X, kilitli)
+  // g: zemine bağlı mı (zemine ya da zemine bağlı bir kutuya değdi)
+  Events.on(engine,'collisionStart',e=>{
+    const ends=pr=>[[pr.bodyA,pr.bodyB],[pr.bodyB,pr.bodyA]];
+    // 1) çizgi önceliği: aynı anda başka bir şeye değse bile çizgiye değen kutu aktif olur
+    for(const pr of e.pairs)for(const [x,y] of ends(pr))
+      if(x.o&&x.o.s===0&&y.label==='line'){x.o.s=1;sndActivate();vibe(10)}
+    // 2) zemine ya da zemine bağlı kutuya değenler kilitlenir; çizgideki havadaki kutulara değmek kilitlemez
+    for(const pr of e.pairs)for(const [x,y] of ends(pr)){
+      if(!x.o)continue;
+      if(y.label==='floor'||(y.o&&y.o.g)){const was=x.o.g;x.o.g=true;if(x.o.s===0){if(x.o.s!==2)sndLock();x.o.s=2}else if(!was)sndLand()}
+    }
+  });
+  boxes=[];segs=[];parts=[];pops=[];score=0;spawnT=0;danger=0;newNext();hud();
+}
+function hud(){
+  document.getElementById('sc').textContent=t('sc')+' '+score;
+  document.getElementById('nx').innerHTML=nxt?t('n')+' <i style="display:inline-block;width:14px;height:14px;vertical-align:middle;border:2px solid '+nxt.c+';border-radius:4px;background:'+nxt.c+'55;box-shadow:0 0 10px '+nxt.c+'"></i>':'';
+  document.getElementById('lv').textContent=danger>0?t('dg')+' '+Math.ceil((2000-danger)/1000):'';
+}
+function newNext(){nxt={c:COLORS[Math.random()*COLORS.length|0],x:S+Math.random()*(W-2*S)}}
+function spawn(){
+  const x=nxt.x,c=nxt.c;newNext();hud();
+  const b=Bodies.rectangle(x,-S,S,S,{restitution:.15,friction:.5,frictionAir:.004,chamfer:{radius:5},angle:Math.random()*6});
+  Body.setAngularVelocity(b,(Math.random()-.5)*.1);
+  const o={b,c,s:0,g:false};b.o=o;Composite.add(engine.world,b);boxes.push(o);sndSpawn();
+}
+function addSeg(a,b,k){
+  let len=Math.hypot(b.x-a.x,b.y-a.y);if(len<1)return;
+  // önceki segment neredeyse aynı doğrultudaysa onu büyütüp yeni fizik nesnesi eklemek yerine genişlet
+  const prev=segs[segs.length-1];
+  if(prev&&prev.k===k){
+    const pa=Math.atan2(prev.b.y-prev.a.y,prev.b.x-prev.a.x),na=Math.atan2(b.y-a.y,b.x-a.x);
+    let d=Math.abs(pa-na);if(d>Math.PI)d=2*Math.PI-d;
+    if(d<0.26){Composite.remove(engine.world,prev.body);segs.pop();a=prev.a;len=Math.hypot(b.x-a.x,b.y-a.y)}
+  }
+  // aynı anda en fazla 2 çizgi: yeni (3.) çizgi başlayınca en eskisi hemen silinir
+  const ids=[...new Set(segs.map(x=>x.k))];
+  if(!ids.includes(k)){ids.push(k);while(ids.length>2){const old=ids.shift();
+    segs=segs.filter(x=>{if(x.k===old){Composite.remove(engine.world,x.body);return false}return true})}}
+  const body=Bodies.rectangle((a.x+b.x)/2,(a.y+b.y)/2,len+4,10,{isStatic:true,label:'line',angle:Math.atan2(b.y-a.y,b.x-a.x),friction:.4,restitution:.1});
+  Composite.add(engine.world,body);segs.push({a,b,body,t:performance.now(),k});
+}
+const MAX_PARTS=150; // ekranda aynı anda en fazla bu kadar parçacık; aşılırsa yeni patlamalar daha az parçacık üretir
+function burst(x,y,c,n,sp,size,life,g){
+  const room=MAX_PARTS-parts.length;if(room<=0)return;
+  n=Math.min(n,Math.max(3,room));
+  for(let i=0;i<n;i++){const an=Math.random()*6.28,v=Math.random()*sp;
+    parts.push({x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v-(g?sp*.3:0),l:life*(.6+Math.random()*.6),m:life,s:size*(.5+Math.random()),c,g});}
+}
+function adjustQuality(){
+  const n=boxes.length+segs.length;
+  const hi=n<16,lo=n>26;
+  const want=hi?{p:8,v:6}:lo?{p:4,v:3}:{p:6,v:4};
+  if(engine.positionIterations!==want.p){engine.positionIterations=want.p;engine.velocityIterations=want.v}
+}
+function step(){
+  adjustQuality();
+  spawnT+=STEP;
+  const D=DIFF[diff],gap=Math.max(D[1],D[0]-score*.6);
+  if(spawnT>gap){spawnT=0;spawn()}
+  Engine.update(engine,STEP);
+  const now=performance.now();
+  for(let i=segs.length-1;i>=0;i--)if(now-segs[i].t>LIFE){Composite.remove(engine.world,segs[i].body);segs.splice(i,1)}
+  for(let i=boxes.length-1;i>=0;i--){
+    const o=boxes[i],b=o.b,sp=Math.hypot(b.velocity.x,b.velocity.y);
+    if(sp>13)Body.setVelocity(b,{x:b.velocity.x*13/sp,y:b.velocity.y*13/sp});
+  }
+  matches();
+  // yığın çizgiyi aşıp durursa süre işler
+  const was=danger;let over=false;
+  for(const o of boxes)if(o.b.position.y>0&&o.b.position.y-S/2<dangerY&&Math.hypot(o.b.velocity.x,o.b.velocity.y)<1)over=true;
+  const wasDanger=danger>0;danger=over?danger+STEP:Math.max(0,danger-STEP*2);if(danger>0&&!wasDanger){sndDanger();vibe([15,60,15])}
+  if(danger>=2000)return gameOver();
+  if((danger>0)!==(was>0)||Math.ceil(danger/1000)!==Math.ceil(was/1000))hud();
+}
+function matches(){
+  const map=new Map();boxes.forEach((o,i)=>map.set(o.b.id,i));
+  const p=boxes.map((_,i)=>i),f=x=>p[x]===x?x:(p[x]=f(p[x]));
+  for(const pr of engine.pairs.list){
+    if(!pr.isActive)continue;
+    const i=map.get(pr.bodyA.id),j=map.get(pr.bodyB.id);
+    if(i!==undefined&&j!==undefined&&boxes[i].c===boxes[j].c&&boxes[i].s>0&&boxes[j].s>0)p[f(i)]=f(j);
+  }
+  const g={};boxes.forEach((_,i)=>(g[f(i)]=g[f(i)]||[]).push(i));
+  const dead=new Set();
+  for(const k in g){const m=g[k];if(m.filter(i=>boxes[i].s===1).length<MIN)continue; // tetikleyen: en az 4 aktif kutu; × kutular köprü olur ve birlikte patlar
+    const n=m.length,pts=100*n+(n-MIN)*150,__pop=sndPop(n),__vb=vibe(n>=MIN+2?[25,30,45]:35);score+=pts;
+    let cx=0,cy=0;
+    m.forEach(i=>{const o=boxes[i];dead.add(i);cx+=o.b.position.x/n;cy+=o.b.position.y/n;
+      burst(o.b.position.x,o.b.position.y,o.c,26,7,4,700,false);burst(o.b.position.x,o.b.position.y,'#fff',8,5,2.5,400,false)});
+    pops.push({x:cx,y:cy,t:0,s:'+'+pts,c:boxes[m[0]].c});hud();
+  }
+  if(dead.size){spawnT=Math.min(spawnT,-1500);boxes=boxes.filter((o,i)=>{if(dead.has(i)){Composite.remove(engine.world,o.b);return false}return true})}
+}
+function gameOver(){
+  sndOver();vibe([30,50,30,50,60]);
+  newRec=score>0&&score>(scores[0]?scores[0].s:0);
+  if(score>0){scores.push({s:score,d:diff});scores.sort((a,b)=>b.s-a.s);scores=scores.slice(0,10);
+    try{localStorage.setItem('neon-top10',JSON.stringify(scores))}catch(e){}
+    try{window.ARKAT&&ARKAT.saveScore('neon',diff,score)}catch(e){}}
+  show('over');
+}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function render(d){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#07040f';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(120,80,255,.09)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=0;x<W;x+=40){ctx.moveTo(x,0);ctx.lineTo(x,H)}
+  for(let y=0;y<H;y+=40){ctx.moveTo(0,y);ctx.lineTo(W,y)}
+  ctx.stroke();
+  // zemin
+  ctx.save();ctx.shadowColor='#ff2a55';ctx.shadowBlur=18;ctx.strokeStyle='#ff5a8a';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(0,H-4);ctx.lineTo(W,H-4);ctx.stroke();ctx.restore();
+  if(!segs)return;
+  ctx.save();ctx.setLineDash([10,8]);ctx.lineWidth=2;ctx.strokeStyle='rgba(255,42,85,'+(danger>0?.5+.5*Math.sin(performance.now()/80):.35)+')';
+  ctx.shadowColor='#ff2a55';ctx.shadowBlur=danger>0?16:6;ctx.beginPath();ctx.moveTo(0,dangerY);ctx.lineTo(W,dangerY);ctx.stroke();ctx.restore();
+  // çizgiler
+  const now=performance.now();
+  ctx.save();ctx.lineCap='round';ctx.lineWidth=5;ctx.shadowColor='#d47bff';ctx.shadowBlur=14;
+  for(const s of segs){const a=Math.min(1,(LIFE-(now-s.t))/1500);
+    ctx.strokeStyle='rgba(235,220,255,'+a+')';ctx.beginPath();ctx.moveTo(s.a.x,s.a.y);ctx.lineTo(s.b.x,s.b.y);ctx.stroke()}
+  ctx.restore();
+  // kutular
+  for(const o of boxes){
+    ctx.save();ctx.translate(o.b.position.x,o.b.position.y);ctx.rotate(o.b.angle);
+    const st=o.s,q=S*.16;ctx.lineWidth=3;ctx.shadowColor=o.c;ctx.strokeStyle=st===2?o.c+'88':o.c;
+    ctx.shadowBlur=st===1?24:st===0?12:5;ctx.fillStyle=o.c+(st===1?'44':st===0?'22':'14');
+    rr(-S/2+1.5,-S/2+1.5,S-3,S-3,7);ctx.fill();ctx.stroke();
+    if(st===1){ctx.shadowBlur=8;ctx.fillStyle=o.c+'cc';rr(-S/5,-S/5,S*.4,S*.4,3);ctx.fill()}
+    else{ctx.shadowBlur=0;ctx.strokeStyle=ctx.fillStyle='rgba(255,255,255,.8)';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.beginPath();
+      if(st===0){ctx.moveTo(-q,-q*.7);ctx.lineTo(q,-q*.7);ctx.lineTo(0,q);ctx.closePath();ctx.fill()}
+      else{ctx.moveTo(-q,-q);ctx.lineTo(q,q);ctx.moveTo(q,-q);ctx.lineTo(-q,q);ctx.stroke()}}
+    ctx.restore();
+  }
+  if(running&&nxt){ctx.save();ctx.globalAlpha=.55+.3*Math.sin(performance.now()/180);ctx.fillStyle=nxt.c;ctx.shadowColor=nxt.c;ctx.shadowBlur=12;
+    ctx.beginPath();ctx.moveTo(nxt.x-9,62);ctx.lineTo(nxt.x+9,62);ctx.lineTo(nxt.x,80);ctx.closePath();ctx.fill();ctx.restore()}
+  // parçacıklar
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];p.l-=d;if(p.l<=0){parts.splice(i,1);continue}
+    p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy=p.vy*.97+(p.g?.05:.02);
+    ctx.globalAlpha=Math.max(0,p.l/p.m);ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=p.g?0:8;
+    ctx.fillRect(p.x,p.y,p.s,p.s);
+  }
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+  for(let i=pops.length-1;i>=0;i--){
+    const p=pops[i];p.t+=d;if(p.t>900){pops.splice(i,1);continue}
+    ctx.globalAlpha=1-p.t/900;ctx.fillStyle=p.c;ctx.shadowColor=p.c;ctx.shadowBlur=14;
+    ctx.font='700 26px system-ui';ctx.textAlign='center';ctx.fillText(p.s,p.x,p.y-p.t*.04);
+  }
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+let last=performance.now(),acc=0;
+function frame(t){
+  const d=Math.min(50,t-last);last=t;
+  if(running){acc+=d;while(acc>=STEP&&running){step();acc-=STEP}}
+  render(d);requestAnimationFrame(frame);
+}
+function pt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
+g.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{ac();if(!running)return;drawing=true;curK++;lastPt=pt(e);cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{
+  if(!drawing||!running)return;const p=pt(e);
+  if(Math.hypot(p.x-lastPt.x,p.y-lastPt.y)>=20){addSeg(lastPt,p,curK);lastPt=p}
+});
+['pointerup','pointercancel'].forEach(n=>cv.addEventListener(n,()=>{drawing=false}));
+addEventListener('resize',resize);
+
+// ---- Dil, menüler, zorluk, duraklatma ----
+const KEYS='s h r x e m d c b sc n dg rs mn go how bye nr ln snd vb tuth t1 t2 t3 t4'.split(' ');
+const LG=[['tr','Türkçe'],['en','English'],['de','Deutsch'],['fr','Français'],['es','Español'],['it','Italiano'],['pt','Português'],['ru','Русский'],['ar','العربية'],['zh','中文'],['ja','日本語'],['ko','한국어']];
+const T={
+tr:["Başlat","En Yüksek Puanlar","Dereceli","Çıkış","Kolay","Orta","Zor","Zorluk Seç","Geri","SKOR","SIRADAKİ","TEHLİKE","Devam Et","Ana Menü","OYUN BİTTİ","Çizgi çizerek kutuları yönlendir. Havadayken çizgiye değen kutu aktif olur (■), çizgiye değmeden yere düşen × olur. Aynı renkten 4 aktif kutu yan yana gelince patlar. Yığın kırmızı çizgiye ulaşırsa kaybedersin.","Görüşürüz!","YENİ REKOR!","Aynı anda en fazla 2 çizgi: 3. çizgi ilkini siler.","Ses","Titreşim","Nasıl Oynanır","Düşüyor — henüz hiçbir şeye değmedi","Havadayken çizgine değince aktif olur ve parlar","Çizgine değmeden inerse × olur, bir daha aktif olmaz","Aynı renkten 4 aktif kutu birleşince hepsi patlar"],
+en:["Start","High Scores","Ranked","Exit","Easy","Medium","Hard","Select Difficulty","Back","SCORE","NEXT","DANGER","Resume","Main Menu","GAME OVER","Draw lines to guide the boxes. A box that touches a line while falling becomes active (■); one that lands without touching becomes ×. 4 active boxes of the same color together explode. Don't let the stack reach the red line.","See you!","NEW RECORD!","Max 2 lines at once: the 3rd erases the 1st.","Sound","Vibration","How to Play","Falling — hasn't touched anything yet","Touches your line while falling and becomes active — it glows","Lands without touching your line and becomes ×, never active","4 active boxes of the same color together and they all explode"],
+de:["Start","Bestenliste","Rangliste","Beenden","Leicht","Mittel","Schwer","Schwierigkeit wählen","Zurück","PUNKTE","NÄCHSTE","GEFAHR","Fortsetzen","Hauptmenü","SPIEL VORBEI","Zeichne Linien, um die Blöcke zu lenken. Ein Block, der im Fall eine Linie berührt, wird aktiv (■); landet er ohne Berührung, wird er ×. 4 aktive Blöcke gleicher Farbe explodieren. Erreicht der Stapel die rote Linie, verlierst du.","Bis bald!","NEUER REKORD!","Max. 2 Linien gleichzeitig: die 3. löscht die 1.","Ton","Vibration","Spielanleitung","Fällt — hat noch nichts berührt","Berührt deine Linie im Fall und wird aktiv — sie leuchtet","Landet ohne deine Linie zu berühren und wird zu ×, nie aktiv","4 aktive Blöcke derselben Farbe zusammen und alle explodieren"],
+fr:["Jouer","Meilleurs scores","Classé","Quitter","Facile","Moyen","Difficile","Choisir la difficulté","Retour","SCORE","SUIVANT","DANGER","Reprendre","Menu principal","PARTIE TERMINÉE","Trace des lignes pour guider les blocs. Un bloc qui touche une ligne en tombant devient actif (■) ; s'il atterrit sans la toucher, il devient ×. 4 blocs actifs de même couleur explosent. Si la pile atteint la ligne rouge, tu perds.","À bientôt !","NOUVEAU RECORD !","2 lignes max : la 3e efface la 1re.","Son","Vibration","Comment jouer","Tombe — n'a encore rien touché","Touche ta ligne en tombant et devient actif — il brille","Atterrit sans toucher ta ligne et devient ×, jamais actif","4 blocs actifs de la même couleur ensemble et ils explosent tous"],
+es:["Jugar","Mejores puntuaciones","Clasificatoria","Salir","Fácil","Medio","Difícil","Elegir dificultad","Atrás","PUNTOS","SIGUIENTE","PELIGRO","Continuar","Menú principal","FIN DEL JUEGO","Dibuja líneas para guiar las cajas. Una caja que toca una línea al caer se activa (■); si aterriza sin tocarla, pasa a ×. 4 cajas activas del mismo color explotan. Si la pila llega a la línea roja, pierdes.","¡Hasta pronto!","¡NUEVO RÉCORD!","Máx. 2 líneas: la 3.ª borra la 1.ª.","Sonido","Vibración","Cómo jugar","Cae — aún no ha tocado nada","Toca tu línea al caer y se activa — brilla","Aterriza sin tocar tu línea y se convierte en ×, nunca se activa","4 cajas activas del mismo color juntas y todas explotan"],
+it:["Gioca","Migliori punteggi","Classificata","Esci","Facile","Medio","Difficile","Scegli difficoltà","Indietro","PUNTI","PROSSIMO","PERICOLO","Riprendi","Menu principale","GAME OVER","Disegna linee per guidare le scatole. Una scatola che tocca una linea mentre cade diventa attiva (■); se atterra senza toccarla diventa ×. 4 scatole attive dello stesso colore esplodono. Se la pila raggiunge la linea rossa, perdi.","A presto!","NUOVO RECORD!","Max 2 linee: la 3ª cancella la 1ª.","Audio","Vibrazione","Come si gioca","Cade — non ha ancora toccato nulla","Tocca la tua linea mentre cade e diventa attiva — si illumina","Atterra senza toccare la tua linea e diventa ×, mai attiva","4 scatole attive dello stesso colore insieme ed esplodono tutte"],
+pt:["Jogar","Melhores pontuações","Ranqueado","Sair","Fácil","Médio","Difícil","Escolher dificuldade","Voltar","PONTOS","PRÓXIMA","PERIGO","Continuar","Menu principal","FIM DE JOGO","Desenhe linhas para guiar as caixas. Uma caixa que toca uma linha ao cair fica ativa (■); se cair sem tocar, vira ×. 4 caixas ativas da mesma cor explodem. Se a pilha chegar à linha vermelha, você perde.","Até logo!","NOVO RECORDE!","Máx. 2 linhas: a 3ª apaga a 1ª.","Som","Vibração","Como jogar","Caindo — ainda não tocou em nada","Toca sua linha ao cair e fica ativa — ela brilha","Pousa sem tocar sua linha e vira ×, nunca fica ativa","4 caixas ativas da mesma cor juntas e todas explodem"],
+ru:["Играть","Рекорды","Рейтинг","Выход","Легко","Средне","Сложно","Выберите сложность","Назад","СЧЁТ","ДАЛЕЕ","ОПАСНОСТЬ","Продолжить","Главное меню","ИГРА ОКОНЧЕНА","Рисуйте линии, чтобы направлять кубики. Кубик, коснувшийся линии в падении, становится активным (■); упавший без касания становится ×. 4 активных кубика одного цвета взрываются. Если куча достигнет красной линии — вы проиграли.","До встречи!","НОВЫЙ РЕКОРД!","Не более 2 линий: 3-я стирает 1-ю.","Звук","Вибрация","Как играть","Падает — ещё ничего не коснулся","Касается вашей линии при падении и становится активным — светится","Приземляется, не коснувшись линии, и становится ×, никогда не активен","4 активных кубика одного цвета вместе — и все они взрываются"],
+ar:["ابدأ","أعلى النتائج","التصنيف","خروج","سهل","متوسط","صعب","اختر الصعوبة","رجوع","النقاط","التالي","خطر","متابعة","القائمة الرئيسية","انتهت اللعبة","ارسم خطوطًا لتوجيه المكعبات. المكعب الذي يلمس خطًا أثناء السقوط يصبح نشطًا (■)، وإن سقط دون لمسه يصبح ×. تنفجر 4 مكعبات نشطة من اللون نفسه. إذا وصلت الكومة إلى الخط الأحمر تخسر.","إلى اللقاء!","رقم قياسي جديد!","خطان كحد أقصى: الثالث يمحو الأول.","الصوت","الاهتزاز","كيفية اللعب","يسقط — لم يلمس شيئًا بعد","يلمس خطك أثناء السقوط ويصبح نشطًا — يتوهج","يهبط دون لمس خطك ويصبح ×، ولن يصبح نشطًا أبدًا","4 مكعبات نشطة من نفس اللون معًا وتنفجر جميعها"],
+zh:["开始","最高分","排位","退出","简单","中等","困难","选择难度","返回","得分","下一个","危险","继续","主菜单","游戏结束","画线来引导方块。下落时碰到线的方块会变为激活状态（■）；未碰线就落地的会变成 ×。4 个同色激活方块相连即爆炸。方块堆到红线就输了。","再见！","新纪录！","最多同时 2 条线：第 3 条会擦掉第 1 条。","声音","振动","玩法说明","下落中——还没碰到任何东西","下落时碰到你画的线就会激活——会发光","没碰到线就落地会变成×，永远不会激活","4个同色的激活方块连在一起就会全部爆炸"],
+ja:["スタート","ハイスコア","ランク戦","終了","かんたん","ふつう","むずかしい","難易度を選択","戻る","スコア","ネクスト","危険","再開","メインメニュー","ゲームオーバー","線を描いてブロックを誘導しよう。落下中に線に触れたブロックはアクティブ（■）になり、触れずに着地すると × になる。同じ色のアクティブなブロック4つで爆発。積み上がりが赤い線に届いたら負け。","またね！","新記録！","線は同時に2本まで：3本目を引くと1本目が消える。","音","バイブ","遊び方","落下中——まだ何にも触れていない","落下中に線に触れると起動する——光る","線に触れずに着地すると×になり、二度と起動しない","同じ色のアクティブなブロック4つが揃うと全部爆発する"],
+ko:["시작","최고 점수","랭킹","종료","쉬움","보통","어려움","난이도 선택","뒤로","점수","다음","위험","계속","메인 메뉴","게임 오버","선을 그려 상자를 유도하세요. 떨어지는 중 선에 닿은 상자는 활성(■)이 되고, 닿지 않고 착지하면 ×가 됩니다. 같은 색 활성 상자 4개가 모이면 폭발합니다. 더미가 빨간 선에 닿으면 패배합니다.","또 만나요!","신기록!","선은 최대 2개: 3번째 선을 그리면 첫 번째가 사라집니다.","소리","진동","플레이 방법","낙하 중 — 아직 아무것도 닿지 않음","떨어지는 동안 선에 닿으면 활성화되어 빛난다","선에 닿지 않고 착지하면 ×가 되어 다시는 활성화되지 않음","같은 색 활성 상자 4개가 모이면 모두 폭발한다"]};
+const MIN=4; // patlama için gereken aktif kutu sayısı
+const DIFF={e:[4200,2600],m:[3200,1800],d:[2400,1300]};
+let curK=0,newRec=false,muted=false,vibOn=true,lang='en',diff='m',st='lang',scores=[],pauseAt=0,siteLang=null;
+try{const sl=localStorage.getItem('arkat-lang');if(sl&&T[sl]){lang=sl;siteLang=sl}}catch(e){}
+try{scores=JSON.parse(localStorage.getItem('neon-top10')||'[]')}catch(e){}
+try{muted=localStorage.getItem('neon-muted')==='1'}catch(e){}
+try{const v=localStorage.getItem('neon-vibe');if(v!==null)vibOn=v==='1'}catch(e){}
+const t=k=>(T[lang]||T.en)[KEYS.indexOf(k)];
+const ov=document.getElementById('ov');
+const B=(a,x,d)=>'<button data-a="'+a+'"'+(d?' disabled':'')+'>'+x+'</button>';
+function show(n){
+  running=false;drawing=false;st=n;if(n==='pause')pauseAt=performance.now();
+  let h=(n==='lang'||n==='menu')?'<h1>'+(lang==='tr'?'NEON DÜŞÜŞ':'NEON DROP')+'</h1>':'';
+  if(n==='lang')h+='<div class="grid">'+LG.map(l=>B('L:'+l[0],l[1])).join('')+'</div>';
+  if(n==='menu')h+=B('diff',t('s'))+B('hs',t('h'))+B('tut',t('tuth'))+B('',t('r'),1)+B('ex',t('x'))+'<br>'+B('mute',t('snd')+': '+(muted?'🔇':'🔊'))+B('vibe',t('vb')+': '+(vibOn?'📳':'🚫'));
+  if(n==='diff')h+='<h2>'+t('c')+'</h2>'+B('D:e',t('e'))+B('D:m',t('m'))+B('D:d',t('d'))+'<p>'+t('how')+'</p><p>'+t('ln')+'</p>'+B('menu',t('b'));
+  if(n==='hs')h+='<h2>'+t('h')+'</h2>'+(scores.length?scores.map((x,i)=>'<div class="row"><span>#'+(i+1)+'</span><b>'+x.s+'</b><span>'+t(x.d)+'</span></div>').join(''):'<p>—</p>')+'<br>'+B('menu',t('b'));
+  if(n==='tut'){
+    const ic=(bg,glow,txt,op)=>'<div class="ticon" style="border:2px solid '+bg+op+';background:'+bg+(op?'22':'44')+';box-shadow:0 0 '+(op?8:16)+'px '+bg+op+'">'+txt+'</div>';
+    h+='<h2>'+t('tuth')+'</h2>'
+      +'<div class="trow">'+ic('#2f8bff','88','▼','1')+'<p>'+t('t1')+'</p></div>'
+      +'<div class="trow">'+ic('#39ff14','','■','')+'<p>'+t('t2')+'</p></div>'
+      +'<div class="trow">'+ic('#ff2a55','88','×','1')+'<p>'+t('t3')+'</p></div>'
+      +'<div class="trow">'+ic('#ffe600','','★','')+'<p>'+t('t4')+'</p></div>'
+      +B('menu',t('b'));
+  }
+  if(n==='pause')h+='<h2>P</h2>'+B('resume',t('rs'))+B('mute',t('snd')+': '+(muted?'🔇':'🔊'))+B('vibe',t('vb')+': '+(vibOn?'📳':'🚫'))+B('menu',t('mn'));
+  if(n==='over')h+=(newRec?'<h2 style="color:#ffe600;text-shadow:0 0 14px #ffe600,0 0 30px #ff2a55">🏆 '+t('nr')+'</h2>':'')+'<h2>'+t('go')+'</h2><p>'+t('sc')+': <b>'+score+'</b></p>'+B('go',t('s'))+B('menu',t('mn'));
+  if(n==='bye')h+='<h2>'+t('bye')+'</h2>'+B('menu',t('mn'));
+  ov.innerHTML=h;ov.style.display='flex';
+}
+function start(){reset();ov.style.display='none';st='play';running=true;acc=0}
+function act(a){
+  if(a.startsWith('L:')){lang=a.slice(2);document.documentElement.lang=lang;hud();return show('menu')}
+  if(a.startsWith('D:')){diff=a.slice(2);return start()}
+  if(a==='mute'){muted=!muted;try{localStorage.setItem('neon-muted',muted?'1':'0')}catch(e){}if(!muted)sndClick();return show(st)}
+  if(a==='vibe'){vibOn=!vibOn;try{localStorage.setItem('neon-vibe',vibOn?'1':'0')}catch(e){}if(vibOn)vibe(15);return show(st)}
+  if(a==='resume'){const d=performance.now()-pauseAt;segs.forEach(x=>x.t+=d);ov.style.display='none';st='play';running=true;acc=0;last=performance.now();return}
+  if(a==='ex'){try{window.close()}catch(e){}return show('bye')}
+  if(a==='go')return start();
+  if(a)show(a);
+}
+ov.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.disabled){ac();sndClick();act(b.dataset.a)}});
+document.getElementById('pb').addEventListener('click',()=>{ac();sndClick();if(st==='play')show('pause')});
+addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P'){if(st==='play')show('pause');else if(st==='pause')act('resume')}});
+document.documentElement.lang=lang;
+resize();reset();show(siteLang?'menu':'lang');requestAnimationFrame(frame);
+</script>
+<script src="../../arkat.js" data-root="../../"></script>
+</body></html>
