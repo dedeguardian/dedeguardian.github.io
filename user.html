@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" data-title="prof_title">
+<html lang="tr" data-title="user_title">
 <head>
 <meta charset="utf-8">
 <link rel="manifest" href="manifest.webmanifest">
@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ARKAT">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ARKAT — Profil</title>
+<title>ARKAT — Oyuncu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
@@ -80,7 +80,7 @@
   .panel h3{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;color:var(--amber);margin:18px 0 10px;line-height:1.6}
   .panel h3:first-child{margin-top:0}
   .prow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px;margin-top:12px}
+  .presets{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
   .presets button{padding:0;border:3px solid var(--line);background:#0d0818;cursor:pointer;aspect-ratio:1;overflow:hidden}
   .presets button:hover{border-color:var(--cyan)}
   .presets svg,.presets img{display:block;width:100%;height:100%}
@@ -111,62 +111,25 @@
     <a class="back" href="index.html" data-i18n="back_home">◂ ANA SAYFA</a>
     <div id="arkat-bar"></div>
   </div>
-  <h1 data-i18n="prof_h">PROFİL</h1>
 
   <div id="loading" class="msg" data-i18n="loading">YÜKLENİYOR…</div>
+  <div id="nf" class="msg" hidden data-i18n="user_notfound">Kullanıcı bulunamadı.</div>
 
-  <div id="guest" class="msg" hidden>
-    <p data-i18n="prof_need" style="margin:0">Profilini görmek için Google ile giriş yap.</p>
-    <button class="btn" id="gbtn"><span data-i18n="login">GİRİŞ YAP</span></button>
-  </div>
-
-  <div id="me" hidden>
+  <div id="view" hidden>
     <div class="pcard">
       <span id="pic"></span>
       <div class="pinfo">
         <div class="pname" id="uname"></div>
         <p class="psub" id="ufull"></p>
-        <p><b data-i18n="f_email">E-POSTA</b> · <span id="umail"></span></p>
         <p><b data-i18n="f_joined">KATILIM</b> · <span id="ujoin">—</span></p>
-        <div class="row2"><button class="abtn sm" id="setbtn" type="button">⚙ <span data-i18n="settings_h">AYARLAR</span></button></div>
+        <div class="row2" id="frbtns"></div>
       </div>
     </div>
-
-    <div class="panel" id="settings" hidden>
-      <h3 data-i18n="set_photo">PROFİL RESMİ</h3>
-      <div class="prow">
-        <span id="spic"></span>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <button class="abtn sm" id="upbtn" type="button"><span data-i18n="set_upload">FOTOĞRAF YÜKLE</span></button>
-          <button class="abtn sm ghost" id="gpbtn" type="button"><span data-i18n="set_google">GOOGLE FOTOĞRAFIM</span></button>
-        </div>
-        <input type="file" id="file" accept="image/*" hidden>
-      </div>
-      <p class="note" data-i18n="set_presets" style="margin-top:14px">YA DA BİR AVATAR SEÇ</p>
-      <div class="presets" id="presets"></div>
-
-      <h3 data-i18n="set_username">KULLANICI ADI</h3>
-      <input class="fld" id="uninp" type="text" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <div class="unst" id="unst"></div>
-      <button class="abtn sm" id="unbtn" type="button" disabled><span data-i18n="set_save">KAYDET</span></button>
-
-      <h3 data-i18n="set_name">İSİM (İSTEĞE BAĞLI)</h3>
-      <div class="two">
-        <div><label class="fl" data-i18n="set_first">Ad</label><input class="fld" id="fn" type="text" maxlength="24" autocomplete="off"></div>
-        <div><label class="fl" data-i18n="set_last">Soyad</label><input class="fld" id="ln" type="text" maxlength="24" autocomplete="off"></div>
-      </div>
-      <p class="note" data-i18n="set_hint_name"></p>
-      <button class="abtn sm" id="nmbtn" type="button"><span data-i18n="set_save">KAYDET</span></button>
-    </div>
-
-    <h2 class="section" data-i18n="friends_h">ARKADAŞLAR</h2>
-    <div id="reqbox" hidden><div class="sub" data-i18n="fr_requests">GELEN İSTEKLER</div><div id="reqs"></div></div>
-    <div id="friends"></div>
 
     <h2 class="section" data-i18n="badges_h">ROZETLER</h2>
     <div id="badges" class="badges"></div>
 
-    <h2 class="section" data-i18n="scores_h">SKORLARIM</h2>
+    <h2 class="section" data-i18n="scores_h2">SKORLAR</h2>
     <p class="hint" data-i18n="tap_rank">Sıralamayı görmek için bir skora dokun.</p>
     <div id="gcards"></div>
   </div>
@@ -176,134 +139,64 @@
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var A=ARKAT, el=A.el;
+  var A=ARKAT, el=A.el, target=null, targetUid=null;
+  var q=new URLSearchParams(location.search), qid=q.get('id'), qu=q.get('u');
 
   function fmt(ts){
     if(!ts||!ts.toDate) return '—';
     var l=A.getLang(); var loc=l==='ja'?'ja-JP':(l==='en'?'en-GB':'tr-TR');
     return ts.toDate().toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'});
   }
-  function setAvatar(box,photo,size){
-    box.innerHTML=''; box.appendChild(A.avatar(photo,size,'big'));
-  }
-
-  // ---- üst kart ----
-  function renderTop(u,p){
-    p=p||{};
-    setAvatar($('pic'),p.photo||u.photoURL,84);
-    setAvatar($('spic'),p.photo||u.photoURL,72);
-    $('uname').textContent=p.username?('@'+p.username):A.shownName(p);
-    var full=((p.firstName||'')+' '+(p.lastName||'')).trim();
-    $('ufull').textContent=full;
-    $('umail').textContent=u.email||'';
-    $('ujoin').textContent=fmt(p.createdAt);
-    if(document.activeElement!==$('uninp')) $('uninp').value=p.username||'';
-    if(document.activeElement!==$('fn')) $('fn').value=p.firstName||'';
-    if(document.activeElement!==$('ln')) $('ln').value=p.lastName||'';
-  }
-
-  // ---- ayarlar ----
-  var uninpSay=null;
-  function initSettings(){
-    $('setbtn').addEventListener('click',function(){var s=$('settings');s.hidden=!s.hidden});
-    // fotoğraf yükle
-    $('upbtn').addEventListener('click',function(){$('file').click()});
-    $('file').addEventListener('change',function(){
-      var f=this.files&&this.files[0]; this.value='';
-      if(!f) return;
-      A.fileToAvatar(f).then(function(url){return A.setPhoto(url,'custom')})
-        .then(function(){A.toast(A.t('set_saved'))})
-        .catch(function(){A.toast(A.t('set_photo_err'))});
-    });
-    $('gpbtn').addEventListener('click',function(){
-      var u=A.getUser(); if(!u||!u.photoURL) return;
-      A.setPhoto(u.photoURL,'google').then(function(){A.toast(A.t('set_saved'))}).catch(function(){A.toast(A.t('set_err'))});
-    });
-    // hazır avatarlar
-    var pr=$('presets');
-    A.PRESETS.forEach(function(svg){
-      var b=el('button'); b.type='button';
-      var im=document.createElement('img'); im.alt=''; im.src=A.svgDataUrl(svg); b.appendChild(im);
-      b.addEventListener('click',function(){
-        A.setPhoto(A.svgDataUrl(svg),'custom').then(function(){A.toast(A.t('set_saved'))}).catch(function(){A.toast(A.t('set_err'))});
-      });
-      pr.appendChild(b);
-    });
-    // kullanıcı adı
-    uninpSay=A.bindUsernameField($('uninp'),$('unst'),$('unbtn'));
-    $('unbtn').addEventListener('click',function(){A.submitUsername($('uninp'),$('unst'),$('unbtn'))});
-    // isim
-    $('nmbtn').addEventListener('click',function(){
-      A.updateNames($('fn').value,$('ln').value).then(function(){A.toast(A.t('set_saved'))}).catch(function(){A.toast(A.t('set_err'))});
-    });
-  }
-
-  // ---- arkadaşlar ----
-  function friendRow(p,uid,actions){
-    var a=el('a','fr'); a.href=A.userLink(uid,p&&p.username);
-    a.appendChild(A.avatar(p&&p.photo,40));
-    var nm=el('span','fn','@'+((p&&p.username)||'?'));
-    var sub=A.publicName(p); if(sub) nm.appendChild(el('small',null,sub));
-    a.appendChild(nm);
-    if(actions){
-      var box=el('span','fa');
-      actions.forEach(function(x){
-        var b=el('button','abtn sm '+(x.cls||''),A.t(x.key)); b.type='button';
-        b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();b.disabled=true;x.fn()});
-        box.appendChild(b);
-      });
-      a.appendChild(box);
+  function renderFriendBtns(){
+    var box=$('frbtns'); box.innerHTML='';
+    var me=A.getUser();
+    function btn(key,cls,fn){var b=el('button','abtn sm '+(cls||''),A.t(key));b.type='button';b.addEventListener('click',function(){b.disabled=true;fn()});box.appendChild(b);return b}
+    function after(){A.loadFriendships(true).then(renderFriendBtns)}
+    function fail(){A.toast(A.t('set_err'));renderFriendBtns()}
+    if(!me){btn('fr_add','',function(){A.signIn()});box.appendChild(el('span','note',A.t('fr_login')));return}
+    if(me.uid===targetUid){box.appendChild(el('span','note',A.t('this_you')));return}
+    var rel=A.relation(targetUid);
+    if(rel==='none') btn('fr_add','',function(){A.requestFriend(targetUid).then(after).catch(fail)});
+    else if(rel==='sent') btn('fr_cancel','ghost',function(){A.removeFriend(targetUid).then(after).catch(fail)});
+    else if(rel==='received'){
+      btn('fr_accept','',function(){A.acceptFriend(targetUid).then(after).catch(fail)});
+      btn('fr_decline','ghost',function(){A.removeFriend(targetUid).then(after).catch(fail)});
+    } else if(rel==='friends'){
+      var b=el('span','note',A.t('fr_friends')); b.style.color='var(--green,#39ff14)'; box.appendChild(b);
+      btn('fr_remove','ghost warn',function(){A.removeFriend(targetUid).then(after).catch(fail)});
     }
-    return a;
   }
-  function renderFriends(){
-    var list=A.getFriendList(), reqs=$('reqs'), fr=$('friends');
-    reqs.innerHTML=''; fr.innerHTML='';
-    var inc=list.filter(function(f){return f.status==='pending'&&f.from!==A.getUser().uid});
-    var acc=list.filter(function(f){return f.status==='accepted'});
-    var out=list.filter(function(f){return f.status==='pending'&&f.from===A.getUser().uid});
-    $('reqbox').hidden=!inc.length;
-    function reload(){A.loadFriendships(true).then(renderFriends)}
-    inc.forEach(function(f){
-      A.getProfileById(f.other).then(function(p){
-        reqs.appendChild(friendRow(p,f.other,[
-          {key:'fr_accept',fn:function(){A.acceptFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}},
-          {key:'fr_decline',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}}
-        ]));
-      });
-    });
-    if(!acc.length&&!out.length){fr.appendChild(el('div','msg',A.t('fr_none')));return}
-    acc.forEach(function(f){
-      A.getProfileById(f.other).then(function(p){fr.appendChild(friendRow(p,f.other,null))});
-    });
-    out.forEach(function(f){
-      A.getProfileById(f.other).then(function(p){
-        fr.appendChild(friendRow(p,f.other,[{key:'fr_cancel',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}}]));
-      });
-    });
+  function renderAll(){
+    if(!target) return;
+    $('loading').hidden=true; $('nf').hidden=true; $('view').hidden=false;
+    $('pic').innerHTML=''; $('pic').appendChild(A.avatar(target.photo,84,'big'));
+    $('uname').textContent=target.username?('@'+target.username):A.shownName(target);
+    $('ufull').textContent=A.publicName(target);
+    $('ujoin').textContent=fmt(target.createdAt);
+    A.renderBadges($('badges'),target);
+    A.renderScoreCards($('gcards'),target,targetUid);
+    renderFriendBtns();
   }
+  function notFound(){$('loading').hidden=true;$('view').hidden=true;$('nf').hidden=false}
 
-  // ---- ana akış ----
-  var wired=false;
-  function render(){
-    var u=A.getUser();
-    $('loading').hidden=true;
-    if(!u){ $('me').hidden=true; $('guest').hidden=false; return; }
-    $('guest').hidden=true; $('me').hidden=false;
-    var p=A.getProfile()||{};
-    if(!wired){wired=true;initSettings()}
-    renderTop(u,p);
-    var data=Object.assign({},p,{badges:Object.assign({},A.localBadges(),p.badges||{})});
-    A.renderBadges($('badges'),data);
-    A.renderScoreCards($('gcards'),data,u.uid);
-    A.syncBoards(p.best).then(function(){A.renderScoreCards($('gcards'),data,u.uid)}).catch(function(){});
-    A.loadFriendships(false).then(renderFriends);
-  }
-  $('gbtn').addEventListener('click',function(){A.signIn()});
-  document.addEventListener('arkat:auth',function(){render()});
-  document.addEventListener('arkat:profile',function(){ if(A.getUser()&&!$('me').hidden){var u=A.getUser();renderTop(u,A.getProfile())} });
-  document.addEventListener('arkat:lang',function(){ if(A.getUser()&&!$('me').hidden) render() });
-  if(!A.isConfigured()){ $('loading').hidden=true; $('guest').hidden=false; }
+  A.whenReady().then(function(){
+    var p=qid?A.getProfileById(qid):(qu?A.getProfileByName(qu):Promise.resolve(null));
+    return p.then(function(d){
+      if(!d){notFound();return}
+      target=d; targetUid=d.uid||qid;
+      if(!targetUid){notFound();return}
+      document.title='@'+(d.username||'?')+' · ARKAT';
+      renderAll();
+      if(A.getUser()&&A.getUser().uid===targetUid) location.replace('profile.html');
+    });
+  }).catch(notFound);
+
+  document.addEventListener('arkat:auth',function(e){
+    if(e.detail&&targetUid&&e.detail.uid===targetUid){location.replace('profile.html');return}
+    if(e.detail) A.loadFriendships(true).then(function(){if(target)renderFriendBtns()}); else if(target) renderFriendBtns();
+  });
+  document.addEventListener('arkat:lang',function(){renderAll()});
+  if(!A.isConfigured()) notFound();
 })();
 </script>
 </body>

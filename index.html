@@ -3,7 +3,15 @@
 <head>
 <meta charset="utf-8">
 <script>try{if(localStorage.getItem("arkat-entry"))document.documentElement.classList.add("entered")}catch(e){}</script>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a0612">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ARKAT">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ARKAT — Retro Oyun Salonu</title>
 <meta name="description" content="Tarayıcıda ücretsiz oynanan retro oyunlar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,6 +140,12 @@
   .tw-twinkle.d2{animation-delay:.45s}.tw-twinkle.d3{animation-delay:.9s}
   @keyframes twtw{50%{opacity:.25}}
   .tw-float{animation:twfl 2.4s steps(6) infinite}
+  .vp-snake{animation:vpmove 3s steps(12) infinite alternate}
+  @keyframes vpmove{from{transform:translateX(-26px)}to{transform:translateX(70px)}}
+  .inst{display:inline-flex;align-items:center;gap:8px;background:var(--panel);color:var(--ink);border:2px solid var(--amber);padding:6px 10px;font-family:'Press Start 2P','DotGothic16',system-ui;font-size:9px;cursor:pointer;box-shadow:3px 3px 0 var(--magenta)}
+  .inst:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--magenta)}
+  .inst img{width:22px;height:22px;display:block;image-rendering:pixelated}
+  .inst[hidden]{display:none}
   @keyframes twfl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
   .placeholder{border-style:dashed;opacity:.5}
@@ -166,7 +180,7 @@
 
 <header>
   <div class="brand"><span class="dot"></span>ARKAT</div>
-  <nav style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end"><a href="#oyunlar" data-i18n="nav_games">OYUNLAR</a><div id="arkat-bar"></div></nav>
+  <nav style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end"><button class="inst" id="install-btn" hidden data-i18n-title="inst_hint"><img src="icons/icon-192.png" alt=""><span data-i18n="install_short">YÜKLE</span></button><a href="#oyunlar" data-i18n="nav_games">OYUNLAR</a><div id="arkat-bar"></div></nav>
 </header>
 
 <div class="hero">
@@ -228,6 +242,31 @@
       </div>
     </a>
 
+    <a class="card c3" href="games/neon-viper/info.html">
+      <div class="thumb">
+        <svg class="scene" viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="360" height="140" fill="#0d0818"/>
+          <g stroke="#7850ff" stroke-opacity=".22"><path d="M0 20H360M0 40H360M0 60H360M0 80H360M0 100H360M0 120H360"/><path d="M20 0V140M40 0V140M60 0V140M80 0V140M100 0V140M120 0V140M140 0V140M160 0V140M180 0V140M200 0V140M220 0V140M240 0V140M260 0V140M280 0V140M300 0V140M320 0V140M340 0V140"/></g>
+          <g class="vp-snake">
+            <rect x="80" y="82" width="18" height="18" rx="4" fill="hsl(310,100%,60%)"/><rect x="100" y="82" width="18" height="18" rx="4" fill="hsl(295,100%,60%)"/>
+            <rect x="120" y="82" width="18" height="18" rx="4" fill="hsl(275,100%,60%)"/><rect x="140" y="82" width="18" height="18" rx="4" fill="hsl(255,100%,60%)"/>
+            <rect x="140" y="62" width="18" height="18" rx="4" fill="hsl(240,100%,62%)"/><rect x="140" y="42" width="18" height="18" rx="4" fill="hsl(220,100%,62%)"/>
+            <rect x="160" y="42" width="18" height="18" rx="4" fill="hsl(200,100%,62%)"/><rect x="180" y="42" width="18" height="18" rx="4" fill="#e8ffff"/>
+            <rect x="188" y="48" width="4" height="4" fill="#0a0612"/><rect x="188" y="56" width="4" height="4" fill="#0a0612"/>
+          </g>
+          <g class="tw-float"><g class="tw-twinkle"><polygon points="236,38 244,51 236,64 228,51" fill="#ff2bd6" stroke="#fff" stroke-width="1.5"/></g></g>
+          <g class="tw-twinkle d2"><text x="280" y="100" text-anchor="middle" font-family="Arial" font-size="22" fill="#ffd23f">★</text></g>
+          <g fill="#2a0010" stroke="#ff3b5c" stroke-width="2"><rect x="62" y="30" width="16" height="16"/><rect x="262" y="76" width="16" height="16" opacity=".0"/><rect x="300" y="40" width="16" height="16"/></g>
+          <g stroke="#ff3b5c" stroke-width="2"><path d="M66 34L74 42M74 34L66 42M304 44L312 52M312 44L304 52"/></g>
+        </svg>
+      </div>
+      <div class="body">
+        <h3 data-i18n="g_viper_t">NEON VIPER</h3>
+        <p data-i18n="g_viper_d">Neon ızgarada yılanı yönlendir, elmasları ye, uzadıkça hızlan ve engellere çarpma.</p>
+        <span class="tag" data-i18n="tag_arcade">ARCADE</span>
+      </div>
+    </a>
+
     <!-- Yeni oyun eklemek için bu bloğu kopyala:
     <a class="card" href="games/YENI-OYUN/info.html">
       <div class="thumb"><b></b><b></b><b></b></div>
@@ -264,6 +303,11 @@
   document.getElementById('g-google').addEventListener('click',function(){ARKAT.signIn()});
   document.addEventListener('arkat:auth',function(e){if(e.detail){mark('user');hide()}});
   document.addEventListener('arkat:signout',show);
+  // Uygulama olarak yükle
+  var ib=document.getElementById('install-btn');
+  function syncInst(){ib.hidden=!ARKAT.canInstall()}
+  ib.addEventListener('click',function(){ARKAT.install()});
+  document.addEventListener('arkat:installable',syncInst);syncInst();
 })();
 </script>
 </body>
