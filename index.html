@@ -2,6 +2,7 @@
 <html lang="tr" data-title="idx_title" data-desc="idx_desc">
 <head>
 <meta charset="utf-8">
+<script>try{if(localStorage.getItem("arkat-entry"))document.documentElement.classList.add("entered")}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ARKAT — Retro Oyun Salonu</title>
 <meta name="description" content="Tarayıcıda ücretsiz oynanan retro oyunlar.">
@@ -99,9 +100,39 @@
   .c1 .thumb b:nth-child(2){background:#ffe60055;border-color:#ffe600;left:50%;top:50%;animation-delay:.4s}
   .c1 .thumb b:nth-child(3){background:#39ff1455;border-color:#39ff14;left:68%;top:24%;animation-delay:.9s}
 
-  .c2 .thumb b:nth-child(1){background:#ff2bd655;border-color:#ff2bd6;left:30%;top:62%}
-  .c2 .thumb b:nth-child(2){background:#19e6ff55;border-color:#19e6ff;left:48%;top:38%;animation-delay:.5s}
-  .c2 .thumb b:nth-child(3){background:#ffd23f55;border-color:#ffd23f;left:64%;top:14%;animation-delay:1s}
+
+
+  /* Giriş (karşılama) ekranı */
+  #gate{position:fixed;inset:0;z-index:100;background:rgba(10,6,18,.97);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+  .entered #gate{display:none}
+  .gate-box{max-width:480px;width:100%;background:var(--panel);border:3px solid var(--cyan);box-shadow:8px 8px 0 var(--magenta);padding:30px 24px 26px;text-align:center}
+  .gate-logo{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:22px;color:var(--cyan);text-shadow:0 0 6px var(--cyan),0 0 16px var(--cyan);display:flex;align-items:center;justify-content:center;gap:10px}
+  .gate-logo .dot{width:11px;height:11px;background:var(--amber);box-shadow:0 0 8px var(--amber),0 0 16px var(--amber);animation:blink 1.3s steps(1) infinite}
+  .gate-box h1{font-size:15px;margin:22px 0 10px;text-shadow:-2px 0 var(--magenta),2px 0 var(--cyan)}
+  .gate-sub{color:var(--dim);font-size:21px;margin:0 0 22px}
+  .gate-lbl{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;color:var(--amber);margin:0 0 10px}
+  .gate-langs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+  .gate-langs .lang-btn{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;background:var(--panel);color:var(--dim);border:3px solid var(--line);padding:11px 12px;cursor:pointer}
+  .gate-langs .lang-btn:hover{color:var(--ink);border-color:var(--cyan)}
+  .gate-langs .lang-btn.on{background:var(--cyan);color:var(--bg);border-color:var(--cyan)}
+  .gbtn{display:flex;width:100%;gap:12px;justify-content:center;align-items:center;font-family:'Press Start 2P','DotGothic16',system-ui;font-size:11px;line-height:1.5;padding:16px 12px;border:3px solid var(--cyan);background:var(--panel);color:var(--ink);box-shadow:5px 5px 0 var(--magenta);cursor:pointer;margin-bottom:16px;transition:transform .08s linear,box-shadow .08s linear}
+  .gbtn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--magenta)}
+  .gbtn.guest{border-color:var(--line);box-shadow:5px 5px 0 #000}
+  .gbtn.guest:hover{border-color:var(--dim);box-shadow:3px 3px 0 #000}
+  .gbtn .g{width:22px;height:22px;background:#fff;color:#4285f4;font:700 15px/22px Arial,sans-serif;border-radius:3px}
+  .gate-note{color:var(--dim);font-size:17px;line-height:1.3;margin:6px 0 0}
+
+  /* Neon Tower kart görseli */
+  .card .thumb svg.scene{position:absolute;inset:0;width:100%;height:100%}
+  .tw-hop{animation:twhop 1.5s steps(8) infinite}
+  @keyframes twhop{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+  .tw-slide{animation:twslide 4.2s steps(14) infinite alternate}
+  @keyframes twslide{from{transform:translateX(-12px)}to{transform:translateX(12px)}}
+  .tw-twinkle{animation:twtw 1.3s steps(2) infinite}
+  .tw-twinkle.d2{animation-delay:.45s}.tw-twinkle.d3{animation-delay:.9s}
+  @keyframes twtw{50%{opacity:.25}}
+  .tw-float{animation:twfl 2.4s steps(6) infinite}
+  @keyframes twfl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
   .placeholder{border-style:dashed;opacity:.5}
   .placeholder:hover{transform:none;box-shadow:6px 6px 0 rgba(0,0,0,.55);border-color:var(--line)}
@@ -112,6 +143,23 @@
 </style>
 </head>
 <body>
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo"><span class="dot"></span>ARKAT</div>
+    <h1 data-i18n="gate_title">HOŞ GELDİN</h1>
+    <p class="gate-sub" data-i18n="gate_sub">Dilini seç, sonra nasıl devam edeceğini belirle.</p>
+    <p class="gate-lbl" data-i18n="gate_lang">DİL</p>
+    <div class="gate-langs">
+      <button class="lang-btn" data-l="tr">TÜRKÇE</button>
+      <button class="lang-btn" data-l="en">ENGLISH</button>
+      <button class="lang-btn" data-l="ja">日本語</button>
+    </div>
+    <button class="gbtn" id="g-google"><span class="g">G</span><span data-i18n="gate_google">GOOGLE İLE GİRİŞ YAP</span></button>
+    <button class="gbtn guest" id="g-guest"><span data-i18n="gate_guest">MİSAFİR OLARAK DEVAM ET</span></button>
+    <p class="gate-note" data-i18n="gate_note"></p>
+  </div>
+</div>
+
 <div class="backdrop"></div>
 <div class="vignette"></div>
 <div class="crt"></div>
@@ -144,7 +192,35 @@
     </a>
 
     <a class="card c2" href="games/neon-tower/info.html">
-      <div class="thumb"><b></b><b></b><b></b></div>
+      <div class="thumb">
+        <svg class="scene" viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><filter id="twg" x="-30%" y="-300%" width="160%" height="700%"><feGaussianBlur stdDeviation="2.6"/></filter></defs>
+          <rect width="360" height="140" fill="#0d0818"/>
+          <g fill="#fff" opacity=".55"><rect x="18" y="14" width="2" height="2"/><rect x="40" y="52" width="2" height="2"/><rect x="104" y="12" width="2" height="2"/><rect x="150" y="30" width="2" height="2"/><rect x="236" y="8" width="2" height="2"/><rect x="288" y="46" width="2" height="2"/><rect x="330" y="20" width="2" height="2"/><rect x="316" y="70" width="2" height="2"/></g>
+          <rect x="4" y="82" width="30" height="60" fill="#170d2e"/><rect x="30" y="104" width="16" height="40" fill="#1b1040"/><rect x="322" y="62" width="34" height="80" fill="#170d2e"/><rect x="310" y="98" width="16" height="44" fill="#1b1040"/>
+          <g fill="#19e6ff" opacity=".6"><rect x="10" y="92" width="3" height="3"/><rect x="22" y="104" width="3" height="3"/><rect x="330" y="76" width="3" height="3"/><rect x="342" y="92" width="3" height="3"/></g>
+          <g transform="translate(60 0)">
+          <g class="tw-slide">
+            <rect x="120" y="84" width="70" height="7" rx="3.5" fill="#19e6ff" filter="url(#twg)"/><rect x="120" y="84" width="70" height="7" rx="3.5" fill="#19e6ff"/>
+          </g>
+          <rect x="36" y="114" width="76" height="7" rx="3.5" fill="#ff2bd6" filter="url(#twg)"/><rect x="36" y="114" width="76" height="7" rx="3.5" fill="#ff2bd6"/>
+          <rect x="70" y="58" width="60" height="7" rx="3.5" fill="#ffd23f" filter="url(#twg)"/><rect x="70" y="58" width="60" height="7" rx="3.5" fill="#ffd23f"/>
+          <rect x="150" y="32" width="60" height="7" rx="3.5" fill="#39ff14" filter="url(#twg)"/><rect x="150" y="32" width="60" height="7" rx="3.5" fill="#39ff14"/>
+          <g class="tw-float"><g class="tw-twinkle"><polygon points="156,58 162,67 156,76 150,67" fill="#19e6ff" stroke="#fff"/></g></g>
+          <g class="tw-float"><g class="tw-twinkle d2"><polygon points="98,28 104,37 98,46 92,37" fill="#19e6ff" stroke="#fff"/></g></g>
+          <g class="tw-float"><g class="tw-twinkle d3"><polygon points="196,8 201,15 196,22 191,15" fill="#19e6ff" stroke="#fff"/></g></g>
+          <g class="tw-twinkle d2"><circle cx="44" cy="76" r="9" fill="#150c26" stroke="#ff9d00" stroke-width="2"/><text x="44" y="80" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#ff9d00">J</text></g>
+          <g transform="translate(74 114)"><g class="tw-hop">
+          <rect x="-5" y="-9" width="4" height="9" fill="#1b1040" stroke="#19e6ff"/><rect x="1" y="-9" width="4" height="9" fill="#1b1040" stroke="#19e6ff"/>
+          <rect x="-8" y="-23" width="16" height="15" rx="3" fill="#1b1040" stroke="#19e6ff" stroke-width="1.5"/>
+          <circle cx="-11" cy="-27" r="4" fill="#ff2bd6"/><circle cx="11" cy="-27" r="4" fill="#ff2bd6"/>
+          <circle cy="-31" r="9" fill="#ffe3d6"/>
+          <path d="M-9.5 -31A9.5 9.5 0 0 1 9.5 -31Q4 -38 0 -38Q-4 -38 -9.5 -31Z" fill="#ff2bd6"/>
+          <rect x="-5" y="-31" width="2.6" height="4.4" fill="#0a0612"/><rect x="2.4" y="-31" width="2.6" height="4.4" fill="#0a0612"/>
+          </g></g>
+          </g>
+        </svg>
+      </div>
       <div class="body">
         <h3 data-i18n="g_tower_t">NEON TOWER</h3>
         <p data-i18n="g_tower_d">Neon kulede platformdan platforma zıpla, kristal topla, engelleri aş ve olabildiğince yükseğe tırman.</p>
@@ -176,5 +252,19 @@
 
 <footer data-i18n="footer">ARKAT · kişisel retro oyun koleksiyonu</footer>
 <script src="arkat.js" data-root=""></script>
+<script>
+(function(){
+  var KEY='arkat-entry', root=document.documentElement;
+  function mark(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+  function hide(){root.classList.add('entered');document.body.style.overflow=''}
+  function show(){root.classList.remove('entered');document.body.style.overflow='hidden'}
+  if(!root.classList.contains('entered'))document.body.style.overflow='hidden';
+  document.querySelectorAll('#gate .lang-btn').forEach(function(b){b.addEventListener('click',function(){ARKAT.setLang(b.dataset.l)})});
+  document.getElementById('g-guest').addEventListener('click',function(){mark('guest');hide()});
+  document.getElementById('g-google').addEventListener('click',function(){ARKAT.signIn()});
+  document.addEventListener('arkat:auth',function(e){if(e.detail){mark('user');hide()}});
+  document.addEventListener('arkat:signout',show);
+})();
+</script>
 </body>
 </html>

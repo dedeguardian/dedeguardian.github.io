@@ -33,6 +33,33 @@
   .info b{color:var(--cyan);font-weight:400}
   .row{display:flex;justify-content:space-between;background:var(--panel);border:3px solid var(--line);padding:12px 16px;margin-bottom:10px}
   .row span{color:var(--dim)} .row b{color:var(--ink);font-weight:400;font-size:24px}
+
+  .hint{color:var(--dim);font-size:18px;margin:-6px 0 16px}
+  .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .badge{background:var(--panel);border:3px solid var(--amber);padding:14px 10px;text-align:center;box-shadow:0 0 14px #ffb00033}
+  .badge svg{width:84px;height:84px}
+  .badge .bn{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;line-height:1.6;margin-top:8px;color:var(--amber)}
+  .badge .bd{color:var(--dim);font-size:17px;line-height:1.25;margin-top:6px}
+  .badge.lock{border:3px dashed var(--line);box-shadow:none}
+  .badge.lock .bn{color:var(--dim)}
+  .badge.lock svg{opacity:.6}
+  .gcard{background:var(--panel);border:3px solid var(--line);margin-bottom:18px;box-shadow:6px 6px 0 rgba(0,0,0,.55)}
+  .ghead{display:flex;align-items:center;gap:14px;padding:12px 14px;border-bottom:3px solid var(--line)}
+  .gicon{width:56px;height:56px;border:3px solid var(--cyan);flex:0 0 auto;background:#0d0818;overflow:hidden}
+  .gicon svg{display:block;width:100%;height:100%}
+  .gname{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:12px;line-height:1.6}
+  .srow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:none;border:0;border-top:2px solid #24173f;color:var(--ink);font:inherit;font-size:21px;text-align:left;padding:11px 14px;cursor:pointer}
+  .srow:first-of-type{border-top:0}
+  button.srow:hover{background:#1d1136}
+  button.srow:hover .go{color:var(--cyan)}
+  .srow .sl{color:var(--dim)}
+  .srow .sv{display:flex;align-items:center;gap:12px}
+  .srow .sv b{font-weight:400;font-size:26px}
+  .srow .rk{display:flex;flex-direction:column;align-items:flex-end;min-width:66px;font-style:normal;line-height:1.1}
+  .srow .rk small{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:8px;color:var(--dim)}
+  .srow .rk span{font-family:'Press Start 2P',system-ui;font-size:13px;color:var(--amber);margin-top:5px}
+  .srow .go{color:var(--dim);font-size:22px}
+
   .msg{color:var(--dim);background:var(--panel);border:3px dashed var(--line);padding:22px;text-align:center}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--panel);color:var(--ink);
     border:3px solid var(--cyan);padding:14px 22px;font-size:12px;box-shadow:5px 5px 0 var(--magenta);cursor:pointer;margin-top:18px}
@@ -68,11 +95,12 @@
       </div>
     </div>
 
-    <h2 class="section" data-i18n="best_drop">EN YÜKSEK PUANLAR · NEON DÜŞÜŞ</h2>
-    <div id="scores"></div>
+    <h2 class="section" data-i18n="badges_h">ROZETLER</h2>
+    <div id="badges" class="badges"></div>
 
-    <h2 class="section" data-i18n="best_tower">NEON TOWER</h2>
-    <div id="scores2"></div>
+    <h2 class="section" data-i18n="scores_h">SKORLARIM</h2>
+    <p class="hint" data-i18n="tap_rank">Sıralamayı görmek için bir skora dokun.</p>
+    <div id="gcards"></div>
   </div>
 </main>
 
@@ -80,12 +108,73 @@
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var lastData=null;
+  var lastData=null, rendered=false;
+  var GAMES=[
+    {id:'neon', t:'g_neon_t', icon:'drop',
+     boards:[['e','easy'],['m','medium'],['d','hard']], extra:[]},
+    {id:'tower', t:'g_tower_t', icon:'tower',
+     boards:[['c','mode_classic'],['h','mode_hard']], extra:[['lv','lv_done',10]]}
+  ];
   function fmt(ts){
     if(!ts||!ts.toDate) return '—';
     var l=ARKAT.getLang(); var loc=l==='ja'?'ja-JP':(l==='en'?'en-GB':'tr-TR');
     return ts.toDate().toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'});
   }
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+
+  function renderBadges(data){
+    var box=$('badges'); box.innerHTML='';
+    var have=Object.assign({},ARKAT.localBadges(),(data&&data.badges)||{});
+    Object.keys(ARKAT.BADGES).forEach(function(id){
+      var b=ARKAT.BADGES[id], got=!!have[id];
+      var c=el('div','badge'+(got?'':' lock'));
+      var art=el('div'); art.innerHTML=ARKAT.badgeSvg(id,!got); c.appendChild(art);
+      c.appendChild(el('div','bn',ARKAT.t(b.n)));
+      c.appendChild(el('div','bd',ARKAT.t(b.d)));
+      box.appendChild(c);
+    });
+  }
+
+  function renderCards(data){
+    var box=$('gcards'); box.innerHTML='';
+    var best=(data&&data.best)||{}, uid=ARKAT.getUser().uid;
+    GAMES.forEach(function(g){
+      var card=el('div','gcard');
+      var head=el('div','ghead');
+      var ic=el('div','gicon'); ic.innerHTML=ARKAT.icon(g.icon);
+      head.appendChild(ic); head.appendChild(el('div','gname',ARKAT.t(g.t)));
+      card.appendChild(head);
+      var mine=best[g.id]||{};
+      g.boards.forEach(function(bd){
+        var id=g.id+'_'+bd[0], score=mine[bd[0]]||0;
+        var row=el('button','srow'); row.type='button';
+        row.appendChild(el('span','sl',ARKAT.t(bd[1])));
+        var sv=el('span','sv');
+        sv.appendChild(el('b',null,score?score:'—'));
+        var rk=el('i','rk'); rk.appendChild(el('small',null,ARKAT.t('world')));
+        var rv=el('span',null,score?'…':'—'); rk.appendChild(rv); sv.appendChild(rk);
+        sv.appendChild(el('span','go','›'));
+        row.appendChild(sv);
+        row.addEventListener('click',function(){ARKAT.showBoard(id,ARKAT.t(g.t)+' · '+ARKAT.t(bd[1]))});
+        card.appendChild(row);
+        if(score){
+          ARKAT.getBoard(id,100).then(function(list){
+            var r=ARKAT.rankOf(list,uid);
+            rv.textContent = r ? '#'+r : (list.length>=100?'100+':'—');
+          }).catch(function(){rv.textContent='—'});
+        }
+      });
+      g.extra.forEach(function(ex){
+        var v=mine[ex[0]]||0;
+        var row=el('div','srow');
+        row.appendChild(el('span','sl',ARKAT.t(ex[1])));
+        var sv=el('span','sv'); sv.appendChild(el('b',null,(v||0)+' / '+ex[2]));
+        row.appendChild(sv); card.appendChild(row);
+      });
+      box.appendChild(card);
+    });
+  }
+
   function render(u,data){
     $('loading').hidden=true;
     if(!u){ $('me').hidden=true; $('guest').hidden=false; return; }
@@ -96,38 +185,23 @@
     data=data||{};
     $('ujoin').textContent=fmt(data.createdAt);
     $('useen').textContent=fmt(data.lastLogin);
-    var b=(data.best&&data.best.neon)||{}, box=$('scores'), any=false;
-    box.innerHTML='';
-    [['e','easy'],['m','medium'],['d','hard']].forEach(function(p){
-      var v=b[p[0]]; if(!v) return; any=true;
-      var r=document.createElement('div'); r.className='row';
-      var s=document.createElement('span'); s.textContent=ARKAT.t(p[1]);
-      var n=document.createElement('b'); n.textContent=v;
-      r.appendChild(s); r.appendChild(n); box.appendChild(r);
-    });
-    if(!any){var m=document.createElement('div');m.className='msg';m.textContent=ARKAT.t('no_score');box.appendChild(m)}
-    var tw=(data.best&&data.best.tower)||{}, box2=$('scores2'), any2=false;
-    box2.innerHTML='';
-    [['c','mode_classic'],['h','mode_hard'],['lv','lv_done']].forEach(function(p){
-      var v=tw[p[0]]; if(!v) return; any2=true;
-      var r=document.createElement('div'); r.className='row';
-      var s=document.createElement('span'); s.textContent=ARKAT.t(p[1]);
-      var n=document.createElement('b'); n.textContent=p[0]==='lv'?(v+' / 10'):v;
-      r.appendChild(s); r.appendChild(n); box2.appendChild(r);
-    });
-    if(!any2){var m2=document.createElement('div');m2.className='msg';m2.textContent=ARKAT.t('no_score');box2.appendChild(m2)}
+    renderBadges(data);
+    renderCards(data);
   }
   function load(u){
     if(!u){ lastData=null; render(null); return; }
     var db=ARKAT.getDb();
     if(!db){ render(u,null); return; }
-    // giriş sonrası belge oluşana kadar kısa bir süre bekleyebilir; hata olursa boş göster
-    db.collection('users').doc(u.uid).get().then(function(s){ lastData=s.exists?s.data():{}; render(u,lastData); })
+    db.collection('users').doc(u.uid).get().then(function(sn){
+      lastData=sn.exists?sn.data():{};
+      // eski skorları dünya tablosuna bir kez aktar, sonra sıralamayı göster
+      return ARKAT.syncBoards(lastData.best).catch(function(){});
+    }).then(function(){ render(u,lastData); })
       .catch(function(){ render(u,null); });
   }
   $('gbtn').addEventListener('click',function(){ARKAT.signIn()});
   document.addEventListener('arkat:auth',function(e){load(e.detail)});
-  document.addEventListener('arkat:lang',function(){ if(ARKAT.getUser()) render(ARKAT.getUser(),lastData) });
+  document.addEventListener('arkat:lang',function(){ if(ARKAT.getUser()&&$('me').hidden===false) render(ARKAT.getUser(),lastData) });
   if(!ARKAT.isConfigured()){ $('loading').hidden=true; $('guest').hidden=false; }
 })();
 </script>

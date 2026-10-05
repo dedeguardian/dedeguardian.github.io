@@ -219,7 +219,7 @@ function drawObs(){for(const o of obs){
  x.shadowBlur=0}}
 function fail(){go('over');beep(120,.5,'sawtooth',.07);if(mode==='classic'||hard)addScore()}
 function startLevel(i){mode='level';hard=0;lv=i;goal=25+10*i;reset();go('play');beep(520,.2,'sawtooth')}
-function winLevel(){bonus=0;if(!done[lv]){bonus=30+lv*15;wallet+=bonus}done[lv]=1;try{window.ARKAT&&ARKAT.saveScore('tower','lv',done.filter(Boolean).length)}catch(e){}prog=Math.max(prog,Math.min(10,lv+2));sv();go('win');beep(880,.15,'square');setTimeout(()=>beep(1320,.3,'square'),150)}
+function winLevel(){bonus=0;if(!done[lv]){bonus=30+lv*15;wallet+=bonus}done[lv]=1;try{window.ARKAT&&ARKAT.saveScore('tower','lv',done.filter(Boolean).length)}catch(e){}chkBadge();prog=Math.max(prog,Math.min(10,lv+2));sv();go('win');beep(880,.15,'square');setTimeout(()=>beep(1320,.3,'square'),150)}
 function cell(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W-39,py=(e.clientY-r.top)/r.height*H-120,co=Math.floor(px/70),ro=Math.floor(py/76);if(px<0||py<0||co>4||ro>1||px-co*70>62||py-ro*76>62)return -1;return ro*5+co}
 function sv(){try{if(!TEST_MONEY)localStorage.setItem('nt_w',wallet);localStorage.setItem('nt_own',JSON.stringify(own));localStorage.setItem('nt_ch',selCh);localStorage.setItem('nt_lv',JSON.stringify({p:prog,d:done}))}catch(e){}}
 function chAct(){const c=CH[cv];
@@ -358,6 +358,8 @@ function pause(){conf=0;go('pause')}
 function resume(){conf=0;go('play')}
 function toMenu(){conf=0;mode='classic';hard=0;reset();go('menu')}
 function togSnd(){snd=!snd;setMusGain();try{localStorage.setItem('nt_snd',snd?1:0)}catch(e){}beep(700,.1)}
+function chkBadge(){try{if(window.ARKAT&&done.filter(Boolean).length>=10)ARKAT.awardBadge('tower_nova')}catch(e){}}
+window.addEventListener('load',()=>setTimeout(chkBadge,800));
 function quit(){try{location.href='../../index.html'}catch(e){go('bye')}}
 function addScore(){lastRank=-1;if(score>0){try{window.ARKAT&&ARKAT.saveScore('tower',hard?'h':'c',score)}catch(e){}const e={s:score,f:fl,c:crys};let a=hard?hh:hs;a.push(e);a.sort((p,q)=>q.s-p.s);lastRank=a.indexOf(e);a=a.slice(0,5);if(lastRank>4)lastRank=-1;if(hard)hh=a;else hs=a;try{localStorage.setItem(hard?'nt_hhs':'nt_hs',JSON.stringify(a))}catch(e){}}}
 function items_(){

@@ -72,6 +72,21 @@
       best_drop: 'EN YÜKSEK PUANLAR · NEON DÜŞÜŞ',
       best_tower: 'NEON TOWER',
       mode_classic: 'Klasik', mode_hard: 'Zor mod', lv_done: 'Biten seviye',
+      // Giriş ekranı, sıralama, rozet
+      gate_title: 'HOŞ GELDİN',
+      gate_sub: 'Dilini seç, sonra nasıl devam edeceğini belirle.',
+      gate_lang: 'DİL',
+      gate_google: 'GOOGLE İLE GİRİŞ YAP',
+      gate_guest: 'MİSAFİR OLARAK DEVAM ET',
+      gate_note: 'Giriş yaparsan puanların ve rozetlerin hesabında saklanır ve dünya sıralamasına girersin. Misafir olarak da oynayabilirsin ama sıralamada yer almazsın.',
+      world: 'DÜNYA', you: 'SEN',
+      lb_empty: 'Bu sıralamada henüz kimse yok.',
+      lb_loading: 'YÜKLENİYOR…', lb_close: 'KAPAT',
+      lb_err: 'Sıralama yüklenemedi.',
+      tap_rank: 'Sıralamayı görmek için bir skora dokun.',
+      scores_h: 'SKORLARIM', badges_h: 'ROZETLER', badge_new: 'YENİ ROZET!',
+      badge_tower_nova_n: 'NOVA AJAN',
+      badge_tower_nova_d: 'Neon Tower\'ın 10 seviyesini de tamamla.',
       // profil
       prof_title: 'ARKAT — Profil',
       back_home: '◂ ANA SAYFA',
@@ -137,6 +152,21 @@
       best_drop: 'HIGH SCORES · NEON DROP',
       best_tower: 'NEON TOWER',
       mode_classic: 'Classic', mode_hard: 'Hard mode', lv_done: 'Levels cleared',
+      // Welcome screen, rankings, badges
+      gate_title: 'WELCOME',
+      gate_sub: 'Pick your language, then choose how to continue.',
+      gate_lang: 'LANGUAGE',
+      gate_google: 'SIGN IN WITH GOOGLE',
+      gate_guest: 'CONTINUE AS GUEST',
+      gate_note: 'Sign in to keep your scores and badges on your account and join the world rankings. You can play as a guest, but you won\'t appear in the rankings.',
+      world: 'WORLD', you: 'YOU',
+      lb_empty: 'Nobody is on this leaderboard yet.',
+      lb_loading: 'LOADING…', lb_close: 'CLOSE',
+      lb_err: 'Could not load the leaderboard.',
+      tap_rank: 'Tap a score to see the rankings.',
+      scores_h: 'MY HIGH SCORES', badges_h: 'BADGES', badge_new: 'NEW BADGE!',
+      badge_tower_nova_n: 'NOVA AGENT',
+      badge_tower_nova_d: 'Clear all 10 levels of Neon Tower.',
       prof_title: 'ARKAT — Profile',
       back_home: '◂ HOME',
       prof_h: 'PROFILE',
@@ -201,6 +231,21 @@
       best_drop: 'ハイスコア · NEON DROP',
       best_tower: 'NEON TOWER',
       mode_classic: 'クラシック', mode_hard: 'ハードモード', lv_done: 'クリア済みレベル',
+      // ようこそ画面・ランキング・バッジ
+      gate_title: 'ようこそ',
+      gate_sub: '言語を選んで、続け方を選んでください。',
+      gate_lang: '言語',
+      gate_google: 'GOOGLEでログイン',
+      gate_guest: 'ゲストとして続ける',
+      gate_note: 'ログインするとスコアとバッジがアカウントに保存され、世界ランキングに参加できます。ゲストでも遊べますが、ランキングには載りません。',
+      world: '世界', you: 'あなた',
+      lb_empty: 'このランキングにはまだ誰もいません。',
+      lb_loading: '読み込み中…', lb_close: '閉じる',
+      lb_err: 'ランキングを読み込めませんでした。',
+      tap_rank: 'スコアをタップするとランキングが見られます。',
+      scores_h: 'マイハイスコア', badges_h: 'バッジ', badge_new: '新しいバッジ！',
+      badge_tower_nova_n: 'ノヴァ・エージェント',
+      badge_tower_nova_d: 'NEON TOWERの全10レベルをクリアしよう。',
       prof_title: 'ARKAT — プロフィール',
       back_home: '◂ ホーム',
       prof_h: 'プロフィール',
@@ -258,7 +303,29 @@
     '#arkat-bar .me{display:flex;align-items:center;gap:8px}' +
     '#arkat-bar .out{background:none;border:none;color:#9c8fc4;font:inherit;font-size:10px;cursor:pointer;padding:4px}' +
     '#arkat-bar .out:hover{color:#ff2a6d}' +
-    '#arkat-msg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;background:#150c26;border:3px solid #ff2a6d;color:#f5f0ff;padding:10px 14px;font:18px "VT323","DotGothic16",monospace;max-width:90vw;display:none}';
+    '#arkat-lb{position:fixed;inset:0;z-index:300;background:rgba(10,6,18,.88);display:flex;align-items:center;justify-content:center;padding:16px}' +
+    '#arkat-lb .box{width:100%;max-width:460px;max-height:86vh;display:flex;flex-direction:column;background:#150c26;border:3px solid #00fff2;box-shadow:6px 6px 0 #ff2a6d;font-family:"VT323","DotGothic16",monospace;color:#f5f0ff}' +
+    '#arkat-lb .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:3px solid #3a2a5c}' +
+    '#arkat-lb .hd h3{margin:0;font:12px/1.6 "Press Start 2P","DotGothic16",system-ui;color:#ffb000}' +
+    '#arkat-lb .x{background:#150c26;color:#f5f0ff;border:2px solid #3a2a5c;font:10px "Press Start 2P","DotGothic16",system-ui;padding:8px 10px;cursor:pointer}' +
+    '#arkat-lb .x:hover{border-color:#ff2a6d}' +
+    '#arkat-lb .ls{overflow:auto;padding:8px 10px 12px}' +
+    '#arkat-lb .msg{padding:22px;text-align:center;color:#9c8fc4;font-size:20px}' +
+    '#arkat-lb .r{display:flex;align-items:center;gap:10px;padding:8px 8px;border-bottom:2px solid #24173f;font-size:21px}' +
+    '#arkat-lb .r.me{background:#00fff21a;border:2px solid #00fff2}' +
+    '#arkat-lb .n{flex:0 0 40px;text-align:right;font:11px "Press Start 2P",system-ui;color:#9c8fc4}' +
+    '#arkat-lb .r:nth-child(1) .n{color:#ffd23f}#arkat-lb .r:nth-child(2) .n{color:#d6d6e6}#arkat-lb .r:nth-child(3) .n{color:#ff9d5c}' +
+    '#arkat-lb .av{width:30px;height:30px;border:2px solid #3a2a5c;object-fit:cover;background:#3a2a5c;flex:0 0 auto}' +
+    '#arkat-lb .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '#arkat-lb .yo{color:#00fff2;font-size:16px;margin-left:6px}' +
+    '#arkat-lb .sc{color:#f5f0ff;font-size:24px}' +
+    '#arkat-badge{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:350;background:#150c26;border:3px solid #ffd23f;box-shadow:0 0 0 4px #0a0612,8px 8px 0 #ff2a6d;padding:22px 26px;text-align:center;font-family:"VT323","DotGothic16",monospace;color:#f5f0ff;cursor:pointer;max-width:86vw;animation:abpop .35s steps(5)}' +
+    '#arkat-badge .t{font:12px/1.6 "Press Start 2P","DotGothic16",system-ui;color:#ffd23f;margin-bottom:10px}' +
+    '#arkat-badge .nm{font:13px/1.6 "Press Start 2P","DotGothic16",system-ui;margin-top:8px}' +
+    '#arkat-badge .ds{color:#9c8fc4;font-size:19px;margin-top:6px}' +
+    '#arkat-badge svg{width:120px;height:120px}' +
+    '@keyframes abpop{0%{transform:translate(-50%,-50%) scale(.2)}100%{transform:translate(-50%,-50%) scale(1)}}' +
+    '#arkat-msg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:400;background:#150c26;border:3px solid #ff2a6d;color:#f5f0ff;padding:10px 14px;font:18px "VT323","DotGothic16",monospace;max-width:90vw;display:none}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var authBox;
@@ -342,10 +409,14 @@
     var ref = db.collection('users').doc(u.uid);
     ref.get().then(function (snap) {
       var now = firebase.firestore.FieldValue.serverTimestamp();
+      var p;
       if (!snap.exists) {
-        return ref.set({ name: u.displayName || '', email: u.email || '', photo: u.photoURL || '', lang: lang, createdAt: now, lastLogin: now, best: {} });
+        p = ref.set({ name: u.displayName || '', email: u.email || '', photo: u.photoURL || '', lang: lang, createdAt: now, lastLogin: now, best: {} });
+      } else {
+        p = ref.set({ name: u.displayName || '', photo: u.photoURL || '', lastLogin: now }, { merge: true });
       }
-      return ref.set({ name: u.displayName || '', photo: u.photoURL || '', lastLogin: now }, { merge: true });
+      syncBadges(snap.exists ? snap.data() : {});
+      return p;
     }).catch(function () {});
   }
 
@@ -363,7 +434,11 @@
       if (!e || e.code !== 'auth/popup-closed-by-user') toast(t('auth_err'));
     });
   }
-  function signOut() { if (auth) auth.signOut(); }
+  function signOut() {
+    try { localStorage.removeItem('arkat-entry'); } catch (e) {}
+    if (auth) auth.signOut();
+    document.dispatchEvent(new CustomEvent('arkat:signout'));
+  }
 
   // Oyun skor kaydı: giriş yapılmışsa en yüksek puanı bulutta tutar
   function saveScore(game, diff, score) {
@@ -377,7 +452,186 @@
         g[diff] = score; best[game] = g;
         tx.set(ref, { best: best }, { merge: true });
       });
-    }).catch(function () {});
+    }).catch(function () {}).then(function () { return writeBoard(game + '_' + diff, score); });
+  }
+
+
+  // ======= 5b) Dünya sıralaması =======
+  // Tablo kimlikleri: oyun_zorluk (neon_e = Neon Düşüş Kolay, tower_h = Neon Tower Zor mod ...)
+  var BOARDS = { neon_e: 1, neon_m: 1, neon_d: 1, tower_c: 1, tower_h: 1 };
+  var boardCache = {};
+  function shortName(n) {
+    n = (n || '').trim(); if (!n) return 'Player';
+    var p = n.split(/\s+/);
+    return p.length > 1 ? p[0] + ' ' + p[p.length - 1].charAt(0).toUpperCase() + '.' : p[0];
+  }
+  function writeBoard(id, score) {
+    score = Math.floor(score);
+    if (!fbUser || !db || !BOARDS[id] || !(score > 0)) return Promise.resolve();
+    var ref = db.collection('boards').doc(id).collection('entries').doc(fbUser.uid);
+    return db.runTransaction(function (tx) {
+      return tx.get(ref).then(function (s) {
+        if (s.exists && !(score > s.data().score)) return;
+        tx.set(ref, { uid: fbUser.uid, name: shortName(fbUser.displayName), photo: fbUser.photoURL || '', score: score, t: firebase.firestore.FieldValue.serverTimestamp() });
+      });
+    }).then(function () { delete boardCache[id]; }).catch(function () {});
+  }
+  // Profilde, tablolara henüz yazılmamış eski skorları bir kez içeri aktarır
+  function syncBoards(best) {
+    if (!fbUser || !best) return Promise.resolve();
+    var k = 'arkat-synced-' + fbUser.uid;
+    try { if (sessionStorage.getItem(k)) return Promise.resolve(); sessionStorage.setItem(k, '1'); } catch (e) {}
+    var jobs = [];
+    Object.keys(BOARDS).forEach(function (id) {
+      var gd = id.split('_'), v = best[gd[0]] && best[gd[0]][gd[1]];
+      if (v > 0) jobs.push(writeBoard(id, v));
+    });
+    return Promise.all(jobs);
+  }
+  function getBoard(id, limit) {
+    if (boardCache[id]) return boardCache[id];
+    var p = initFirebase().then(function () {
+      return db.collection('boards').doc(id).collection('entries').orderBy('score', 'desc').limit(limit || 100).get();
+    }).then(function (q) {
+      return q.docs.map(function (d) { var x = d.data(); return { uid: x.uid || d.id, name: x.name || '', photo: x.photo || '', score: x.score || 0 }; });
+    });
+    boardCache[id] = p;
+    p.catch(function () { delete boardCache[id]; });
+    return p;
+  }
+  // Sıra = senden yüksek skor sayısı + 1 (eşit skor aynı sırayı paylaşır). İlk 100'de değilse null.
+  function rankOf(list, uid) {
+    var me = null, i;
+    for (i = 0; i < list.length; i++) if (list[i].uid === uid) { me = list[i]; break; }
+    if (!me) return null;
+    var higher = 0;
+    for (i = 0; i < list.length; i++) if (list[i].score > me.score) higher++;
+    return higher + 1;
+  }
+  function closeBoard() {
+    var o = document.getElementById('arkat-lb'); if (o) o.remove();
+    document.removeEventListener('keydown', lbKey);
+  }
+  function lbKey(e) { if (e.key === 'Escape') closeBoard(); }
+  function showBoard(id, title) {
+    closeBoard();
+    var ov = document.createElement('div'); ov.id = 'arkat-lb';
+    var box = document.createElement('div'); box.className = 'box';
+    var hd = document.createElement('div'); hd.className = 'hd';
+    var h = document.createElement('h3'); h.textContent = '\uD83C\uDF0D ' + t('world') + ' · ' + title;
+    var x = document.createElement('button'); x.className = 'x'; x.textContent = t('lb_close'); x.addEventListener('click', closeBoard);
+    hd.appendChild(h); hd.appendChild(x);
+    var ls = document.createElement('div'); ls.className = 'ls';
+    var m = document.createElement('div'); m.className = 'msg'; m.textContent = t('lb_loading'); ls.appendChild(m);
+    box.appendChild(hd); box.appendChild(ls); ov.appendChild(box);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeBoard(); });
+    document.body.appendChild(ov);
+    document.addEventListener('keydown', lbKey);
+    getBoard(id, 100).then(function (list) {
+      ls.innerHTML = '';
+      if (!list.length) { var e = document.createElement('div'); e.className = 'msg'; e.textContent = t('lb_empty'); ls.appendChild(e); return; }
+      var myUid = fbUser && fbUser.uid;
+      list.forEach(function (it, i) {
+        var higher = 0; for (var j = 0; j < list.length; j++) if (list[j].score > it.score) higher++;
+        var r = document.createElement('div'); r.className = 'r' + (it.uid === myUid ? ' me' : '');
+        var n = document.createElement('span'); n.className = 'n'; n.textContent = '#' + (higher + 1);
+        var av = document.createElement('img'); av.className = 'av'; av.alt = ''; av.referrerPolicy = 'no-referrer';
+        if (it.photo) av.src = it.photo; else av.style.visibility = 'hidden';
+        av.onerror = function () { av.style.visibility = 'hidden'; };
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name;
+        if (it.uid === myUid) { var y = document.createElement('span'); y.className = 'yo'; y.textContent = '◂ ' + t('you'); nm.appendChild(y); }
+        var sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = it.score;
+        r.appendChild(n); r.appendChild(av); r.appendChild(nm); r.appendChild(sc); ls.appendChild(r);
+      });
+    }).catch(function () { ls.innerHTML = ''; var e = document.createElement('div'); e.className = 'msg'; e.textContent = t('lb_err'); ls.appendChild(e); });
+  }
+
+  // ======= 5c) Rozetler =======
+  var BADGES = { tower_nova: { game: 'tower', n: 'badge_tower_nova_n', d: 'badge_tower_nova_d' } };
+  function localBadges() { try { return JSON.parse(localStorage.getItem('arkat-badges') || '{}'); } catch (e) { return {}; } }
+  function saveLocalBadges(o) { try { localStorage.setItem('arkat-badges', JSON.stringify(o)); } catch (e) {} }
+  function awardBadge(id) {
+    if (!BADGES[id]) return;
+    var lb = localBadges(), fresh = !lb[id];
+    if (fresh) { lb[id] = Date.now(); saveLocalBadges(lb); }
+    if (fbUser && db) {
+      var ref = db.collection('users').doc(fbUser.uid);
+      ref.get().then(function (s) {
+        var b = (s.exists && s.data().badges) || {};
+        if (!b[id]) { var u = { badges: {} }; u.badges[id] = firebase.firestore.FieldValue.serverTimestamp(); return ref.set(u, { merge: true }); }
+      }).catch(function () {});
+    }
+    if (fresh) badgePopup(id);
+  }
+  // Girişte: hesaptaki rozetler cihaza, cihazdaki (misafirken kazanılan) rozetler hesaba
+  function syncBadges(data) {
+    var cloud = (data && data.badges) || {}, local = localBadges(), changed = false, up = null;
+    Object.keys(cloud).forEach(function (id) {
+      if (!local[id]) { local[id] = cloud[id] && cloud[id].toMillis ? cloud[id].toMillis() : Date.now(); changed = true; }
+    });
+    Object.keys(local).forEach(function (id) {
+      if (BADGES[id] && !cloud[id]) { up = up || { badges: {} }; up.badges[id] = firebase.firestore.FieldValue.serverTimestamp(); }
+    });
+    if (changed) saveLocalBadges(local);
+    if (up && fbUser && db) db.collection('users').doc(fbUser.uid).set(up, { merge: true }).catch(function () {});
+  }
+  function badgePopup(id) {
+    var old = document.getElementById('arkat-badge'); if (old) old.remove();
+    var b = document.createElement('div'); b.id = 'arkat-badge';
+    var tt = document.createElement('div'); tt.className = 't'; tt.textContent = t('badge_new');
+    var art = document.createElement('div'); art.innerHTML = badgeSvg(id, false);
+    var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = t(BADGES[id].n);
+    var ds = document.createElement('div'); ds.className = 'ds'; ds.textContent = t(BADGES[id].d);
+    b.appendChild(tt); b.appendChild(art); b.appendChild(nm); b.appendChild(ds);
+    b.addEventListener('click', function () { b.remove(); });
+    document.body.appendChild(b);
+    setTimeout(function () { if (b.parentNode) b.remove(); }, 7000);
+  }
+
+  // ======= 5d) Oyun simgeleri ve rozet çizimleri (SVG) =======
+  function heroSvg(skin, hair, accent) {
+    return '<rect x="-5" y="-9" width="4" height="9" fill="#1b1040" stroke="' + accent + '" stroke-width="1"/>' +
+      '<rect x="1" y="-9" width="4" height="9" fill="#1b1040" stroke="' + accent + '" stroke-width="1"/>' +
+      '<rect x="-8" y="-23" width="16" height="15" rx="3" fill="#1b1040" stroke="' + accent + '" stroke-width="1.5"/>' +
+      '<circle cx="-11" cy="-27" r="4" fill="' + hair + '"/><circle cx="11" cy="-27" r="4" fill="' + hair + '"/>' +
+      '<circle cx="0" cy="-31" r="9" fill="' + skin + '"/>' +
+      '<path d="M-9.5 -31A9.5 9.5 0 0 1 9.5 -31Q4 -38 0 -38Q-4 -38 -9.5 -31Z" fill="' + hair + '"/>' +
+      '<rect x="-5" y="-31" width="2.6" height="4.4" fill="#0a0612"/><rect x="2.4" y="-31" width="2.6" height="4.4" fill="#0a0612"/>';
+  }
+  function icon(name) {
+    if (name === 'drop') {
+      return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
+        '<rect x="9" y="30" width="14" height="14" fill="#2f8bff55" stroke="#2f8bff" stroke-width="2"/>' +
+        '<rect x="25" y="13" width="14" height="14" fill="#ffe60055" stroke="#ffe600" stroke-width="2"/>' +
+        '<rect x="41" y="34" width="14" height="14" fill="#39ff1455" stroke="#39ff14" stroke-width="2"/>' +
+        '<path d="M6 57H58" stroke="#ff2a55" stroke-width="3" stroke-dasharray="5 3"/></svg>';
+    }
+    if (name === 'tower') {
+      return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
+        '<rect x="2" y="36" width="11" height="28" fill="#1b1040"/><rect x="51" y="26" width="11" height="38" fill="#1b1040"/>' +
+        '<rect x="30" y="31" width="24" height="4" rx="2" fill="#19e6ff"/>' +
+        '<rect x="8" y="55" width="30" height="4" rx="2" fill="#ff2bd6"/>' +
+        '<g transform="translate(23 55) scale(.78)">' + heroSvg('#ffe3d6', '#ff2bd6', '#19e6ff') + '</g>' +
+        '<polygon points="44,10 50,19 44,28 38,19" fill="#19e6ff" stroke="#fff" stroke-width="1"/></svg>';
+    }
+    return '';
+  }
+  function badgeSvg(id, locked) {
+    var col = locked ? '#5b5170' : '#ffd23f', hair = locked ? '#6b6080' : '#ff3b5c', skin = locked ? '#8a8099' : '#f6d3c0', acc = locked ? '#5b5170' : '#ff2a6d';
+    if (id === 'tower_nova') {
+      return '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+        '<polygon points="48,3 87,25 87,71 48,93 9,71 9,25" fill="#150c26" stroke="' + col + '" stroke-width="4"/>' +
+        '<polygon points="48,11 80,29 80,67 48,85 16,67 16,29" fill="none" stroke="' + acc + '" stroke-width="2" opacity=".8"/>' +
+        '<ellipse cx="48" cy="21" rx="17" ry="5.5" fill="none" stroke="' + col + '" stroke-width="3"/>' +
+        '<rect x="29" y="43" width="6" height="22" fill="' + hair + '"/><rect x="61" y="43" width="6" height="22" fill="' + hair + '"/>' +
+        '<circle cx="48" cy="46" r="18" fill="' + skin + '"/>' +
+        '<path d="M29 45A19 19 0 0 1 67 45Q58 35 48 35Q38 35 29 45Z" fill="' + hair + '"/>' +
+        '<rect x="39" y="47" width="5" height="7" fill="#0a0612"/><rect x="52" y="47" width="5" height="7" fill="#0a0612"/>' +
+        '<rect x="44" y="58" width="8" height="2.5" fill="#0a0612"/>' +
+        '<polygon points="48,70 53,77 48,84 43,77" fill="' + (locked ? '#5b5170' : '#19e6ff') + '"/>' +
+        '</svg>';
+    }
+    return '';
   }
 
   // ======= 6) Dışarı açılan API =======
@@ -387,6 +641,8 @@
     getDb: function () { return db; },
     whenReady: function () { return configured ? initFirebase() : Promise.resolve(); },
     saveScore: saveScore, signIn: signIn, signOut: signOut,
+    getBoard: getBoard, rankOf: rankOf, showBoard: showBoard, syncBoards: syncBoards,
+    awardBadge: awardBadge, BADGES: BADGES, localBadges: localBadges, badgeSvg: badgeSvg, icon: icon,
     isConfigured: function () { return configured; }
   };
 
