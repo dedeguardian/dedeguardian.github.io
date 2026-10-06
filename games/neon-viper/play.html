@@ -14,13 +14,13 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 body{display:flex;justify-content:center;align-items:center}
-#w{height:100%;max-width:100%;aspect-ratio:420/640}
+#w{height:100%;max-width:100%;aspect-ratio:420/760}
 canvas{width:100%;height:100%;display:block}
 </style></head><body>
-<div id="w"><canvas id="c" width="420" height="640"></canvas></div>
+<div id="w"><canvas id="c" width="420" height="760"></canvas></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');
-const W=420,H=640,CS=20,COLS=20,ROWS=22,BX=10,BY=88;
+const W=420,H=760,CS=20,COLS=20,ROWS=22,BX=10,BY=88;
 const MODES=['SINIRSIZ MOD','KLASİK MOD','SEVİYE MODU'];
 const LSP=[170,155,140,128,116,105,95,86,78,70],LOB=[0,5,9,13,17,22,27,32,38,45],LH=[290,200,18,185,95,265,48,225,330,355];
 const LN=['NEON ŞEHİR','SİBER KANAL','KIZIL ÇÖL','BUZ DEVRESİ','TOKSİK ARITMA','MOR ORMAN','ALTIN HAT','DERİN VOLT','KOZMİK DOK','SON KULE'];
@@ -118,12 +118,12 @@ DT.de.push("GRENZENLOSER MODUS","Das Spiel geht verloren und der Punktestand wir
 const LG=[['tr','Türkçe'],['en','English'],['ja','日本語'],['it','Italiano'],['fr','Français'],['ko','한국어'],['zh','中文'],['ru','Русский'],['uk','Українська'],['ar','العربية'],['es','Español'],['de','Deutsch']];
 const KI={};KT.forEach((k,i)=>KI[k]=i);
 const TP=KT.map((k,i)=>[k,i]).filter(([k])=>k.includes('{')).map(([k,i])=>({i,n:k.length,re:new RegExp('^'+k.split(/\{\d\}/).map(p=>p.replace(/[.*+?^$()[\]\\|]/g,'\\$&')).join('(.+?)')+'$')})).sort((a,b)=>b.n-a.n);
-let lang='en',langSet=0,lsel=1,langBack='menu',layBack='menu',mus=true,dpOn=true,dpC={x:210,y:583},dragD=null;
+let lang='en',langSet=0,lsel=1,langBack='menu',layBack='menu',mus=true,dpOn=true,dpC={x:210,y:652},dragD=null;
 try{const sv=localStorage.getItem('nv_lang');if(sv&&LG.some(g=>g[0]===sv)){lang=sv;langSet=1}else{const nl=(navigator.language||'en').slice(0,2);if(LG.some(g=>g[0]===nl))lang=nl}
- mus=localStorage.getItem('nv_mus')!=='0';const ly=JSON.parse(localStorage.getItem('nv_lay')||'null');if(ly){dpC={x:ly.x,y:ly.y};dpOn=true}}catch(e){}
+ mus=localStorage.getItem('nv_mus')!=='0';const ly=JSON.parse(localStorage.getItem('nv_lay2')||'null');if(ly){dpC={x:ly.x,y:ly.y};dpOn=true}}catch(e){}
 try{const _sl=localStorage.getItem('arkat-lang'),_seen=localStorage.getItem('nv_sitelang');if(_sl&&LG.some(g=>g[0]===_sl)&&_sl!==_seen){lang=_sl;langSet=1;localStorage.setItem('nv_lang',_sl);localStorage.setItem('nv_sitelang',_sl)}}catch(e){}
 lsel=Math.max(0,LG.findIndex(g=>g[0]===lang));
-function saveLay(){try{localStorage.setItem('nv_lay',JSON.stringify({x:dpC.x,y:dpC.y,on:dpOn}))}catch(e){}}
+function saveLay(){try{localStorage.setItem('nv_lay2',JSON.stringify({x:dpC.x,y:dpC.y,on:dpOn}))}catch(e){}}
 function tr(s,l){l=l||lang;if(l==='tr'||typeof s!=='string')return s;const d=DT[l]||DT.en,g=i=>d[i]||DT.en[i]||KT[i];
  const i=KI[s];if(i!==undefined)return g(i);
  for(const p of TP){const m=s.match(p.re);if(m)return g(p.i).replace(/\{(\d)\}/g,(_,n)=>tr(m[+n+1],l))}
@@ -211,27 +211,27 @@ function items_(){
  if(S==='pause')return conf?[['EVET, ANA MENÜYE DÖN',toMenu],['HAYIR, DEVAM ET',()=>{conf=0;sel=0}]]:[['DEVAM ET',resume],sn_,['ANA MENÜYE DÖN',()=>{conf=1;sel=1}]];
  if(S==='over')return mode===2?[['TEKRAR DENE',()=>newGame(2,lv)],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['TEKRAR OYNA',()=>newGame(mode)],['ANA MENÜ',toMenu]];
  if(S==='lvwin')return lv<9?[['SONRAKİ SEVİYE',nextLevel],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]];
- if(S==='layout')return[['✓ TAMAM',()=>go(layBack)],['SIFIRLA',()=>{dpC={x:210,y:583};dpOn=true;saveLay()}]];
+ if(S==='layout')return[['✓ TAMAM',()=>go(layBack)],['SIFIRLA',()=>{dpC={x:210,y:652};dpOn=true;saveLay()}]];
  if(S==='levels'||S==='scores')return[['GERİ',toMenu]];
  return[]}
 function hit(e){const p=pt(e),n=items_().length;for(let i=0;i<n;i++)if(Math.abs(p[0]-W/2)<140&&p[1]>my0+i*48&&p[1]<my0+i*48+40)return i;return -1}
 function pt(e){const r=c.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]}
 function cellL(p){const px=p[0]-39,py=p[1]-120,co=Math.floor(px/70),ro=Math.floor(py/76);if(px<0||py<0||co>4||ro>1||px-co*70>62||py-ro*76>62)return -1;return ro*5+co}
-const DP=[[0,-31,0,-1],[-48,1,-1,0],[48,1,1,0],[0,31,0,1]];
+const DP=[[0,-66,0,-1],[-66,0,-1,0],[66,0,1,0],[0,66,0,1]];
 let sw=null;
 c.addEventListener('pointerdown',e=>{const p=pt(e);
  if((S==='menu'||S==='pause')&&!conf){const q=icz(p);if(q===1){layBack=S;go('layout');return}if(q===2){langBack=S;go('lang');return}if(q===3){togMus();return}}
  if(S==='lang'){const i=lcell(p);if(i>=0)pickLang(i);return}
- if(S==='layout'&&dpOn&&Math.hypot(p[0]-dpC.x,p[1]-dpC.y)<90){dragD={dx:p[0]-dpC.x,dy:p[1]-dpC.y};return}
+ if(S==='layout'&&dpOn&&Math.hypot(p[0]-dpC.x,p[1]-dpC.y)<112){dragD={dx:p[0]-dpC.x,dy:p[1]-dpC.y};return}
  if(S==='play'){if(p[0]>366&&p[1]<54&&p[0]<410){pause();return}
-  if(dpOn)for(const d of DP)if(Math.hypot(p[0]-dpC.x-d[0],p[1]-dpC.y-d[1])<30){setDir(d[2],d[3]);return}
+  if(dpOn)for(const d of DP)if(Math.hypot(p[0]-dpC.x-d[0],p[1]-dpC.y-d[1])<40){setDir(d[2],d[3]);return}
   sw=p;return}
  if(S==='levels'){const i=cellL(p);if(i>=0){lvSel=i;if(i<prog)newGame(2,i);return}}
  if(S==='scores'&&p[1]>96&&p[1]<140){const q=Math.floor((p[0]-10)/134);if(q>=0&&q<3&&(p[0]-10)%134<126){scM=q;return}}
  const i=hit(e);if(i>=0){sel=i;items_()[i][1]()}});
 c.addEventListener('pointermove',e=>{const p=pt(e);
  if(S==='lang'){const i=lcell(p);if(i>=0)lsel=i;return}
- if(dragD){dpC={x:Math.max(60,Math.min(W-60,p[0]-dragD.dx)),y:Math.max(60,Math.min(H-50,p[1]-dragD.dy))};return}
+ if(dragD){dpC={x:Math.max(100,Math.min(W-100,p[0]-dragD.dx)),y:Math.max(100,Math.min(H-100,p[1]-dragD.dy))};return}
  if(S==='play'&&sw){const dx=p[0]-sw[0],dy=p[1]-sw[1];if(Math.hypot(dx,dy)>22){if(Math.abs(dx)>Math.abs(dy))setDir(dx>0?1:-1,0);else setDir(0,dy>0?1:-1);sw=p}return}
  if(S==='levels'){const i=cellL(p);if(i>=0)lvSel=i}
  if(S!=='play'){const i=hit(e);if(i>=0)sel=i}});
@@ -303,8 +303,8 @@ function hud(){
  else txt(MODES[mode],W-60,76,11,'#9bd','right');
  x.strokeStyle='#ffd23f';x.lineWidth=2;glow('#ffd23f',8);x.strokeRect(370,14,36,36);x.shadowBlur=0;x.fillStyle='#ffd23f';x.fillRect(382,24,4,16);x.fillRect(390,24,4,16);
  if(S==='play'&&acc<0)txt('HAZIR!',W/2,BY+ROWS*CS/2,30,'#ffd23f')}
-function dpad(ed){if(!dpOn&&!ed)return;x.globalAlpha=dpOn?1:.35;if(ed){x.setLineDash([6,6]);x.strokeStyle='#ffd23f';x.lineWidth=2;x.beginPath();x.arc(dpC.x,dpC.y,84,0,7);x.stroke();x.setLineDash([])}
- for(const d of DP){const px=dpC.x+d[0],py=dpC.y+d[1];glow('#19e6ff',8);x.strokeStyle='#19e6ff';x.lineWidth=2;x.fillStyle='rgba(25,230,255,.08)';x.beginPath();x.arc(px,py,22,0,7);x.fill();x.stroke();x.shadowBlur=0;txt(d[2]<0?'◀':d[2]>0?'▶':d[3]<0?'▲':'▼',px,py+6,16,'#19e6ff')}x.globalAlpha=1}
+function dpad(ed){if(!dpOn&&!ed)return;x.globalAlpha=dpOn?1:.35;if(ed){x.setLineDash([6,6]);x.strokeStyle='#ffd23f';x.lineWidth=2;x.beginPath();x.arc(dpC.x,dpC.y,116,0,7);x.stroke();x.setLineDash([])}
+ for(const d of DP){const px=dpC.x+d[0],py=dpC.y+d[1];glow('#19e6ff',8);x.strokeStyle='#19e6ff';x.lineWidth=2;x.fillStyle='rgba(25,230,255,.10)';x.beginPath();x.arc(px,py,31,0,7);x.fill();x.stroke();x.shadowBlur=0;txt(d[2]<0?'◀':d[2]>0?'▶':d[3]<0?'▲':'▼',px,py+8,22,'#19e6ff')}x.globalAlpha=1}
 function menuSnake(){const n=26;for(let i=0;i<n;i++){const cx=40+i*14,cy=104+Math.sin(t*.08+i*.5)*12,k=i/n,col=i===n-1?'#e8ffff':'hsl('+(320-k*135)+',100%,'+(60)+'%)';glow(col,10);x.fillStyle=col;x.beginPath();x.arc(cx,cy,3+k*4,0,7);x.fill()}x.shadowBlur=0}
 function drawMenu(it,y0){it.forEach((m,i)=>{const y=y0+i*48,on=i===sel,col=on?'#19e6ff':'#ff2bd6';
  x.fillStyle=on?'rgba(25,230,255,.14)':'rgba(255,43,214,.06)';x.fillRect(W/2-140,y,280,40);glow(col,on?14:4);x.strokeStyle=col;x.lineWidth=2;x.strokeRect(W/2-140,y,280,40);x.shadowBlur=0;

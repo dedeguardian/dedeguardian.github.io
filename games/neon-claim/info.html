@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr" data-title="cl_info_title">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0a0612">
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ARKAT">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Claim — Nasıl Oynanır</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0612;--panel:#150c26;--line:#3a2a5c;--ink:#f5f0ff;--dim:#9c8fc4;
+    --cyan:#00fff2;--magenta:#ff2a6d;--amber:#ffb000;
+    --blue:#2f8bff;--yellow:#ffe600;--green:#39ff14;--red:#ff2a55;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323','DotGothic16',monospace;font-size:20px;line-height:1.35}
+  h1,h2,.pixel,.btn{font-family:'Press Start 2P','DotGothic16',system-ui;line-height:1.6}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+  .top a.back{margin-bottom:0}
+
+  .crt{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 4px);mix-blend-mode:multiply}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 160px 40px rgba(0,0,0,.75)}
+  .backdrop{position:fixed;inset:0;z-index:-1;background:
+    radial-gradient(60vw 40vh at 15% -10%, rgba(47,139,255,.14), transparent 60%),
+    radial-gradient(55vw 40vh at 95% 10%, rgba(255,42,109,.12), transparent 60%), var(--bg)}
+
+  main{max-width:640px;margin:0 auto;padding:36px 22px 70px}
+  a.back{display:inline-block;color:var(--dim);text-decoration:none;font-size:13px;margin-bottom:26px}
+  a.back:hover{color:var(--ink)}
+
+  h1{font-size:clamp(22px,5vw,34px);margin:0 0 8px;color:var(--ink);
+    text-shadow:-2px 0 var(--magenta),2px 0 var(--cyan)}
+  .tagline{color:var(--dim);font-size:20px;margin:0 0 34px}
+
+  h2.section{font-size:13px;color:var(--amber);margin:0 0 20px;letter-spacing:.02em;
+    border-bottom:3px solid var(--line);padding-bottom:12px}
+
+  .trow{display:flex;align-items:center;gap:16px;margin-bottom:18px;background:var(--panel);
+    border:3px solid var(--line);padding:12px 14px}
+  .ticon{flex:0 0 auto;width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#fff;font-family:system-ui;font-size:18px;border-width:3px;border-style:solid}
+  .trow p{margin:0;font-size:18px;color:var(--ink)}
+
+  .controls{background:var(--panel);border:3px solid var(--line);padding:16px 18px;margin-bottom:34px}
+  .controls p{margin:0 0 8px;font-size:19px}
+  .controls p:last-child{margin-bottom:0}
+  .controls b{color:var(--cyan)}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+    background:var(--panel);color:var(--ink);border:3px solid var(--cyan);
+    padding:16px 26px;font-size:14px;letter-spacing:.02em;
+    box-shadow:5px 5px 0 var(--magenta);
+    transition:transform .08s linear, box-shadow .08s linear;width:100%;justify-content:center;
+  }
+  .btn:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--magenta)}
+  .btn:active{transform:translate(5px,5px);box-shadow:0 0 0 var(--magenta)}
+</style>
+</head>
+<body>
+<div class="backdrop"></div>
+<div class="vignette"></div>
+<div class="crt"></div>
+
+<main>
+  <div class="top"><a class="back" href="../../index.html" data-i18n="back_arkat">◂ ARKAT'A DÖN</a><div id="arkat-bar"></div></div>
+  <h1 data-i18n="g_claim_t">NEON CLAIM</h1>
+  <p class="tagline" data-i18n="cl_tagline">Çizgi çiz, alanı kapat, yaratıkları hapset.</p>
+
+  <h2 class="section" data-i18n="cl_sec_rules">NASIL OYNANIR</h2>
+  <div class="trow"><div class="ticon" style="border-color:#e8ffff;background:#19e6ff33;box-shadow:0 0 10px #19e6ff88">━</div><p data-i18n="cl_r1"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#39ff14;background:#39ff1433;box-shadow:0 0 10px #39ff1488">◩</div><p data-i18n="cl_r2"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#ff2a55;background:#ff2a5522;box-shadow:0 0 8px #ff2a5588">✕</div><p data-i18n="cl_r3"></p></div>
+
+  <h2 class="section" style="margin-top:30px" data-i18n="cl_sec_foes">YARATIKLAR</h2>
+  <div class="trow"><div class="ticon" style="border-color:#ff2bd6;background:#ff2bd633;box-shadow:0 0 10px #ff2bd688">●</div><p data-i18n="cl_f1"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#ffd23f;background:#ffd23f33;box-shadow:0 0 10px #ffd23f88">◆</div><p data-i18n="cl_f2"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#ff3b5c;background:#ff3b5c22;box-shadow:0 0 8px #ff3b5c88">✦</div><p data-i18n="cl_f3"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#ffffff;background:#ffffff22;box-shadow:0 0 10px #19e6ff">·</div><p data-i18n="cl_f4"></p></div>
+  <div class="trow"><div class="ticon" style="border-color:#19e6ff;background:#19e6ff22;box-shadow:0 0 12px #19e6ff">⬢</div><p data-i18n="cl_f5"></p></div>
+
+  <h2 class="section" style="margin-top:30px" data-i18n="tw_sec_modes">MODLAR</h2>
+  <div class="controls">
+    <p data-i18n="cl_m1"></p>
+    <p data-i18n="cl_m2"></p>
+  </div>
+
+  <h2 class="section" data-i18n="sec_controls">KONTROLLER</h2>
+  <div class="controls">
+    <p data-i18n="cl_c1"></p>
+    <p data-i18n="cl_c2"></p>
+    <p data-i18n="cl_c3"></p>
+  </div>
+
+  <a class="btn" href="play.html" data-i18n="start">▸ OYUNA BAŞLA</a>
+</main>
+<script src="../../arkat.js" data-root="../../"></script>
+</body>
+</html>

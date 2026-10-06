@@ -28,7 +28,7 @@
       hero: 'OYNAMAK İÇİN<br>JETON AT',
       hero_p: 'Tarayıcıda oynanan, indirmesiz retro oyunlar. Telefonda da masaüstünde de çalışır.',
       go_games: '▸ OYUNLARA GİT',
-      sec_games: 'OYUNLAR', count: '3 OYUN',
+      sec_games: 'OYUNLAR', count: '4 OYUN',
       g_neon_t: 'NEON DÜŞÜŞ',
       g_tower_t: 'NEON TOWER',
       g_neon_d: 'Çizgi çizerek düşen renkli kutuları yönlendir, aynı renkten dördünü bir araya getirip patlat.',
@@ -159,6 +159,29 @@
       vp_c2: '<b>Dokunmatik:</b> ekranda parmağını kaydır ya da yön tuşlarını kullan. Tuşları menüden istediğin yere taşıyabilirsin.',
       vp_c3: '<b>Kaybetme:</b> duvara (sınırsız modda hariç), kendine ya da engele çarparsan oyun biter.',
       inst_hint: 'Telefonuna uygulama gibi yükle',
+      // Neon Claim
+      g_claim_t: 'NEON CLAIM',
+      g_claim_d: 'Duvardan çizgi çek, alanı kapat, yaratıkları içeri hapset. 20 seviye ve sonsuz mod.',
+      cl_info_title: 'Neon Claim — Nasıl Oynanır',
+      cl_tagline: 'Çizgi çiz, alanı kapat, yaratıkları hapset.',
+      cl_sec_rules: 'NASIL OYNANIR',
+      cl_sec_foes: 'YARATIKLAR',
+      cl_r1: '<b>Çiz:</b> duvardan boşluğa doğru ilerle, çizgi çıkar. Çizgiyi başka bir duvara bağlayınca alan ikiye bölünür.',
+      cl_r2: '<b>Kapat:</b> küçük taraf senin olur. Orada kalan yaratıklar yok olur ve bonus puan verir.',
+      cl_r3: '<b>Dikkat:</b> çizgi tamamlanmadan bir yaratık ona ya da sana değerse can kaybedersin. Duvardayken yaratıklar zarar veremez.',
+      cl_f1: '<b>Zıplayan:</b> duvarlardan sekerek ilerler.',
+      cl_f2: '<b>Titrek:</b> yönünü sürekli değiştirir, tahmin etmesi zor.',
+      cl_f3: '<b>Avcı:</b> seni takip eder. Çizgi çizerken daha hızlı döner.',
+      cl_f4: '<b>Kıvılcım:</b> duvarlarda gezer. Duvarda bile olsan değerse can kaybedersin.',
+      cl_f5: '<b>Boss:</b> her 5. seviyede. Onu kapatıp yok etmek ya da %90 alanı almak gerekir.',
+      cl_m1: '<b>Seviye modu:</b> 20 seviye. Hedef yüzdeye ulaş ya da tüm yaratıkları yok et. 20 seviyenin hepsini bitirince özel rozet kazanırsın. Her 5 seviyede bir can bonusu var.',
+      cl_m2: '<b>Sonsuz mod:</b> seviyeler bitmez, giderek zorlaşır. En yüksek skoru yap.',
+      cl_c1: '<b>Klavye:</b> ◀ ▲ ▼ ▶ / WASD hareket · P duraklat · M ses.',
+      cl_c2: '<b>Dokunmatik:</b> ekrandaki yön tuşlarına bas ya da ekranda parmağını kaydır. Tuş konumunu duraklatma menüsünden değiştirebilirsin.',
+      cl_c3: '<b>İpucu:</b> duvarda dur, düşmanın uzaklaşmasını bekle, sonra hızlıca çiz.',
+      mode_endless: 'Sonsuz mod',
+      badge_claim_master_n: 'ALAN HAKİMİ',
+      badge_claim_master_d: 'Neon Claim\'in 20 seviyesini de bitir.',
       // profil
       prof_title: 'ARKAT — Profil',
       back_home: '◂ ANA SAYFA',
@@ -181,7 +204,7 @@
       hero: 'INSERT COIN<br>TO PLAY',
       hero_p: 'Retro games that run in your browser — no downloads. Works on phones and desktops.',
       go_games: '▸ BROWSE GAMES',
-      sec_games: 'GAMES', count: '3 GAMES',
+      sec_games: 'GAMES', count: '4 GAMES',
       g_neon_t: 'NEON DROP',
       g_tower_t: 'NEON TOWER',
       g_neon_d: 'Draw lines to steer the falling colored boxes, then line up four of the same color to blow them up.',
@@ -311,6 +334,29 @@
       vp_c2: '<b>Touch:</b> swipe on the screen or use the on-screen arrows. You can move the arrows anywhere from the menu.',
       vp_c3: '<b>Losing:</b> hitting a wall (except in unlimited mode), yourself or an obstacle ends the run.',
       inst_hint: 'Install it on your phone like an app',
+      // Neon Claim
+      g_claim_t: 'NEON CLAIM',
+      g_claim_d: 'Draw lines from the walls, seal off zones and trap the creatures inside. 20 levels plus endless mode.',
+      cl_info_title: 'Neon Claim — How to Play',
+      cl_tagline: 'Draw lines, seal zones, trap the creatures.',
+      cl_sec_rules: 'HOW TO PLAY',
+      cl_sec_foes: 'CREATURES',
+      cl_r1: '<b>Draw:</b> move from a wall into the open area to leave a line. Connect it to another wall and the field splits in two.',
+      cl_r2: '<b>Seal:</b> the smaller side becomes yours. Creatures caught there are destroyed and give bonus points.',
+      cl_r3: '<b>Careful:</b> if a creature touches your unfinished line or you, you lose a life. Creatures can\'t hurt you while you stand on a wall.',
+      cl_f1: '<b>Bouncer:</b> ricochets off the walls.',
+      cl_f2: '<b>Wobbler:</b> keeps changing direction, hard to predict.',
+      cl_f3: '<b>Hunter:</b> chases you, and turns faster while you draw.',
+      cl_f4: '<b>Spark:</b> patrols the walls. If it touches you, you lose a life even on a wall.',
+      cl_f5: '<b>Boss:</b> every 5th level. Seal it in to destroy it, or claim 90% of the area.',
+      cl_m1: '<b>Level mode:</b> 20 levels. Reach the target percentage or destroy every creature. Clear all 20 for a special badge. Every 5 levels gives a bonus life.',
+      cl_m2: '<b>Endless mode:</b> the levels never end and keep getting harder. Chase the high score.',
+      cl_c1: '<b>Keyboard:</b> ◀ ▲ ▼ ▶ / WASD move · P pause · M sound.',
+      cl_c2: '<b>Touch:</b> press the on-screen arrows or drag your finger on the screen. You can move the buttons from the pause menu.',
+      cl_c3: '<b>Tip:</b> stand on a wall, wait for the creatures to drift away, then draw quickly.',
+      mode_endless: 'Endless mode',
+      badge_claim_master_n: 'ZONE MASTER',
+      badge_claim_master_d: 'Clear all 20 levels of Neon Claim.',
       prof_title: 'ARKAT — Profile',
       back_home: '◂ HOME',
       prof_h: 'PROFILE',
@@ -332,7 +378,7 @@
       hero: 'コインを入れて<br>スタート',
       hero_p: 'ダウンロード不要、ブラウザで遊べるレトロゲーム。スマホでもPCでも動きます。',
       go_games: '▸ ゲーム一覧へ',
-      sec_games: 'ゲーム', count: '3ゲーム',
+      sec_games: 'ゲーム', count: '4ゲーム',
       g_neon_t: 'NEON DROP',
       g_tower_t: 'NEON TOWER',
       g_neon_d: '線を描いて落ちてくる色つきブロックを誘導し、同じ色を4つそろえて爆発させよう。',
@@ -462,6 +508,29 @@
       vp_c2: '<b>タッチ：</b>画面をスワイプするか、画面上の矢印を使う。矢印の位置はメニューから動かせる。',
       vp_c3: '<b>ゲームオーバー：</b>壁（無制限モード以外）、自分、障害物にぶつかると終了。',
       inst_hint: 'スマホにアプリのようにインストール',
+      // Neon Claim
+      g_claim_t: 'NEON CLAIM',
+      g_claim_d: '壁から線を引いてエリアを囲み、クリーチャーを閉じ込めよう。全20レベル＋エンドレスモード。',
+      cl_info_title: 'NEON CLAIM — 遊び方',
+      cl_tagline: '線を引いて、囲んで、閉じ込めよう。',
+      cl_sec_rules: '遊び方',
+      cl_sec_foes: 'クリーチャー',
+      cl_r1: '<b>引く：</b>壁から空きスペースへ進むと線が伸びる。別の壁につなぐとフィールドが2つに分かれる。',
+      cl_r2: '<b>囲む：</b>小さい側があなたの領域になる。そこにいたクリーチャーは消滅し、ボーナス点が入る。',
+      cl_r3: '<b>注意：</b>線が完成する前にクリーチャーが線やあなたに触れるとライフを失う。壁の上ならクリーチャーは安全。',
+      cl_f1: '<b>バウンサー：</b>壁に跳ね返りながら進む。',
+      cl_f2: '<b>ウォブラー：</b>頻繁に向きを変える予測しにくい敵。',
+      cl_f3: '<b>ハンター：</b>あなたを追いかける。線を引いている間は旋回が速くなる。',
+      cl_f4: '<b>スパーク：</b>壁を走る。壁の上でも触れるとライフを失う。',
+      cl_f5: '<b>ボス：</b>5レベルごとに登場。囲んで倒すか、占領率90%を目指そう。',
+      cl_m1: '<b>レベルモード：</b>全20レベル。目標の占領率に到達するか、全クリーチャーを倒そう。全クリアで特別バッジ。5レベルごとにライフボーナス。',
+      cl_m2: '<b>エンドレスモード：</b>終わりのないレベルがだんだん難しくなる。ハイスコアを目指そう。',
+      cl_c1: '<b>キーボード：</b>◀ ▲ ▼ ▶ / WASD 移動 · P 一時停止 · M サウンド。',
+      cl_c2: '<b>タッチ：</b>画面の矢印ボタンを押すか、画面上で指をスライド。ボタンの位置は一時停止メニューで変えられる。',
+      cl_c3: '<b>ヒント：</b>壁の上で待ち、敵が離れたらすばやく線を引こう。',
+      mode_endless: 'エンドレスモード',
+      badge_claim_master_n: 'ゾーンマスター',
+      badge_claim_master_d: 'NEON CLAIMの全20レベルをクリアしよう。',
       prof_title: 'ARKAT — プロフィール',
       back_home: '◂ ホーム',
       prof_h: 'プロフィール',
@@ -779,7 +848,7 @@
 
   // ======= 8) Dünya sıralaması =======
   // Tablo kimlikleri: oyun_zorluk (neon_e = Neon Düşüş Kolay, tower_h = Neon Tower Zor mod ...)
-  var BOARDS = { neon_e: 1, neon_m: 1, neon_d: 1, tower_c: 1, tower_h: 1, viper_u: 1, viper_c: 1, viper_l: 1 };
+  var BOARDS = { neon_e: 1, neon_m: 1, neon_d: 1, tower_c: 1, tower_h: 1, viper_u: 1, viper_c: 1, viper_l: 1, claim_l: 1, claim_e: 1 };
   var boardCache = {};
   function shortName(n) {
     n = (n || '').trim(); if (!n) return 'Player';
@@ -890,7 +959,8 @@
   var BADGES = {
     tower_nova: { game: 'tower', n: 'badge_tower_nova_n', d: 'badge_tower_nova_d' },
     tower_solo: { game: 'tower', n: 'badge_tower_solo_n', d: 'badge_tower_solo_d' },
-    viper_master: { game: 'viper', n: 'badge_viper_master_n', d: 'badge_viper_master_d' }
+    viper_master: { game: 'viper', n: 'badge_viper_master_n', d: 'badge_viper_master_d' },
+    claim_master: { game: 'claim', n: 'badge_claim_master_n', d: 'badge_claim_master_d' }
   };
   function localBadges() { try { return JSON.parse(localStorage.getItem('arkat-badges') || '{}'); } catch (e) { return {}; } }
   function saveLocalBadges(o) { try { localStorage.setItem('arkat-badges', JSON.stringify(o)); } catch (e) {} }
@@ -955,6 +1025,13 @@
         '<g transform="translate(23 55) scale(.78)">' + heroSvg('#ffe3d6', '#ff2bd6', '#19e6ff') + '</g>' +
         '<polygon points="44,10 50,19 44,28 38,19" fill="#19e6ff" stroke="#fff" stroke-width="1"/></svg>';
     }
+    if (name === 'claim') {
+      return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
+        '<rect x="3" y="3" width="58" height="58" fill="none" stroke="#19e6ff" stroke-width="2"/>' +
+        '<rect x="3" y="3" width="24" height="58" fill="#19e6ff" fill-opacity=".25"/><path d="M27 3V61" stroke="#e8ffff" stroke-width="2.5"/>' +
+        '<polygon points="44,18 50,27 44,36 38,27" fill="#ff2bd6" stroke="#fff" stroke-width="1.2"/>' +
+        '<circle cx="46" cy="47" r="4" fill="#ffd23f"/></svg>';
+    }
     if (name === 'viper') {
       return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
         '<g stroke="#7850ff33" stroke-width="1"><path d="M0 16H64M0 32H64M0 48H64M16 0V64M32 0V64M48 0V64"/></g>' +
@@ -978,7 +1055,8 @@
     heroAvatar({ skin: '#ffe3d6', hair: '#00ffb3', accent: '#ff2bd6', halo: '#ff2bd6', ear: 1, bg: '#0d2a2a' }),
     icon('drop'),
     icon('tower'),
-    icon('viper')
+    icon('viper'),
+    icon('claim')
   ];
   function svgDataUrl(svg) { return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg); }
   function badgeSvg(id, locked) {
@@ -1010,6 +1088,18 @@
         '<polygon points="48,68 53,75 48,82 43,75" fill="' + c2 + '"/>' +
         '</svg>';
     }
+    if (id === 'claim_master') {
+      var k1 = locked ? '#5b5170' : '#19e6ff', k2 = locked ? '#6b6080' : '#ff2bd6', k3 = locked ? '#5b5170' : '#ffd23f';
+      return '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+        '<polygon points="48,3 87,25 87,71 48,93 9,71 9,25" fill="#150c26" stroke="' + k3 + '" stroke-width="4"/>' +
+        '<polygon points="48,11 80,29 80,67 48,85 16,67 16,29" fill="none" stroke="' + k2 + '" stroke-width="2" opacity=".8"/>' +
+        '<rect x="28" y="30" width="40" height="36" fill="' + k1 + '" fill-opacity=".28" stroke="' + k1 + '" stroke-width="3"/>' +
+        '<path d="M28 48H68M48 30V66" stroke="' + k1 + '" stroke-width="1.5" opacity=".6"/>' +
+        '<polygon points="48,38 55,48 48,58 41,48" fill="' + k2 + '" stroke="#fff" stroke-width="1.5"/>' +
+        '<path d="M20 74L34 60" stroke="#e8ffff" stroke-width="3" stroke-linecap="round"/>' +
+        '<polygon points="72,72 76,78 72,84 68,78" fill="' + k3 + '"/>' +
+        '</svg>';
+    }
     if (id === 'viper_master') {
       var g1 = locked ? '#5b5170' : '#19e6ff', g2 = locked ? '#6b6080' : '#ff2bd6', gd = locked ? '#5b5170' : '#ffd23f';
       return '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
@@ -1032,7 +1122,9 @@
     { id: 'tower', t: 'g_tower_t', icon: 'tower', href: 'games/neon-tower/info.html', kw: ['neon', 'tower', 'kule', 'タワー'],
       boards: [['c', 'mode_classic'], ['h', 'mode_hard']], extra: [['lv', 'lv_done', 10]] },
     { id: 'viper', t: 'g_viper_t', icon: 'viper', href: 'games/neon-viper/info.html', kw: ['neon', 'viper', 'yılan', 'yilan', 'snake', 'ヘビ', 'バイパー'],
-      boards: [['u', 'mode_unlimited'], ['c', 'mode_classic'], ['l', 'mode_level']], extra: [['lv', 'lv_done', 10]] }
+      boards: [['u', 'mode_unlimited'], ['c', 'mode_classic'], ['l', 'mode_level']], extra: [['lv', 'lv_done', 10]] },
+    { id: 'claim', t: 'g_claim_t', icon: 'claim', href: 'games/neon-claim/info.html', kw: ['neon', 'claim', 'alan', 'kapat', 'zone', 'エリア'],
+      boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 20]] }
   ];
   function renderBadges(box, data) {
     box.innerHTML = '';

@@ -141,6 +141,10 @@
   @keyframes twtw{50%{opacity:.25}}
   .tw-float{animation:twfl 2.4s steps(6) infinite}
   .vp-snake{animation:vpmove 3s steps(12) infinite alternate}
+  .cl-draw{animation:cldraw 2.6s steps(10) infinite alternate}
+  @keyframes cldraw{from{opacity:.2;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+  .cl-spark{animation:clspark 3.4s steps(20) infinite}
+  @keyframes clspark{0%{transform:translate(0,0)}25%{transform:translate(210px,0)}50%{transform:translate(210px,108px)}75%{transform:translate(0,108px)}100%{transform:translate(0,0)}}
   @keyframes vpmove{from{transform:translateX(-26px)}to{transform:translateX(70px)}}
   .inst{display:inline-flex;align-items:center;gap:8px;background:var(--panel);color:var(--ink);border:2px solid var(--amber);padding:6px 10px;font-family:'Press Start 2P','DotGothic16',system-ui;font-size:9px;cursor:pointer;box-shadow:3px 3px 0 var(--magenta)}
   .inst:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--magenta)}
@@ -263,6 +267,29 @@
       <div class="body">
         <h3 data-i18n="g_viper_t">NEON VIPER</h3>
         <p data-i18n="g_viper_d">Neon ızgarada yılanı yönlendir, elmasları ye, uzadıkça hızlan ve engellere çarpma.</p>
+        <span class="tag" data-i18n="tag_arcade">ARCADE</span>
+      </div>
+    </a>
+
+    <a class="card c4" href="games/neon-claim/info.html">
+      <div class="thumb">
+        <svg class="scene" viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><filter id="clg" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>
+          <rect width="360" height="140" fill="#0d0818"/>
+          <rect x="70" y="10" width="220" height="120" fill="#000" fill-opacity=".45" stroke="#19e6ff" stroke-opacity=".7" stroke-width="2"/>
+          <path class="cl-fill" d="M70 10H150V130H70Z" fill="#19e6ff" fill-opacity=".26"/>
+          <path d="M150 10V70H210" fill="none" stroke="#19e6ff" stroke-width="3" filter="url(#clg)"/>
+          <path d="M150 10V70H210" fill="none" stroke="#e8ffff" stroke-width="2.2"/>
+          <path d="M150 130V70" fill="none" stroke="#19e6ff" stroke-width="2.2" stroke-opacity=".9"/>
+          <g class="cl-draw"><path d="M150 70H238V108" fill="none" stroke="#e8ffff" stroke-width="2.6" stroke-linejoin="round"/><polygon points="238,108 244,114 238,120 232,114" fill="#fff"/></g>
+          <g class="tw-float"><circle cx="262" cy="44" r="9" fill="#ff2bd6" filter="url(#clg)"/><circle cx="262" cy="44" r="6" fill="#ff2bd6"/><circle cx="262" cy="44" r="12" fill="none" stroke="#ffb3f0" stroke-dasharray="3 3"/></g>
+          <g class="tw-twinkle d2"><polygon points="206,34 214,46 206,58 198,46" fill="#ffd23f"/></g>
+          <g class="cl-spark"><rect x="70" y="10" width="8" height="8" fill="#fff" transform="rotate(45 74 14)"/></g>
+        </svg>
+      </div>
+      <div class="body">
+        <h3 data-i18n="g_claim_t">NEON CLAIM</h3>
+        <p data-i18n="g_claim_d">Duvardan çizgi çek, alanı kapat, yaratıkları içeri hapset.</p>
         <span class="tag" data-i18n="tag_arcade">ARCADE</span>
       </div>
     </a>
