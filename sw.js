@@ -1,7 +1,7 @@
 /* ARKAT service worker: önce ağ (hep güncel), internet yoksa önbellek */
-const V = 'arkat-v3';
+const V = 'arkat-v4';
 const CORE = [
-  './', 'index.html', 'profile.html', 'user.html', 'arkat.js', 'manifest.webmanifest',
+  './', 'index.html', 'profile.html', 'user.html', 'badges.html', 'arkat.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png',
   'games/neon-dusus/info.html', 'games/neon-dusus/play.html',
   'games/neon-tower/info.html', 'games/neon-tower/play.html',

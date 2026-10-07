@@ -124,7 +124,7 @@
     <div class="pcard">
       <span id="pic"></span>
       <div class="pinfo">
-        <div class="pname" id="uname"></div>
+        <div class="pname"><span id="uname"></span><span id="atag" class="atag" hidden></span></div>
         <p class="psub" id="ufull"></p>
         <p><b data-i18n="f_email">E-POSTA</b> · <span id="umail"></span></p>
         <p><b data-i18n="f_joined">KATILIM</b> · <span id="ujoin">—</span></p>
@@ -159,16 +159,22 @@
       <button class="abtn sm" id="nmbtn" type="button"><span data-i18n="set_save">KAYDET</span></button>
     </div>
 
-    <h2 class="section" data-i18n="friends_h">ARKADAŞLAR</h2>
-    <div id="reqbox" hidden><div class="sub" data-i18n="fr_requests">GELEN İSTEKLER</div><div id="reqs"></div></div>
-    <div id="friends"></div>
+    <h2 class="section" id="h-friends"><span data-i18n="friends_h">ARKADAŞLAR</span></h2>
+    <div id="s-friends">
+      <div id="reqbox" hidden><div class="sub" data-i18n="fr_requests">GELEN İSTEKLER</div><div id="reqs"></div></div>
+      <div id="friends"></div>
+      <button class="more" id="frmore" type="button" hidden></button>
+    </div>
 
-    <h2 class="section" data-i18n="badges_h">ROZETLER</h2>
-    <div id="badges" class="badges"></div>
+    <h2 class="section" id="h-favs"><span data-i18n="favs_h">FAVORİ OYUNLAR</span></h2>
+    <div id="s-favs"><div id="favs"></div></div>
 
-    <h2 class="section" data-i18n="scores_h">SKORLARIM</h2>
-    <p class="hint" data-i18n="tap_rank">Sıralamayı görmek için bir skora dokun.</p>
-    <div id="gcards"></div>
+    <h2 class="section" id="h-badges"><span data-i18n="badges_h">ROZETLER</span></h2>
+    <div id="s-badges"><div id="badges" class="badges"></div><a class="more" id="bdmore" href="badges.html"></a></div>
+
+    <h2 class="section" id="h-scores"><span data-i18n="scores_h">SKORLARIM</span></h2>
+    <div id="s-scores"><p class="hint" data-i18n="tap_rank">Sıralamayı görmek için bir skora dokun.</p>
+    <div id="gcards"></div></div>
   </div>
 </main>
 
@@ -193,6 +199,7 @@
     setAvatar($('pic'),p.photo||u.photoURL,84);
     setAvatar($('spic'),p.photo||u.photoURL,72);
     $('uname').textContent=p.username?('@'+p.username):A.shownName(p);
+    $('atag').textContent=A.t('admin_tag');$('atag').hidden=!A.isAdminUid(u.uid);
     var full=((p.firstName||'')+' '+(p.lastName||'')).trim();
     $('ufull').textContent=full;
     $('umail').textContent=u.email||'';
@@ -256,30 +263,40 @@
     }
     return a;
   }
+  var frExpanded=false;
   function renderFriends(){
-    var list=A.getFriendList(), reqs=$('reqs'), fr=$('friends');
-    reqs.innerHTML=''; fr.innerHTML='';
-    var inc=list.filter(function(f){return f.status==='pending'&&f.from!==A.getUser().uid});
+    var list=A.getFriendList(), reqs=$('reqs'), fr=$('friends'), more=$('frmore');
+    reqs.innerHTML=''; fr.innerHTML=''; more.hidden=true;
+    var me=A.getUser().uid;
+    var inc=list.filter(function(f){return f.status==='pending'&&f.from!==me});
     var acc=list.filter(function(f){return f.status==='accepted'});
-    var out=list.filter(function(f){return f.status==='pending'&&f.from===A.getUser().uid});
+    var out=list.filter(function(f){return f.status==='pending'&&f.from===me});
     $('reqbox').hidden=!inc.length;
     function reload(){A.loadFriendships(true).then(renderFriends)}
+    function fail(){A.toast(A.t('set_err'))}
     inc.forEach(function(f){
       A.getProfileById(f.other).then(function(p){
         reqs.appendChild(friendRow(p,f.other,[
-          {key:'fr_accept',fn:function(){A.acceptFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}},
-          {key:'fr_decline',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}}
+          {key:'fr_accept',fn:function(){A.acceptFriend(f.other).then(reload).catch(fail)}},
+          {key:'fr_decline',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(fail)}}
         ]));
       });
     });
     if(!acc.length&&!out.length){fr.appendChild(el('div','msg',A.t('fr_none')));return}
-    acc.forEach(function(f){
-      A.getProfileById(f.other).then(function(p){fr.appendChild(friendRow(p,f.other,null))});
-    });
-    out.forEach(function(f){
-      A.getProfileById(f.other).then(function(p){
-        fr.appendChild(friendRow(p,f.other,[{key:'fr_cancel',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(function(){A.toast(A.t('set_err'))})}}]));
+    var all=acc.map(function(f){return {f:f,acts:null}}).concat(out.map(function(f){return {f:f,acts:[{key:'fr_cancel',cls:'ghost',fn:function(){A.removeFriend(f.other).then(reload).catch(fail)}}]}}));
+    Promise.all(all.map(function(x){return A.getProfileById(x.f.other)})).then(function(ps){
+      fr.innerHTML='';
+      var LIM=4;
+      all.forEach(function(x,i){
+        var row=friendRow(ps[i],x.f.other,x.acts);
+        if(!frExpanded&&i>=LIM)row.hidden=true;
+        fr.appendChild(row);
       });
+      if(all.length>LIM){
+        more.hidden=false;
+        more.textContent=frExpanded?A.t('show_less'):A.t('see_all')+' ('+all.length+')';
+        more.onclick=function(){frExpanded=!frExpanded;renderFriends()};
+      }
     });
   }
 
@@ -294,11 +311,15 @@
     if(!wired){wired=true;initSettings()}
     renderTop(u,p);
     var data=Object.assign({},p,{badges:Object.assign({},A.localBadges(),p.badges||{})});
-    A.renderBadges($('badges'),data);
+    var bi=A.renderBadges($('badges'),data,{limit:4,href:'badges.html'});
+    $('bdmore').textContent=A.t('see_all')+' ('+bi.earned+' / '+bi.total+')';
+    A.renderFavs($('favs'),A.getFavs(),true);
     A.renderScoreCards($('gcards'),data,u.uid);
     A.syncBoards(p.best).then(function(){A.renderScoreCards($('gcards'),data,u.uid)}).catch(function(){});
     A.loadFriendships(false).then(renderFriends);
   }
+  [['friends','h-friends','s-friends',true],['favs','h-favs','s-favs',true],['badges','h-badges','s-badges',true],['scores','h-scores','s-scores',true]].forEach(function(x){A.collapsible($(x[1]),$(x[2]),x[0],x[3])});
+  document.addEventListener('arkat:favs',function(){ if(A.getUser()) A.renderFavs($('favs'),A.getFavs(),true) });
   $('gbtn').addEventListener('click',function(){A.signIn()});
   document.addEventListener('arkat:auth',function(){render()});
   document.addEventListener('arkat:profile',function(){ if(A.getUser()&&!$('me').hidden){var u=A.getUser();renderTop(u,A.getProfile())} });

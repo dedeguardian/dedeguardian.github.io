@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr" data-title="user_title">
+<html lang="tr" data-title="bd_page_title">
 <head>
 <meta charset="utf-8">
 <link rel="manifest" href="manifest.webmanifest">
@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ARKAT">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ARKAT — Oyuncu</title>
+<title>ARKAT — Rozetler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
@@ -96,6 +96,11 @@
   .fr .fa{display:flex;gap:8px}
   .sub{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;color:var(--dim);margin:16px 0 10px}
 
+
+  .badges.big{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .badges.big .badge svg{width:104px;height:104px}
+  .badge .gm{color:var(--cyan);font-size:15px;margin-top:6px}
+  .sub2{color:var(--dim);font-size:22px;margin:-14px 0 20px}
   .msg{color:var(--dim);background:var(--panel);border:3px dashed var(--line);padding:22px;text-align:center}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--panel);color:var(--ink);
     border:3px solid var(--cyan);padding:14px 22px;font-size:12px;box-shadow:5px 5px 0 var(--magenta);cursor:pointer;margin-top:18px}
@@ -108,33 +113,21 @@
 
 <main>
   <div class="top">
-    <a class="back" href="index.html" data-i18n="back_home">◂ ANA SAYFA</a>
+    <a class="back" id="backl" href="profile.html" data-i18n="back_home">◂ GERİ</a>
     <div id="arkat-bar"></div>
   </div>
+  <h1><span data-i18n="badges_h">ROZETLER</span></h1>
+  <p class="psub" id="who"></p>
 
   <div id="loading" class="msg" data-i18n="loading">YÜKLENİYOR…</div>
   <div id="nf" class="msg" hidden data-i18n="user_notfound">Kullanıcı bulunamadı.</div>
 
   <div id="view" hidden>
-    <div class="pcard">
-      <span id="pic"></span>
-      <div class="pinfo">
-        <div class="pname"><span id="uname"></span><span id="atag" class="atag" hidden></span></div>
-        <p class="psub" id="ufull"></p>
-        <p><b data-i18n="f_joined">KATILIM</b> · <span id="ujoin">—</span></p>
-        <div class="row2" id="frbtns"></div>
-      </div>
-    </div>
-
-    <h2 class="section" id="h-favs"><span data-i18n="favs_h">FAVORİ OYUNLAR</span></h2>
-    <div id="s-favs"><div id="favs"></div></div>
-
-    <h2 class="section" id="h-badges"><span data-i18n="badges_h">ROZETLER</span></h2>
-    <div id="s-badges"><div id="badges" class="badges"></div><a class="more" id="bdmore" href="badges.html"></a></div>
-
-    <h2 class="section" id="h-scores"><span data-i18n="scores_h2">SKORLAR</span></h2>
-    <div id="s-scores"><p class="hint" data-i18n="tap_rank">Sıralamayı görmek için bir skora dokun.</p>
-    <div id="gcards"></div></div>
+    <p class="sub2" id="count"></p>
+    <h2 class="section"><span data-i18n="bd_earned">KAZANILAN ROZETLER</span></h2>
+    <div id="earned" class="badges big"></div>
+    <h2 class="section" style="margin-top:34px"><span data-i18n="bd_locked">KİLİTLİ ROZETLER</span></h2>
+    <div id="locked" class="badges big"></div>
   </div>
 </main>
 
@@ -142,69 +135,60 @@
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var A=ARKAT, el=A.el, target=null, targetUid=null;
+  var A=ARKAT, el=A.el;
   var q=new URLSearchParams(location.search), qid=q.get('id'), qu=q.get('u');
-
+  var data=null, who='';
   function fmt(ts){
-    if(!ts||!ts.toDate) return '—';
+    var ms=ts&&ts.toMillis?ts.toMillis():(typeof ts==='number'?ts:0); if(!ms) return '';
     var l=A.getLang(); var loc=l==='ja'?'ja-JP':(l==='en'?'en-GB':'tr-TR');
-    return ts.toDate().toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'});
+    return new Date(ms).toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'});
   }
-  function renderFriendBtns(){
-    var box=$('frbtns'); box.innerHTML='';
-    var me=A.getUser();
-    function btn(key,cls,fn){var b=el('button','abtn sm '+(cls||''),A.t(key));b.type='button';b.addEventListener('click',function(){b.disabled=true;fn()});box.appendChild(b);return b}
-    function after(){A.loadFriendships(true).then(renderFriendBtns)}
-    function fail(){A.toast(A.t('set_err'));renderFriendBtns()}
-    if(!me){btn('fr_add','',function(){A.signIn()});box.appendChild(el('span','note',A.t('fr_login')));return}
-    if(me.uid===targetUid){box.appendChild(el('span','note',A.t('this_you')));return}
-    var rel=A.relation(targetUid);
-    if(rel==='none') btn('fr_add','',function(){A.requestFriend(targetUid).then(after).catch(fail)});
-    else if(rel==='sent') btn('fr_cancel','ghost',function(){A.removeFriend(targetUid).then(after).catch(fail)});
-    else if(rel==='received'){
-      btn('fr_accept','',function(){A.acceptFriend(targetUid).then(after).catch(fail)});
-      btn('fr_decline','ghost',function(){A.removeFriend(targetUid).then(after).catch(fail)});
-    } else if(rel==='friends'){
-      var b=el('span','note',A.t('fr_friends')); b.style.color='var(--green,#39ff14)'; box.appendChild(b);
-      btn('fr_remove','ghost warn',function(){A.removeFriend(targetUid).then(after).catch(fail)});
-    }
+  function gameName(id){
+    var b=A.BADGES[id]; var g=A.GAMES.filter(function(x){return x.id===b.game})[0];
+    return g?A.t(g.t):'';
   }
-  function renderAll(){
-    if(!target) return;
-    $('loading').hidden=true; $('nf').hidden=true; $('view').hidden=false;
-    $('pic').innerHTML=''; $('pic').appendChild(A.avatar(target.photo,84,'big'));
-    $('uname').textContent=target.username?('@'+target.username):A.shownName(target);
-    $('ufull').textContent=A.publicName(target);
-    $('ujoin').textContent=fmt(target.createdAt);
-    $('atag').textContent=A.t('admin_tag');$('atag').hidden=!A.isAdminUid(targetUid);
-    var bi=A.renderBadges($('badges'),target,{limit:4,href:'badges.html?id='+encodeURIComponent(targetUid)});
-    $('bdmore').href='badges.html?id='+encodeURIComponent(targetUid);
-    $('bdmore').textContent=A.t('see_all')+' ('+bi.earned+' / '+bi.total+')';
-    A.renderFavs($('favs'),target.favs||[],false);
-    A.renderScoreCards($('gcards'),target,targetUid);
-    renderFriendBtns();
+  function fill(box,ids,got,have){
+    box.innerHTML='';
+    if(!ids.length){box.appendChild(el('div','msg',got?A.t('bd_none'):'—'));return}
+    ids.forEach(function(id){
+      var c=A.badgeCard(id,got,null,got?fmt(have[id]):'');
+      var gn=el('div','gm',gameName(id)); c.insertBefore(gn,c.children[1]);
+      box.appendChild(c);
+    });
+  }
+  function render(){
+    if(!data) return;
+    $('loading').hidden=true;$('nf').hidden=true;$('view').hidden=false;
+    var L=A.badgeList(data);
+    $('count').textContent=L.earned.length+' / '+(L.earned.length+L.locked.length)+' '+A.t('bd_of');
+    $('who').textContent=who;
+    fill($('earned'),L.earned,true,L.have);
+    fill($('locked'),L.locked,false,L.have);
   }
   function notFound(){$('loading').hidden=true;$('view').hidden=true;$('nf').hidden=false}
-
-  [['favs','h-favs','s-favs',true],['badges','h-badges','s-badges',true],['scores','h-scores','s-scores',true]].forEach(function(x){A.collapsible(document.getElementById(x[1]),document.getElementById(x[2]),'u-'+x[0],x[3])});
-  A.whenReady().then(function(){
-    var p=qid?A.getProfileById(qid):(qu?A.getProfileByName(qu):Promise.resolve(null));
-    return p.then(function(d){
-      if(!d){notFound();return}
-      target=d; targetUid=d.uid||qid;
-      if(!targetUid){notFound();return}
-      document.title='@'+(d.username||'?')+' · ARKAT';
-      renderAll();
-      if(A.getUser()&&A.getUser().uid===targetUid) location.replace('profile.html');
-    });
-  }).catch(notFound);
-
-  document.addEventListener('arkat:auth',function(e){
-    if(e.detail&&targetUid&&e.detail.uid===targetUid){location.replace('profile.html');return}
-    if(e.detail) A.loadFriendships(true).then(function(){if(target)renderFriendBtns()}); else if(target) renderFriendBtns();
-  });
-  document.addEventListener('arkat:lang',function(){renderAll()});
-  if(!A.isConfigured()) notFound();
+  function showOwn(){
+    var p=A.getProfile()||{};
+    data=Object.assign({},p,{badges:Object.assign({},A.localBadges(),p.badges||{})});
+    who=p.username?'@'+p.username:'';
+    render();
+  }
+  if(qid||qu){
+    $('backl').href=qid?('user.html?id='+encodeURIComponent(qid)):('user.html?u='+encodeURIComponent(qu));
+    A.whenReady().then(function(){
+      var p=qid?A.getProfileById(qid):A.getProfileByName(qu);
+      return p.then(function(d){
+        if(!d){notFound();return}
+        data=d;who='@'+(d.username||'?');render();
+      });
+    }).catch(notFound);
+  }else{
+    // kendi rozetlerim (giriş yoksa bu cihazda kazanılanlar)
+    if(!A.isConfigured()){showOwn()}
+    document.addEventListener('arkat:auth',showOwn);
+    document.addEventListener('arkat:profile',function(){showOwn()});
+    setTimeout(function(){if(!data)showOwn()},1500);
+  }
+  document.addEventListener('arkat:lang',render);
 })();
 </script>
 </body>

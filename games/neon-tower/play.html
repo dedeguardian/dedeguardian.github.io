@@ -27,7 +27,7 @@ canvas{width:100%;height:100%;display:block}
 const c=document.getElementById('c'),x=c.getContext('2d');
 const W=420,H=640,WL=26;
 let S='menu',P,plats,items,parts,camY,t,score,crys,fl,topN,topY,toast={s:'',t:0},best=0,ac;
-let snd=true,sel=0,conf=0,hs=[],lastRank=-1,my0=300,mode='classic',lv=0,goal=0,prog=1,done=[],obs=[],lvSel=0,bonus=0,wallet=0,own=[0],selCh=0,cv=0,msgT=0,msgS='';
+let snd=true,sel=0,conf=0,hs=[],lastRank=-1,my0=300,mode='classic',lv=0,goal=0,prog=1,done=[],obs=[],lvSel=0,bonus=0,wallet=0,adminOn=false,realWallet=0,own=[0],selCh=0,cv=0,msgT=0,msgS='';
 try{hs=JSON.parse(localStorage.getItem('nt_hs')||'[]');snd=localStorage.getItem('nt_snd')!=='0'}catch(e){}
 try{wallet=+localStorage.getItem('nt_w')||0;own=JSON.parse(localStorage.getItem('nt_own')||'[0]');selCh=+localStorage.getItem('nt_ch')||0;if(!own.includes(selCh))selCh=0;const o=JSON.parse(localStorage.getItem('nt_lv')||'{}');prog=o.p||1;done=o.d||[]}catch(e){}
 let dn=[];try{dn=JSON.parse(localStorage.getItem('nt_dn')||'[]')}catch(e){}
@@ -142,7 +142,7 @@ function hud(){
  txt('◆ '+crys,WL+8,46,12,'#cfe','left');{const bt=(hard?hh:hs)[0];if((mode==='classic'||hard)&&score>0&&(!bt||score>bt.s))txt('★ YENİ YÜKSEK SKOR! ★',WL+8,80,10,'#ffd23f','left',200)}
  if(mode==='level')txt(hard?'ZOR MOD':'SEVİYE '+(lv+1)+' · '+TH[lv].n,WL+8,62,10,'#9bd','left');
  const spd=sp();txt('HIZ',W-WL-70,46,10,'#cfe','right');
- x.strokeStyle='#ff2bd6';x.strokeRect(W-WL-66,38,58,8);x.fillStyle='#ff2bd6';x.fillRect(W-WL-66,38,58*spd/2.6,8);
+ x.strokeStyle='#ff2bd6';x.strokeRect(W-WL-66,38,58,8);x.fillStyle='#ff2bd6';x.fillRect(W-WL-66,38,58*Math.min(1,spd/2.1),8);
  let by=H-18;const bar=(l,v,col)=>{if(v<=0)return;x.fillStyle=col;x.font='10px monospace';x.textAlign='left';x.fillText(l,WL+8,by+8);x.strokeStyle=col;x.strokeRect(WL+30,by,60,8);x.fillRect(WL+30,by,60*v,8);by-=14};
  bar('JET',Math.min(1,P.jet/90),'#ff9d00');bar('2x',P.dj/720,'#39ff14');bar('MIK',Math.min(1,P.mag/600),'#ff2bd6');
  if(P.offer>0){const a=P.offer/200;glow('#ffd23f',16);x.strokeStyle='#ffd23f';x.lineWidth=3;x.beginPath();x.arc(W/2,130,26,-Math.PI/2,-Math.PI/2+6.283*a);x.stroke();x.shadowBlur=0;x.fillStyle='rgba(255,210,63,.12)';x.beginPath();x.arc(W/2,130,26,0,7);x.fill();txt('J',W/2,140,28,'#ffd23f');txt('ÖZEL J!',W/2,176,12,'#ffd23f');txt('DOKUN VEYA J TUŞU',W/2,192,10,'#cfe');if(CH[selCh].pk!=='nova')txt('300 ◆',W/2,210,12,wallet>=300?'#0ff':'#ff3b5c')}
@@ -216,7 +216,7 @@ const TH=[{n:'NEON ŞEHİR',h:290,o:'Engelsiz giriş · yolu öğren'},{n:'SİBE
 function HB(){return mode==='level'?TH[lv].h:(285+fl*2)%360}
 function PB(){return mode==='level'?TH[lv].h+170:170}
 function DF(){const L=lv;return{mv:L>=1?Math.min(.5,.12+.04*(L-1)):0,cr:L>=2?Math.min(.3,.08+.03*(L-2)):0,dr:L>=3?Math.min(.28,.07+.03*(L-3)):0,ls:L>=4?Math.min(.28,.06+.03*(L-4)):0}}
-function sp(){if(fl<3)return 0;return mode==='level'?.5+lv*.12+Math.min(hard?1.2:.5,t*(hard?.0002:.00012)):Math.min(2.6,.5+t*.00018)}
+function sp(){if(fl<3)return 0;if(hard)return Math.min(2.0,1.0+t*.0002);if(mode==='level')return .5+lv*.12+Math.min(.5,t*.00012);return Math.min(1.6,.5+t*.00012)}
 function buildMap(){if(mode==='level'){const h=TH[lv].h;buildBl('hsl('+h+',55%,14%)','hsl('+((h+60)%360)+',100%,60%)','hsl('+h+',60%,8%)','hsl('+((h+180)%360)+',100%,60%)')}else buildBl('#1c0b45','#ff2bd6','#0f0630','#19e6ff')}
 function drawObs(){for(const o of obs){
  if(o.k==='dr'){const sy=(o.yy||o.y)-camY;if(sy<-20||sy>H+20)continue;glow('#ff3b5c',14);x.fillStyle='#2a0010';x.strokeStyle='#ff3b5c';x.lineWidth=2;x.beginPath();x.arc(o.x,sy,9,0,7);x.fill();x.stroke();x.fillStyle='#ff3b5c';x.fillRect(o.x-5,sy-1.5,10,3);x.fillStyle='#fff';x.fillRect(o.x+(o.vx>0?2:-4),sy-1,2,2)}
@@ -229,7 +229,7 @@ function fail(){go('over');beep(120,.5,'sawtooth',.07);if(mode==='classic'||hard
 function startLevel(i){mode='level';hard=0;lv=i;goal=25+10*i;reset();go('play');beep(520,.2,'sawtooth')}
 function winLevel(){bonus=0;if(!done[lv]){bonus=30+lv*15;wallet+=bonus}done[lv]=1;try{window.ARKAT&&ARKAT.saveScore('tower','lv',done.filter(Boolean).length)}catch(e){}if(CH[selCh].pk!=='nova'){dn[lv]=1;try{localStorage.setItem('nt_dn',JSON.stringify(dn))}catch(e){}}chkBadge();prog=Math.max(prog,Math.min(10,lv+2));sv();go('win');beep(880,.15,'square');setTimeout(()=>beep(1320,.3,'square'),150)}
 function cell(e){const r=c.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W-39,py=(e.clientY-r.top)/r.height*H-120,co=Math.floor(px/70),ro=Math.floor(py/76);if(px<0||py<0||co>4||ro>1||px-co*70>62||py-ro*76>62)return -1;return ro*5+co}
-function sv(){try{if(!TEST_MONEY)localStorage.setItem('nt_w',wallet);localStorage.setItem('nt_own',JSON.stringify(own));localStorage.setItem('nt_ch',selCh);localStorage.setItem('nt_lv',JSON.stringify({p:prog,d:done}))}catch(e){}}
+function sv(){try{if(!TEST_MONEY&&!adminOn)localStorage.setItem('nt_w',wallet);localStorage.setItem('nt_own',JSON.stringify(own));localStorage.setItem('nt_ch',selCh);localStorage.setItem('nt_lv',JSON.stringify({p:prog,d:done}))}catch(e){}}
 function chAct(){const c=CH[cv];
  if(own.includes(cv)){selCh=cv;sv();beep(900,.12,'triangle');return}
  if(wallet>=c.p){wallet-=c.p;own.push(cv);selCh=cv;sv();msgS='SATIN ALINDI!';beep(1100,.3,'sawtooth',.06)}
@@ -366,6 +366,10 @@ function pause(){conf=0;go('pause')}
 function resume(){conf=0;go('play')}
 function toMenu(){conf=0;mode='classic';hard=0;reset();go('menu')}
 function togSnd(){snd=!snd;setMusGain();try{localStorage.setItem('nt_snd',snd?1:0)}catch(e){}beep(700,.1)}
+function setAdmin(on){if(on&&!adminOn){adminOn=true;realWallet=wallet;wallet=Math.max(wallet,1e9)}else if(!on&&adminOn){adminOn=false;wallet=realWallet}}
+function chkAdmin(){try{setAdmin(!!(window.ARKAT&&ARKAT.isAdmin()))}catch(e){}}
+document.addEventListener('arkat:auth',chkAdmin);
+window.addEventListener('load',()=>setTimeout(chkAdmin,900));
 function chkBadge(){try{if(!window.ARKAT)return;if(done.filter(Boolean).length>=10)ARKAT.awardBadge('tower_nova');if(dn.filter(Boolean).length>=10)ARKAT.awardBadge('tower_solo')}catch(e){}}
 window.addEventListener('load',()=>setTimeout(chkBadge,800));
 function quit(){try{location.href='../../index.html'}catch(e){go('bye')}}

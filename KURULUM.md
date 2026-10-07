@@ -18,6 +18,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Yönetici hesabı (Firebase uid). Aynı uid arkat.js içinde de tanımlı.
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'Pufgl8aoeVgiwVZ0JMeoV2EhwFH3';
+    }
+
     // Özel kullanıcı kaydı (e-posta, dil, son giriş): sadece sahibi
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
@@ -27,11 +32,13 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if true;
       allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','firstName','lastName','photo','photoSrc','best','badges','createdAt'])
+        && request.resource.data.keys().hasOnly(['uid','username','usernameLower','firstName','lastName','photo','photoSrc','best','badges','favs','createdAt'])
         && (!('photo' in request.resource.data) || request.resource.data.photo.size() < 20000)
+        && (!('favs' in request.resource.data) || (request.resource.data.favs is list && request.resource.data.favs.size() <= 20))
         // kullanıcı adı, ancak bu kişi adına ayrılmışsa yazılabilir
         && (!('usernameLower' in request.resource.data)
             || getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.usernameLower)).data.uid == uid);
+      allow delete: if isAdmin();
     }
 
     // Kullanıcı adı kaydı: bir ad ilk alan kişiye aittir, başkası alamaz
@@ -41,7 +48,7 @@ service cloud.firestore {
         && name.matches('^[a-z0-9_]{3,16}$')
         && request.resource.data.keys().hasOnly(['uid','username'])
         && request.resource.data.uid == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow delete: if (request.auth != null && resource.data.uid == request.auth.uid) || isAdmin();
       allow update: if false;
     }
 
@@ -62,6 +69,7 @@ service cloud.firestore {
         && request.resource.data.score >= resource.data.score
         && request.resource.data.score < 100000000
         && request.resource.data.photo.size() < 20000;
+      allow delete: if isAdmin();
     }
 
     // Arkadaşlık istekleri ve arkadaşlıklar: sadece iki taraf görür
@@ -102,6 +110,7 @@ games/neon-viper/info.html
 games/neon-viper/play.html
 games/neon-claim/info.html
 games/neon-claim/play.html
+badges.html
 user.html
 sw.js
 manifest.webmanifest

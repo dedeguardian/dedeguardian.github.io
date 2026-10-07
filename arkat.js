@@ -182,6 +182,21 @@
       mode_endless: 'Sonsuz mod',
       badge_claim_master_n: 'ALAN HAKİMİ',
       badge_claim_master_d: 'Neon Claim\'in 20 seviyesini de bitir.',
+      // Favoriler, rozet sayfası, admin
+      fav_add: 'FAVORİLERE EKLE',
+      fav_on: 'FAVORİDE',
+      favs_h: 'FAVORİ OYUNLAR',
+      fav_none: 'Henüz favori oyun yok. Oyun kartlarındaki ♡ simgesine dokunarak ekleyebilirsin.',
+      fav_none_other: 'Henüz favori oyunu yok.',
+      play: 'OYNA',
+      see_all: 'TÜMÜNÜ GÖR',
+      show_less: 'DAHA AZ GÖSTER',
+      bd_page_title: 'ARKAT — Rozetler',
+      bd_earned: 'KAZANILAN ROZETLER',
+      bd_locked: 'KİLİTLİ ROZETLER',
+      bd_of: 'kazanıldı',
+      bd_none: 'Henüz rozet kazanılmadı.',
+      admin_tag: 'ADMİN',
       // profil
       prof_title: 'ARKAT — Profil',
       back_home: '◂ ANA SAYFA',
@@ -357,6 +372,21 @@
       mode_endless: 'Endless mode',
       badge_claim_master_n: 'ZONE MASTER',
       badge_claim_master_d: 'Clear all 20 levels of Neon Claim.',
+      // Favoriler, rozet sayfası, admin
+      fav_add: 'ADD TO FAVORITES',
+      fav_on: 'FAVORITE',
+      favs_h: 'FAVORITE GAMES',
+      fav_none: 'No favorite games yet. Tap the ♡ on a game card to add one.',
+      fav_none_other: 'No favorite games yet.',
+      play: 'PLAY',
+      see_all: 'SEE ALL',
+      show_less: 'SHOW LESS',
+      bd_page_title: 'ARKAT — Badges',
+      bd_earned: 'EARNED BADGES',
+      bd_locked: 'LOCKED BADGES',
+      bd_of: 'earned',
+      bd_none: 'No badges earned yet.',
+      admin_tag: 'ADMIN',
       prof_title: 'ARKAT — Profile',
       back_home: '◂ HOME',
       prof_h: 'PROFILE',
@@ -531,6 +561,21 @@
       mode_endless: 'エンドレスモード',
       badge_claim_master_n: 'ゾーンマスター',
       badge_claim_master_d: 'NEON CLAIMの全20レベルをクリアしよう。',
+      // Favoriler, rozet sayfası, admin
+      fav_add: 'お気に入りに追加',
+      fav_on: 'お気に入り',
+      favs_h: 'お気に入りゲーム',
+      fav_none: 'お気に入りのゲームはまだありません。ゲームカードの♡をタップして追加しよう。',
+      fav_none_other: 'お気に入りのゲームはまだありません。',
+      play: 'プレイ',
+      see_all: 'すべて見る',
+      show_less: '閉じる',
+      bd_page_title: 'ARKAT — バッジ',
+      bd_earned: '獲得したバッジ',
+      bd_locked: 'ロックされたバッジ',
+      bd_of: '獲得',
+      bd_none: 'まだバッジを獲得していません。',
+      admin_tag: '管理者',
       prof_title: 'ARKAT — プロフィール',
       back_home: '◂ ホーム',
       prof_h: 'プロフィール',
@@ -688,6 +733,25 @@
     '#arkat-badge .ds{color:#9c8fc4;font-size:19px;margin-top:6px}' +
     '#arkat-badge svg{width:120px;height:120px}' +
     '@keyframes abpop{0%{transform:translate(-50%,-50%) scale(.2)}100%{transform:translate(-50%,-50%) scale(1)}}' +
+    // favori kalbi, favori düğmesi, açılır başlıklar, rozet/oyun kartları
+    '.fav{position:absolute;top:8px;right:8px;z-index:3;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(10,6,18,.72);border:2px solid #3a2a5c;color:#9c8fc4;font:20px/1 system-ui,sans-serif;cursor:pointer;padding:0}' +
+    '.fav:hover{border-color:#ff2a6d;color:#ff2a6d}.fav.on{color:#ff2a6d;border-color:#ff2a6d;text-shadow:0 0 8px #ff2a6d}' +
+    '.favbtn{display:inline-flex;align-items:center;gap:8px;background:#150c26;color:#9c8fc4;border:3px solid #3a2a5c;padding:10px 12px;margin:0 0 22px;font:10px/1.4 "Press Start 2P","DotGothic16",system-ui;cursor:pointer}' +
+    '.favbtn .hh{font:18px/1 system-ui,sans-serif}.favbtn:hover{border-color:#ff2a6d;color:#f5f0ff}.favbtn.on{color:#ff2a6d;border-color:#ff2a6d}' +
+    'h2.section.cs{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}' +
+    'h2.section.cs:hover{color:#f5f0ff}h2.section .chev,button.ghead .chev{color:#9c8fc4;font-size:14px;margin-left:10px}' +
+    '.sechd{display:flex;align-items:center;justify-content:space-between;gap:10px}' +
+    'a.more,button.more{display:block;width:100%;margin-top:12px;background:none;border:3px dashed #3a2a5c;color:#9c8fc4;text-align:center;text-decoration:none;font:10px/1.5 "Press Start 2P","DotGothic16",system-ui;padding:12px;cursor:pointer;box-sizing:border-box}' +
+    'a.more:hover,button.more:hover{border-color:#00fff2;color:#f5f0ff}' +
+    'a.badge{display:block;color:inherit;text-decoration:none;cursor:pointer}a.badge:hover{border-color:#00fff2}' +
+    '.badge .bt{color:#39ff14;font-size:15px;margin-top:6px}' +
+    'button.ghead{width:100%;background:none;border:0;border-bottom:3px solid #3a2a5c;color:inherit;text-align:left;cursor:pointer;font:inherit;box-sizing:border-box}' +
+    '.gcard:not(.open) button.ghead{border-bottom:0}button.ghead:hover{background:#1d1136}' +
+    'button.ghead .gsum{margin-left:auto;font-size:26px}' +
+    '.favrow{display:flex;align-items:center;gap:12px;background:#150c26;border:3px solid #3a2a5c;padding:10px 12px;margin-bottom:10px;box-shadow:4px 4px 0 rgba(0,0,0,.55)}' +
+    '.favrow .gicon{width:52px;height:52px;border:3px solid #00fff2;overflow:hidden;flex:0 0 auto;background:#0d0818;display:block}.favrow .gicon svg{display:block;width:100%;height:100%}' +
+    '.favrow .fnm{flex:1;min-width:0;font:11px/1.5 "Press Start 2P","DotGothic16",system-ui;color:#f5f0ff;text-decoration:none}.favrow .fnm:hover{color:#00fff2}' +
+    '.atag{display:inline-block;vertical-align:middle;margin-left:8px;background:#ff2a6d;color:#fff;font:8px/1 "Press Start 2P","DotGothic16",system-ui;padding:4px 6px}' +
     '#arkat-msg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:600;background:#150c26;border:3px solid #ff2a6d;color:#f5f0ff;padding:10px 14px;font:18px "VT323","DotGothic16",monospace;max-width:90vw;display:none}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -737,6 +801,10 @@
 
   // ======= 6) Firebase / Google giriş =======
   var fbUser = null, db = null, auth = null, busy = false, profile = null, friendCache = null;
+  // Yönetici hesapları (Firebase uid). Aynı uid firestore.rules içinde de tanımlıdır.
+  var ADMIN_UIDS = ['Pufgl8aoeVgiwVZ0JMeoV2EhwFH3'];
+  function isAdminUid(u) { return ADMIN_UIDS.indexOf(u) >= 0; }
+  function isAdmin() { return !!(fbUser && isAdminUid(fbUser.uid)); }
   var configured = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
   var SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
   function loadScript(src) {
@@ -807,7 +875,7 @@
       return Promise.all(jobs).then(function () {
         return created ? pref.get().then(function (s) { if (s.exists) profile = s.data(); }) : null;
       });
-    }).then(function () { syncBadges(profile); });
+    }).then(function () { syncBadges(profile); syncFavs(profile); });
   }
 
   function signIn() {
@@ -1117,62 +1185,93 @@
 
   // ======= 11) Oyun listesi + paylaşılan kartlar (kendi profil + başkasının profili) =======
   var GAMES = [
-    { id: 'neon', t: 'g_neon_t', icon: 'drop', href: 'games/neon-dusus/info.html', kw: ['neon', 'drop', 'düşüş', 'dusus', 'ネオン'],
+    { id: 'neon', t: 'g_neon_t', icon: 'drop', href: 'games/neon-dusus/info.html', play: 'games/neon-dusus/play.html', kw: ['neon', 'drop', 'düşüş', 'dusus', 'ネオン'],
       boards: [['e', 'easy'], ['m', 'medium'], ['d', 'hard']], extra: [] },
-    { id: 'tower', t: 'g_tower_t', icon: 'tower', href: 'games/neon-tower/info.html', kw: ['neon', 'tower', 'kule', 'タワー'],
+    { id: 'tower', t: 'g_tower_t', icon: 'tower', href: 'games/neon-tower/info.html', play: 'games/neon-tower/play.html', kw: ['neon', 'tower', 'kule', 'タワー'],
       boards: [['c', 'mode_classic'], ['h', 'mode_hard']], extra: [['lv', 'lv_done', 10]] },
-    { id: 'viper', t: 'g_viper_t', icon: 'viper', href: 'games/neon-viper/info.html', kw: ['neon', 'viper', 'yılan', 'yilan', 'snake', 'ヘビ', 'バイパー'],
+    { id: 'viper', t: 'g_viper_t', icon: 'viper', href: 'games/neon-viper/info.html', play: 'games/neon-viper/play.html', kw: ['neon', 'viper', 'yılan', 'yilan', 'snake', 'ヘビ', 'バイパー'],
       boards: [['u', 'mode_unlimited'], ['c', 'mode_classic'], ['l', 'mode_level']], extra: [['lv', 'lv_done', 10]] },
-    { id: 'claim', t: 'g_claim_t', icon: 'claim', href: 'games/neon-claim/info.html', kw: ['neon', 'claim', 'alan', 'kapat', 'zone', 'エリア'],
+    { id: 'claim', t: 'g_claim_t', icon: 'claim', href: 'games/neon-claim/info.html', play: 'games/neon-claim/play.html', kw: ['neon', 'claim', 'alan', 'kapat', 'zone', 'エリア'],
       boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 20]] }
   ];
-  function renderBadges(box, data) {
+  function badgeList(data) {
+    var have = (data && data.badges) || {}, ids = Object.keys(BADGES);
+    var ms = function (v) { return v && v.toMillis ? v.toMillis() : (typeof v === 'number' ? v : 0); };
+    var earned = ids.filter(function (id) { return !!have[id]; }).sort(function (a, b) { return ms(have[b]) - ms(have[a]); });
+    var locked = ids.filter(function (id) { return !have[id]; });
+    return { have: have, earned: earned, locked: locked, ms: ms };
+  }
+  function badgeCard(id, got, href, dateTxt) {
+    var b = BADGES[id];
+    var c = el(href ? 'a' : 'div', 'badge' + (got ? '' : ' lock'));
+    if (href) c.href = href;
+    var art = el('div'); art.innerHTML = badgeSvg(id, !got); c.appendChild(art);
+    c.appendChild(el('div', 'bn', t(b.n)));
+    c.appendChild(el('div', 'bd', t(b.d)));
+    if (dateTxt) c.appendChild(el('div', 'bt', dateTxt));
+    return c;
+  }
+  // Kazanılanlar önce gelir. opts.limit: en fazla kaç tane gösterilsin, opts.href: karta tıklayınca gidilecek sayfa
+  function renderBadges(box, data, opts) {
+    opts = opts || {};
     box.innerHTML = '';
-    var have = Object.assign({}, (data && data.badges) || {});
-    Object.keys(BADGES).forEach(function (id) {
-      var b = BADGES[id], got = !!have[id];
-      var c = el('div', 'badge' + (got ? '' : ' lock'));
-      var art = el('div'); art.innerHTML = badgeSvg(id, !got); c.appendChild(art);
-      c.appendChild(el('div', 'bn', t(b.n)));
-      c.appendChild(el('div', 'bd', t(b.d)));
-      box.appendChild(c);
-    });
+    var L = badgeList(data), all = L.earned.concat(L.locked);
+    (opts.limit ? all.slice(0, opts.limit) : all).forEach(function (id) { box.appendChild(badgeCard(id, !!L.have[id], opts.href)); });
+    return { earned: L.earned.length, total: all.length };
   }
   function renderScoreCards(box, data, uid) {
     box.innerHTML = '';
     var best = (data && data.best) || {};
     GAMES.forEach(function (g) {
-      var card = el('div', 'gcard');
-      var head = el('div', 'ghead');
+      var key = 'arkat-sc-' + g.id, open = false;
+      try { open = localStorage.getItem(key) === '1'; } catch (e) {}
+      var card = el('div', 'gcard' + (open ? ' open' : ''));
+      var head = el('button', 'ghead'); head.type = 'button';
       var ic = el('div', 'gicon'); ic.innerHTML = icon(g.icon);
       head.appendChild(ic); head.appendChild(el('div', 'gname', t(g.t)));
-      card.appendChild(head);
       var mine = best[g.id] || {};
-      g.boards.forEach(function (bd) {
-        var id = g.id + '_' + bd[0], score = mine[bd[0]] || 0;
-        var row = el('button', 'srow'); row.type = 'button';
-        row.appendChild(el('span', 'sl', t(bd[1])));
-        var sv = el('span', 'sv');
-        sv.appendChild(el('b', null, score ? String(score) : '—'));
-        var rk = el('i', 'rk'); rk.appendChild(el('small', null, t('world')));
-        var rv = el('span', null, score ? '…' : '—'); rk.appendChild(rv); sv.appendChild(rk);
-        sv.appendChild(el('span', 'go', '›'));
-        row.appendChild(sv);
-        row.addEventListener('click', function () { showBoard(id, t(g.t) + ' · ' + t(bd[1]), uid); });
-        card.appendChild(row);
-        if (score) {
-          getBoard(id, 100).then(function (list) {
-            var r = rankOf(list, uid);
-            rv.textContent = r ? '#' + r : (list.length >= 100 ? '100+' : '—');
-          }).catch(function () { rv.textContent = '—'; });
-        }
-      });
-      g.extra.forEach(function (ex) {
-        var v = mine[ex[0]] || 0;
-        var row = el('div', 'srow');
-        row.appendChild(el('span', 'sl', t(ex[1])));
-        var sv = el('span', 'sv'); sv.appendChild(el('b', null, v + ' / ' + ex[2]));
-        row.appendChild(sv); card.appendChild(row);
+      var first = g.boards[0] && mine[g.boards[0][0]];
+      head.appendChild(el('span', 'gsum', first ? String(first) : '—'));
+      var ch = el('span', 'chev', open ? '▾' : '▸'); head.appendChild(ch);
+      card.appendChild(head);
+      var body = el('div', 'gbody'); body.hidden = !open; card.appendChild(body);
+      var built = false;
+      function build() {
+        if (built) return; built = true;
+        g.boards.forEach(function (bd) {
+          var id = g.id + '_' + bd[0], score = mine[bd[0]] || 0;
+          var row = el('button', 'srow'); row.type = 'button';
+          row.appendChild(el('span', 'sl', t(bd[1])));
+          var sv = el('span', 'sv');
+          sv.appendChild(el('b', null, score ? String(score) : '—'));
+          var rk = el('i', 'rk'); rk.appendChild(el('small', null, t('world')));
+          var rv = el('span', null, score ? '…' : '—'); rk.appendChild(rv); sv.appendChild(rk);
+          sv.appendChild(el('span', 'go', '›'));
+          row.appendChild(sv);
+          row.addEventListener('click', function () { showBoard(id, t(g.t) + ' · ' + t(bd[1]), uid); });
+          body.appendChild(row);
+          if (score) {
+            getBoard(id, 100).then(function (list) {
+              var r = rankOf(list, uid);
+              rv.textContent = r ? '#' + r : (list.length >= 100 ? '100+' : '—');
+            }).catch(function () { rv.textContent = '—'; });
+          }
+        });
+        g.extra.forEach(function (ex) {
+          var v = mine[ex[0]] || 0;
+          var row = el('div', 'srow');
+          row.appendChild(el('span', 'sl', t(ex[1])));
+          var sv = el('span', 'sv'); sv.appendChild(el('b', null, v + ' / ' + ex[2]));
+          row.appendChild(sv); body.appendChild(row);
+        });
+      }
+      if (open) build();
+      head.addEventListener('click', function () {
+        body.hidden = !body.hidden;
+        var o = !body.hidden;
+        card.classList.toggle('open', o); ch.textContent = o ? '▾' : '▸';
+        if (o) build();
+        try { localStorage.setItem(key, o ? '1' : '0'); } catch (e) {}
       });
       box.appendChild(card);
     });
@@ -1346,6 +1445,69 @@
       .then(function (s) { return s.exists ? getProfileById(s.data().uid) : null; });
   }
 
+
+  // ======= 14b) Favori oyunlar =======
+  function localFavs() { try { var a = JSON.parse(localStorage.getItem('arkat-favs') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function saveLocalFavs(a) { try { localStorage.setItem('arkat-favs', JSON.stringify(a)); } catch (e) {} }
+  function validFav(id) { return GAMES.some(function (g) { return g.id === id; }); }
+  function getFavs() { return localFavs().filter(validFav); }
+  function isFav(id) { return getFavs().indexOf(id) >= 0; }
+  function syncFavs(p) {
+    var cloud = Array.isArray(p && p.favs) ? p.favs : [], merged = cloud.slice();
+    localFavs().forEach(function (id) { if (merged.indexOf(id) < 0) merged.push(id); });
+    merged = merged.filter(validFav);
+    saveLocalFavs(merged);
+    if (p) p.favs = merged;
+    if (fbUser && db && (merged.length !== cloud.length)) db.collection('profiles').doc(fbUser.uid).set({ favs: merged }, { merge: true }).catch(function () {});
+    refreshFavButtons();
+  }
+  function toggleFav(id) {
+    if (!validFav(id)) return;
+    var a = getFavs(), i = a.indexOf(id);
+    if (i >= 0) a.splice(i, 1); else a.push(id);
+    saveLocalFavs(a);
+    if (profile) profile.favs = a.slice();
+    if (fbUser && db) db.collection('profiles').doc(fbUser.uid).set({ favs: a }, { merge: true }).catch(function () { toast(t('set_err')); });
+    refreshFavButtons();
+    document.dispatchEvent(new CustomEvent('arkat:favs', { detail: a }));
+  }
+  function refreshFavButtons() {
+    document.querySelectorAll('[data-fav]').forEach(function (b) {
+      var on = isFav(b.dataset.fav);
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var wide = b.classList.contains('favbtn');
+      b.innerHTML = '<span class="hh">' + (on ? '♥' : '♡') + '</span>' + (wide ? '<span>' + t(on ? 'fav_on' : 'fav_add') + '</span>' : '');
+      if (!b.dataset.wired) {
+        b.dataset.wired = '1';
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleFav(b.dataset.fav); });
+      }
+    });
+  }
+  function renderFavs(box, favs, own) {
+    box.innerHTML = '';
+    var list = GAMES.filter(function (g) { return (favs || []).indexOf(g.id) >= 0; });
+    if (!list.length) { box.appendChild(el('div', 'msg', t(own ? 'fav_none' : 'fav_none_other'))); return; }
+    list.forEach(function (g) {
+      var r = el('div', 'favrow');
+      var ic = el('a', 'gicon'); ic.href = rootPath + g.href; ic.innerHTML = icon(g.icon);
+      var nm = el('a', 'fnm', t(g.t)); nm.href = rootPath + g.href;
+      var pl = el('a', 'abtn sm', '▸ ' + t('play')); pl.href = rootPath + g.play;
+      r.appendChild(ic); r.appendChild(nm); r.appendChild(pl); box.appendChild(r);
+    });
+  }
+  // Başlığa tıklayınca içeriği açıp kapatan yardımcı
+  function collapsible(h2, body, key, def) {
+    var open = def;
+    try { var v = localStorage.getItem('arkat-cs-' + key); if (v !== null) open = v === '1'; } catch (e) {}
+    h2.classList.add('cs');
+    var ch = el('span', 'chev');
+    h2.appendChild(ch);
+    function apply() { body.hidden = !open; ch.textContent = open ? '▾' : '▸'; }
+    h2.addEventListener('click', function () { open = !open; apply(); try { localStorage.setItem('arkat-cs-' + key, open ? '1' : '0'); } catch (e) {} });
+    apply();
+  }
+
   // ======= 15) Arama (oyun + kişi) =======
   function closeSearch() {
     var o = document.getElementById('arkat-search'); if (o) o.remove();
@@ -1481,11 +1643,15 @@
     loadFriendships: loadFriendships, relation: relation, requestFriend: requestFriend, acceptFriend: acceptFriend, removeFriend: removeFriend,
     getFriendList: function () { return friendCache || []; },
     openSearch: openSearch,
+    isAdmin: isAdmin, isAdminUid: isAdminUid,
+    getFavs: getFavs, isFav: isFav, toggleFav: toggleFav, refreshFavButtons: refreshFavButtons, renderFavs: renderFavs, collapsible: collapsible,
+    badgeList: badgeList, badgeCard: badgeCard, BADGE_IDS: function () { return Object.keys(BADGES); },
     canInstall: canInstall, install: install
   };
 
   function boot() {
-    buildBar(); applyI18n();
+    buildBar(); applyI18n(); refreshFavButtons();
+    document.addEventListener('arkat:lang', refreshFavButtons);
     if (configured) initFirebase().catch(function () {});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
