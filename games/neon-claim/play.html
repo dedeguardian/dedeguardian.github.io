@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ARKAT">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <title>NEON CLAIM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +46,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .lv.boss{border-color:var(--mg);color:var(--mg)}
 .lv.boss.done{border-color:#39ff14;color:#39ff14}
 .lv[disabled]{opacity:.3;cursor:not-allowed}
+.wl{flex:2;font-family:'Press Start 2P','DotGothic16',system-ui;font-size:calc(var(--u)*10);line-height:1.7;display:flex;align-items:center;justify-content:center;text-align:center}
 .hs{display:flex;flex-direction:column;gap:calc(var(--u)*3);font-size:calc(var(--u)*22)}
 .hs div{display:flex;justify-content:space-between;border-bottom:calc(var(--u)*2) solid #24173f;padding:calc(var(--u)*2) calc(var(--u)*4)}
 .hs .h{color:var(--am);font-family:'Press Start 2P','DotGothic16',system-ui;font-size:calc(var(--u)*10);border:0;padding-top:calc(var(--u)*8)}
@@ -65,17 +66,17 @@ const touchy=('ontouchstart' in window)||(navigator.maxTouchPoints>0)||(window.m
 
 /* ============== diller (TR / EN / JA) ============== */
 const T={
-tr:{level:'SEVİYE MODU',endless:'SONSUZ MOD',scores:'YÜKSEK SKORLAR',how:'NASIL OYNANIR',sndOn:'SES: AÇIK',sndOff:'SES: KAPALI',exit:'ÇIKIŞ',pick:'SEVİYE SEÇ',back:'◂ GERİ',paused:'DURAKLATILDI',resume:'DEVAM ET',restart:'SEVİYEYİ YENİLE',pad:'TUŞ KONUMU',padL:'SOL',padC:'ORTA',padR:'SAĞ',menu:'ANA MENÜ',over:'OYUN BİTTİ',score:'SKOR',best:'EN İYİ',newBest:'YENİ REKOR!',retry:'TEKRAR DENE',clear:'SEVİYE TAMAM!',next:'SONRAKİ SEVİYE',area:'ALAN',bonus:'BONUS',win:'TÜM SEVİYELER TAMAM!',winSub:'Bölgenin efendisi sensin.',lvl:'SEVİYE',boss:'BOSS',hint:'KENARDAN İÇERİ ÇİZ · ÇİZGİYİ DUVARA BAĞLA',mL:'SEVİYE',mE:'SONSUZ',none:'—',
+tr:{level:'SEVİYE MODU',endless:'SONSUZ MOD',scores:'YÜKSEK SKORLAR',how:'NASIL OYNANIR',sndOn:'SES: AÇIK',sndOff:'SES: KAPALI',exit:'ÇIKIŞ',pick:'SEVİYE SEÇ',back:'◂ GERİ',paused:'DURAKLATILDI',resume:'DEVAM ET',restart:'SEVİYEYİ YENİLE',pad:'TUŞ KONUMU',padL:'SOL',padC:'ORTA',padR:'SAĞ',menu:'ANA MENÜ',over:'OYUN BİTTİ',score:'SKOR',best:'EN İYİ',newBest:'YENİ REKOR!',retry:'TEKRAR DENE',clear:'SEVİYE TAMAM!',next:'SONRAKİ SEVİYE',area:'ALAN',bonus:'BONUS',win:'TÜM SEVİYELER TAMAM!',winSub:'Bölgenin efendisi sensin.',lvl:'SEVİYE',boss:'BOSS',world:'DÜNYA',hint:'KENARDAN İÇERİ ÇİZ · ÇİZGİYİ DUVARA BAĞLA',mL:'SEVİYE',mE:'SONSUZ',none:'—',
  how1:'Duvardan boşluğa doğru ilerleyip çizgi çiz, çizgiyi başka bir duvara bağlayarak alanı kapat.',
  how2:'Küçük taraf senin olur. Kapanan tarafta kalan yaratıklar yok olur.',
  how3:'Çizgi tamamlanmadan bir yaratık ona değerse can kaybedersin. Duvardayken yaratıklar zarar veremez ama kıvılcımlar duvarda gezer!',
  how4:'Hedef alan yüzdesine ulaş ya da tüm yaratıkları yok et. Her 5 seviyede bir boss var.'},
-en:{level:'LEVEL MODE',endless:'ENDLESS MODE',scores:'HIGH SCORES',how:'HOW TO PLAY',sndOn:'SOUND: ON',sndOff:'SOUND: OFF',exit:'EXIT',pick:'SELECT LEVEL',back:'◂ BACK',paused:'PAUSED',resume:'RESUME',restart:'RESTART LEVEL',pad:'BUTTON POSITION',padL:'LEFT',padC:'CENTER',padR:'RIGHT',menu:'MAIN MENU',over:'GAME OVER',score:'SCORE',best:'BEST',newBest:'NEW RECORD!',retry:'TRY AGAIN',clear:'LEVEL CLEAR!',next:'NEXT LEVEL',area:'AREA',bonus:'BONUS',win:'ALL LEVELS CLEARED!',winSub:'You rule the zone.',lvl:'LEVEL',boss:'BOSS',hint:'DRAW FROM THE EDGE · CONNECT TO A WALL',mL:'LEVEL',mE:'ENDLESS',none:'—',
+en:{level:'LEVEL MODE',endless:'ENDLESS MODE',scores:'HIGH SCORES',how:'HOW TO PLAY',sndOn:'SOUND: ON',sndOff:'SOUND: OFF',exit:'EXIT',pick:'SELECT LEVEL',back:'◂ BACK',paused:'PAUSED',resume:'RESUME',restart:'RESTART LEVEL',pad:'BUTTON POSITION',padL:'LEFT',padC:'CENTER',padR:'RIGHT',menu:'MAIN MENU',over:'GAME OVER',score:'SCORE',best:'BEST',newBest:'NEW RECORD!',retry:'TRY AGAIN',clear:'LEVEL CLEAR!',next:'NEXT LEVEL',area:'AREA',bonus:'BONUS',win:'ALL LEVELS CLEARED!',winSub:'You rule the zone.',lvl:'LEVEL',boss:'BOSS',world:'WORLD',hint:'DRAW FROM THE EDGE · CONNECT TO A WALL',mL:'LEVEL',mE:'ENDLESS',none:'—',
  how1:'Draw a line from a wall into the open area and connect it to another wall to seal off a zone.',
  how2:'The smaller side becomes yours. Creatures caught inside the sealed side are destroyed.',
  how3:'If a creature touches your line before it is finished, you lose a life. Creatures cannot hurt you on walls, but sparks patrol them!',
  how4:'Reach the target area percentage or destroy every creature. Every 5th level has a boss.'},
-ja:{level:'レベルモード',endless:'エンドレスモード',scores:'ハイスコア',how:'遊び方',sndOn:'サウンド：オン',sndOff:'サウンド：オフ',exit:'終了',pick:'レベル選択',back:'◂ 戻る',paused:'一時停止',resume:'再開',restart:'やり直す',pad:'ボタンの位置',padL:'左',padC:'中央',padR:'右',menu:'メインメニュー',over:'ゲームオーバー',score:'スコア',best:'ベスト',newBest:'新記録！',retry:'もう一度',clear:'レベルクリア！',next:'次のレベル',area:'占領率',bonus:'ボーナス',win:'全レベルクリア！',winSub:'あなたがゾーンの支配者だ。',lvl:'レベル',boss:'ボス',hint:'フチから線を引いて、壁につなごう',mL:'レベル',mE:'エンドレス',none:'—',
+ja:{level:'レベルモード',endless:'エンドレスモード',scores:'ハイスコア',how:'遊び方',sndOn:'サウンド：オン',sndOff:'サウンド：オフ',exit:'終了',pick:'レベル選択',back:'◂ 戻る',paused:'一時停止',resume:'再開',restart:'やり直す',pad:'ボタンの位置',padL:'左',padC:'中央',padR:'右',menu:'メインメニュー',over:'ゲームオーバー',score:'スコア',best:'ベスト',newBest:'新記録！',retry:'もう一度',clear:'レベルクリア！',next:'次のレベル',area:'占領率',bonus:'ボーナス',win:'全レベルクリア！',winSub:'あなたがゾーンの支配者だ。',lvl:'レベル',boss:'ボス',world:'ワールド',hint:'フチから線を引いて、壁につなごう',mL:'レベル',mE:'エンドレス',none:'—',
  how1:'壁から空きスペースへ線を引き、別の壁につなげてエリアを囲もう。',
  how2:'小さい側があなたの領域になる。囲んだ側に閉じ込めたクリーチャーは消滅する。',
  how3:'線が完成する前にクリーチャーが触れるとライフを失う。壁の上ならクリーチャーは安全だが、壁を走るスパークに注意！',
@@ -91,7 +92,7 @@ const t=k=>(T[lang]&&T[lang][k]!=null)?T[lang][k]:T.en[k];
 
 /* ============== kayıtlar ============== */
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let done=ls.get('nc_done',[]);while(done.length<20)done.push(false);
+let done=ls.get('nc_done',[]);while(done.length<200)done.push(false);
 let hs=[ls.get('nc_hs_0',[]),ls.get('nc_hs_1',[])];
 let mute=ls.get('nc_mute',false),padPos=ls.get('nc_pad',1);
 
@@ -138,10 +139,44 @@ function endlessSpec(n){
   if(n%5===0){o.X=[1,Math.min(13,9+n/5*.8)];o.tgt=90}
   return o;
 }
-const hueOf=n=>(190+(n-1)*23)%360;
+const WN=['BOOT','GRID','VOID','PULSE','CORE','NEXUS','ZENITH','ECLIPSE','SINGULARITY','OMEGA'];
+const worldOf=n=>Math.min(9,Math.floor((Math.max(1,n)-1)/20));
+const hueOf=n=>(200+worldOf(n)*47+((Math.max(1,n)-1)%20)*3)%360;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function genRects(r,w){
+  const out=[],count=1+Math.floor(r()*3)+(w>=3?1:0)+(w>=6?1:0);
+  for(let i=0;i<count*8&&out.length<count;i++){
+    const ww=3+Math.floor(r()*8),hh=3+Math.floor(r()*8);
+    const x0=4+Math.floor(r()*(C-8-ww)),y0=4+Math.floor(r()*(R-16-hh));
+    let ok=true;for(const o of out)if(x0<o[0]+o[2]+3&&x0+ww+3>o[0]&&y0<o[1]+o[3]+3&&y0+hh+3>o[1])ok=false;
+    if(ok)out.push([x0,y0,ww,hh]);
+  }
+  if(r()<.5){ // simetrik yerleşim
+    for(const o of out.slice()){const mx=C-o[0]-o[2];let ok=mx>0&&mx+o[2]<C-1;for(const q of out)if(mx<q[0]+q[2]+3&&mx+o[2]+3>q[0]&&o[1]<q[1]+q[3]+3&&o[1]+o[3]+3>q[1])ok=false;if(ok)out.push([mx,o[1],o[2],o[3]])}
+  }
+  return out;
+}
+// 21-200: seviye numarasına göre her zaman aynı üretilir
+function genSpec(n){
+  const r=mulberry(n*7919+13),d=Math.min(1,(n-1)/199),w=worldOf(n),em=w%4;
+  const sp=Math.min(24,11+d*13+(r()-.5)*1.5);
+  let b=Math.round(1+d*5+r()*1.5),ww=Math.round(d*4*r()),h=Math.round(d*3.5*r()),s=Math.round(1+d*2.5+r());
+  if(em===0)b+=1;if(em===1)ww+=2;if(em===2)h+=1+(d>.3?1:0);if(em===3)s+=1;
+  b=Math.min(8,b);ww=Math.min(7,ww);h=Math.min(5,h);s=Math.min(6,s);
+  const sp_={tgt:Math.round(Math.min(82,58+d*22+r()*3)),rects:genRects(r,w)};
+  let X=0;
+  if(n===200){X=3;b=2;ww=3;h=3;sp_.tgt=92}
+  else if(n%5===0){X=(n>=100&&n%10===0)?2:1;b=Math.min(b,3);sp_.tgt=90}
+  let tot=X+b+ww+h;while(tot>12){if(b>1&&b>=ww&&b>=h){b--}else if(ww>0&&ww>=h){ww--}else if(h>0){h--}else break;tot=X+b+ww+h}
+  if(X)sp_.X=[X,Math.min(14,9+d*5)];
+  if(b)sp_.b=[b,sp];if(ww)sp_.w=[ww,sp+1];if(h)sp_.h=[h,Math.min(13,8+d*5)];
+  if(s)sp_.s=[s,Math.min(22,sp+1)];
+  return sp_;
+}
+function specFor(n){return n<=20?LV[n-1]:genSpec(n)}
 
 /* ============== durum ============== */
-let mode=0,lvl=1,spec=null,lives=3,score=0,S='menu',ovName='';
+let lsPage=0,mode=0,lvl=1,spec=null,lives=3,score=0,S='menu',ovName='';
 const g=new Uint8Array(N),comp=new Int16Array(N);
 let P=1,claimed=0,px=C>>1,py=R-1,dir=null,drawing=false,trail=[],startCell=[C>>1,R-1],stepAcc=0;
 let enemies=[],sparks=[],parts=[],flash=null;
@@ -168,7 +203,7 @@ function initLevel(sp,demo){
   spec=sp;g.fill(0);
   for(let a=0;a<C;a++){g[idx(a,0)]=1;g[idx(a,R-1)]=1}
   for(let b=0;b<R;b++){g[idx(0,b)]=1;g[idx(C-1,b)]=1}
-  for(const r of LAY[sp.o||0])for(let b=r[1];b<r[1]+r[3];b++)for(let a=r[0];a<r[0]+r[2];a++)g[idx(a,b)]=1;
+  for(const r of (sp.rects||LAY[sp.o||0]))for(let b=r[1];b<r[1]+r[3];b++)for(let a=r[0];a<r[0]+r[2];a++)g[idx(a,b)]=1;
   P=0;for(let i=0;i<N;i++)if(g[i]===0)P++;
   claimed=0;px=C>>1;py=R-1;dir=null;drawing=false;trail=[];startCell=[px,py];stepAcc=0;
   parts=[];flash=null;invuln=0;grace=demo?0:1.4;dyingT=0;shake=0;
@@ -347,7 +382,7 @@ function addScore(){
   const arr=hs[mode];arr.push(score);arr.sort((a,b)=>b-a);hs[mode]=arr.slice(0,5);ls.set('nc_hs_'+mode,hs[mode]);
   try{window.ARKAT&&ARKAT.saveScore('claim',mode?'e':'l',score)}catch(e){}
 }
-function chkBadge(){try{if(window.ARKAT&&done.filter(Boolean).length>=20)ARKAT.awardBadge('claim_master')}catch(e){}}
+function chkBadge(){try{if(!window.ARKAT)return;if(done.slice(0,20).every(Boolean))ARKAT.awardBadge('claim_master');if(done.slice(0,200).every(Boolean))ARKAT.awardBadge('claim_legend')}catch(e){}}
 window.addEventListener('load',()=>setTimeout(chkBadge,800));
 function levelComplete(){
   S='clear';sfx.win();
@@ -360,7 +395,7 @@ function levelComplete(){
     chkBadge();
   }
   addScore();
-  const last=mode===0&&lvl>=20;
+  const last=mode===0&&lvl>=200;
   setTimeout(()=>{if(S==='clear')show(last?'win':'clear')},900);
 }
 function gameOver(){S='over';addScore();setTimeout(()=>{if(S==='over')show('over')},700)}
@@ -371,7 +406,7 @@ function startRun(m,n){
   beginLevel();
 }
 function beginLevel(){
-  initLevel(mode===0?LV[lvl-1]:endlessSpec(lvl));
+  initLevel(mode===0?specFor(lvl):endlessSpec(lvl));
   held.length=0;S='play';hintT=(mode===0&&lvl<=2)?7:0;show(null);
 }
 function nextLevel(){
@@ -390,9 +425,16 @@ function panel(name){
   if(name==='menu')return '<div class="pn"><h1 class="logo">NEON<br>CLAIM</h1>'+btn('levels',t('level'))+btn('endless',t('endless'))+btn('scores',t('scores'),'sec')+btn('how',t('how'),'sec')+
     '<div class="row">'+['tr','en','ja'].map(l=>'<button class="nb sm sec lang'+(l===lang?' on':'')+'" data-a="lang" data-n="'+l+'">'+l.toUpperCase()+'</button>').join('')+'</div>'+
     '<div class="row">'+btn('snd',mute?t('sndOff'):t('sndOn'),'sm sec')+btn('exit',t('exit'),'sm sec')+'</div></div>';
-  if(name==='levels'){let h='<div class="pn"><h2 class="ttl">'+t('pick')+'</h2><div class="grid">';
-    for(let i=1;i<=20;i++){const un=i===1||done[i-2];h+='<button class="lv'+(done[i-1]?' done':'')+(i%5===0?' boss':'')+'" data-a="start" data-n="'+i+'"'+(un?'':' disabled')+'>'+i+'</button>'}
-    return h+'</div>'+btn('menu',t('back'),'sec')+'</div>'}
+  if(name==='levels'){
+    const adm=!!(window.ARKAT&&ARKAT.isAdmin&&ARKAT.isAdmin());
+    const cnt=done.filter(Boolean).length,hh=hueOf(lsPage*20+1);
+    let h='<div class="pn"><h2 class="ttl">'+t('pick')+'</h2>'+
+      '<div class="row"><button class="nb sm sec" data-a="wp" data-n="-1"'+(lsPage<=0?' disabled':'')+'>◀</button>'+
+      '<div class="wl" style="color:hsl('+hh+',100%,70%)">'+t('world')+' '+(lsPage+1)+'/10<br>'+WN[lsPage]+'</div>'+
+      '<button class="nb sm sec" data-a="wp" data-n="1"'+(lsPage>=9?' disabled':'')+'>▶</button></div>'+
+      '<div class="grid">';
+    for(let k=1;k<=20;k++){const i=lsPage*20+k,un=adm||i===1||done[i-2];h+='<button class="lv'+(done[i-1]?' done':'')+(i%5===0?' boss':'')+'" data-a="start" data-n="'+i+'"'+(un?'':' disabled')+'>'+i+'</button>'}
+    return h+'</div><p class="sub">'+cnt+' / 200</p>'+btn('menu',t('back'),'sec')+'</div>'}
   if(name==='scores'){const row=(a)=>a.length?a.map((v,i)=>'<div><span>'+(i+1)+'.</span><span>'+v+'</span></div>').join(''):'<div><span>'+t('none')+'</span></div>';
     return '<div class="pn"><h2 class="ttl">'+t('scores')+'</h2><div class="hs"><div class="h">'+t('mL')+'</div>'+row(hs[0])+'<div class="h">'+t('mE')+'</div>'+row(hs[1])+'</div>'+btn('menu',t('back'),'sec')+'</div>'}
   if(name==='how')return '<div class="pn how"><h2 class="ttl">'+t('how')+'</h2><p>'+t('how1')+'</p><p>'+t('how2')+'</p><p>'+t('how3')+'</p><p>'+t('how4')+'</p>'+btn('menu',t('back'),'sec')+'</div>';
@@ -409,7 +451,7 @@ function show(name){ovName=name;if(!name){ov.classList.remove('on');ov.innerHTML
 ov.addEventListener('click',e=>{
   const b=e.target.closest('[data-a]');if(!b||b.disabled)return;
   const a=b.dataset.a,n=b.dataset.n;
-  if(a==='levels')show('levels');else if(a==='endless')startRun(1,1);else if(a==='scores')show('scores');else if(a==='how')show('how');
+  if(a==='levels'){let f=done.findIndex(v=>!v);if(f<0)f=199;lsPage=Math.floor(f/20);show('levels')}else if(a==='wp'){lsPage=Math.max(0,Math.min(9,lsPage+(+n)));show('levels')}else if(a==='endless')startRun(1,1);else if(a==='scores')show('scores');else if(a==='how')show('how');
   else if(a==='menu')show('menu');else if(a==='start')startRun(0,+n);
   else if(a==='lang'){lang=n;ls.set('nc_lang',n);show('menu')}
   else if(a==='snd'){mute=!mute;ls.set('nc_mute',mute);show(ovName)}
@@ -518,7 +560,7 @@ function drawEnemy(e){
 function heart(a,b,s,on){x.fillStyle=on?'#ff2a6d':'#3a2a5c';x.beginPath();x.moveTo(a,b+s*.9);x.bezierCurveTo(a-s*1.4,b-s*.2,a-s*.7,b-s*1.1,a,b-s*.4);x.bezierCurveTo(a+s*.7,b-s*1.1,a+s*1.4,b-s*.2,a,b+s*.9);x.fill()}
 function drawHud(){
   const h=hueOf(Math.max(1,lvl));
-  txt((mode===0?t('lvl')+' ':'∞ '+t('lvl')+' ')+lvl+((mode===0&&lvl%5===0)||(mode===1&&lvl%5===0)?' · '+t('boss'):''),FL,20,10,'hsl('+h+',100%,72%)');
+  txt((mode===0?t('lvl')+' ':'∞ '+t('lvl')+' ')+lvl+(lvl%5===0?' · '+t('boss'):''),FL,20,10,'hsl('+h+',100%,72%)');
   for(let i=0;i<5;i++)heart(190+i*17,19,5,i<lives);
   // duraklat düğmesi
   x.strokeStyle='#ffb000';x.lineWidth=2;x.strokeRect(318,6,28,26);x.fillStyle='#ffb000';x.fillRect(327,13,4,12);x.fillRect(334,13,4,12);
@@ -601,7 +643,7 @@ function frame(now){
 }
 resize();toMenu();requestAnimationFrame(frame);
 // sınama için kancalar
-window.__nc={get S(){return S},get g(){return g},get enemies(){return enemies},get sparks(){return sparks},get claimed(){return claimed},get P(){return P},get lives(){return lives},get score(){return score},get lvl(){return lvl},get pos(){return[px,py]},get drawing(){return drawing},LV,endlessSpec,initLevel,startRun,press,release,closeTrail,stepPlayer,get done(){return done},set done(v){done=v},chkBadge,levelComplete,die,afterDeath,isB,set grace(v){grace=v},set invuln(v){invuln=v},set spec(v){spec=v},get spec(){return spec},playerUpdate,updateEnemies,updateSparks,collisions};
+window.__nc={get S(){return S},get g(){return g},get enemies(){return enemies},get sparks(){return sparks},get claimed(){return claimed},get P(){return P},get lives(){return lives},get score(){return score},get lvl(){return lvl},get pos(){return[px,py]},get drawing(){return drawing},LV,specFor,genSpec,WN,hueOf,endlessSpec,initLevel,startRun,press,release,closeTrail,stepPlayer,get done(){return done},set done(v){done=v},chkBadge,levelComplete,die,afterDeath,isB,set grace(v){grace=v},set invuln(v){invuln=v},set spec(v){spec=v},get spec(){return spec},playerUpdate,updateEnemies,updateSparks,collisions};
 })();
 </script>
 <script src="../../arkat.js" data-root="../../"></script>

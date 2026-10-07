@@ -161,7 +161,7 @@
       inst_hint: 'Telefonuna uygulama gibi yükle',
       // Neon Claim
       g_claim_t: 'NEON CLAIM',
-      g_claim_d: 'Duvardan çizgi çek, alanı kapat, yaratıkları içeri hapset. 20 seviye ve sonsuz mod.',
+      g_claim_d: 'Duvardan çizgi çek, alanı kapat, yaratıkları içeri hapset. 200 seviye ve sonsuz mod.',
       cl_info_title: 'Neon Claim — Nasıl Oynanır',
       cl_tagline: 'Çizgi çiz, alanı kapat, yaratıkları hapset.',
       cl_sec_rules: 'NASIL OYNANIR',
@@ -174,7 +174,7 @@
       cl_f3: '<b>Avcı:</b> seni takip eder. Çizgi çizerken daha hızlı döner.',
       cl_f4: '<b>Kıvılcım:</b> duvarlarda gezer. Duvarda bile olsan değerse can kaybedersin.',
       cl_f5: '<b>Boss:</b> her 5. seviyede. Onu kapatıp yok etmek ya da %90 alanı almak gerekir.',
-      cl_m1: '<b>Seviye modu:</b> 20 seviye. Hedef yüzdeye ulaş ya da tüm yaratıkları yok et. 20 seviyenin hepsini bitirince özel rozet kazanırsın. Her 5 seviyede bir can bonusu var.',
+      cl_m1: '<b>Seviye modu:</b> 200 seviye, 10 dünya. Hedef yüzdeye ulaş ya da tüm yaratıkları yok et. İlk 20 seviyeyi bitirince ALAN HAKİMİ, 200\'ün hepsini bitirince BÖLGE İMPARATORU rozeti kazanırsın. Her 5 seviyede bir can bonusu var.',
       cl_m2: '<b>Sonsuz mod:</b> seviyeler bitmez, giderek zorlaşır. En yüksek skoru yap.',
       cl_c1: '<b>Klavye:</b> ◀ ▲ ▼ ▶ / WASD hareket · P duraklat · M ses.',
       cl_c2: '<b>Dokunmatik:</b> ekrandaki yön tuşlarına bas ya da ekranda parmağını kaydır. Tuş konumunu duraklatma menüsünden değiştirebilirsin.',
@@ -206,7 +206,9 @@
       best_h: 'EN YÜKSEK PUANLAR · NEON DÜŞÜŞ',
       easy: 'Kolay', medium: 'Orta', hard: 'Zor',
       no_score: 'Henüz puan yok.',
-      loading: 'YÜKLENİYOR…'
+      loading: 'YÜKLENİYOR…',
+      badge_claim_legend_n: 'BÖLGE İMPARATORU',
+      badge_claim_legend_d: 'Neon Claim\'in 200 seviyesinin hepsini bitir.',
     },
     en: {
       lang_name: 'English',
@@ -351,7 +353,7 @@
       inst_hint: 'Install it on your phone like an app',
       // Neon Claim
       g_claim_t: 'NEON CLAIM',
-      g_claim_d: 'Draw lines from the walls, seal off zones and trap the creatures inside. 20 levels plus endless mode.',
+      g_claim_d: 'Draw lines from the walls, seal off zones and trap the creatures inside. 200 levels plus endless mode.',
       cl_info_title: 'Neon Claim — How to Play',
       cl_tagline: 'Draw lines, seal zones, trap the creatures.',
       cl_sec_rules: 'HOW TO PLAY',
@@ -364,7 +366,7 @@
       cl_f3: '<b>Hunter:</b> chases you, and turns faster while you draw.',
       cl_f4: '<b>Spark:</b> patrols the walls. If it touches you, you lose a life even on a wall.',
       cl_f5: '<b>Boss:</b> every 5th level. Seal it in to destroy it, or claim 90% of the area.',
-      cl_m1: '<b>Level mode:</b> 20 levels. Reach the target percentage or destroy every creature. Clear all 20 for a special badge. Every 5 levels gives a bonus life.',
+      cl_m1: '<b>Level mode:</b> 200 levels across 10 worlds. Reach the target percentage or destroy every creature. Clear the first 20 for the ZONE MASTER badge and all 200 for the ZONE EMPEROR badge. Every 5 levels gives a bonus life.',
       cl_m2: '<b>Endless mode:</b> the levels never end and keep getting harder. Chase the high score.',
       cl_c1: '<b>Keyboard:</b> ◀ ▲ ▼ ▶ / WASD move · P pause · M sound.',
       cl_c2: '<b>Touch:</b> press the on-screen arrows or drag your finger on the screen. You can move the buttons from the pause menu.',
@@ -395,7 +397,9 @@
       best_h: 'HIGH SCORES · NEON DROP',
       easy: 'Easy', medium: 'Medium', hard: 'Hard',
       no_score: 'No scores yet.',
-      loading: 'LOADING…'
+      loading: 'LOADING…',
+      badge_claim_legend_n: 'ZONE EMPEROR',
+      badge_claim_legend_d: 'Clear all 200 levels of Neon Claim.',
     },
     ja: {
       lang_name: '日本語',
@@ -540,7 +544,7 @@
       inst_hint: 'スマホにアプリのようにインストール',
       // Neon Claim
       g_claim_t: 'NEON CLAIM',
-      g_claim_d: '壁から線を引いてエリアを囲み、クリーチャーを閉じ込めよう。全20レベル＋エンドレスモード。',
+      g_claim_d: '壁から線を引いてエリアを囲み、クリーチャーを閉じ込めよう。全200レベル＋エンドレスモード。',
       cl_info_title: 'NEON CLAIM — 遊び方',
       cl_tagline: '線を引いて、囲んで、閉じ込めよう。',
       cl_sec_rules: '遊び方',
@@ -553,7 +557,7 @@
       cl_f3: '<b>ハンター：</b>あなたを追いかける。線を引いている間は旋回が速くなる。',
       cl_f4: '<b>スパーク：</b>壁を走る。壁の上でも触れるとライフを失う。',
       cl_f5: '<b>ボス：</b>5レベルごとに登場。囲んで倒すか、占領率90%を目指そう。',
-      cl_m1: '<b>レベルモード：</b>全20レベル。目標の占領率に到達するか、全クリーチャーを倒そう。全クリアで特別バッジ。5レベルごとにライフボーナス。',
+      cl_m1: '<b>レベルモード：</b>10ワールドで全200レベル。目標の占領率に到達するか、全クリーチャーを倒そう。最初の20レベルでゾーンマスター、200レベル全クリアでゾーン皇帝のバッジ。5レベルごとにライフボーナス。',
       cl_m2: '<b>エンドレスモード：</b>終わりのないレベルがだんだん難しくなる。ハイスコアを目指そう。',
       cl_c1: '<b>キーボード：</b>◀ ▲ ▼ ▶ / WASD 移動 · P 一時停止 · M サウンド。',
       cl_c2: '<b>タッチ：</b>画面の矢印ボタンを押すか、画面上で指をスライド。ボタンの位置は一時停止メニューで変えられる。',
@@ -584,7 +588,9 @@
       best_h: 'ハイスコア · NEON DROP',
       easy: 'かんたん', medium: 'ふつう', hard: 'むずかしい',
       no_score: 'まだスコアがありません。',
-      loading: '読み込み中…'
+      loading: '読み込み中…',
+      badge_claim_legend_n: 'ゾーン皇帝',
+      badge_claim_legend_d: 'NEON CLAIMの全200レベルをクリアしよう。'
     }
   };
 
@@ -1028,7 +1034,8 @@
     tower_nova: { game: 'tower', n: 'badge_tower_nova_n', d: 'badge_tower_nova_d' },
     tower_solo: { game: 'tower', n: 'badge_tower_solo_n', d: 'badge_tower_solo_d' },
     viper_master: { game: 'viper', n: 'badge_viper_master_n', d: 'badge_viper_master_d' },
-    claim_master: { game: 'claim', n: 'badge_claim_master_n', d: 'badge_claim_master_d' }
+    claim_master: { game: 'claim', n: 'badge_claim_master_n', d: 'badge_claim_master_d' },
+    claim_legend: { game: 'claim', n: 'badge_claim_legend_n', d: 'badge_claim_legend_d' }
   };
   function localBadges() { try { return JSON.parse(localStorage.getItem('arkat-badges') || '{}'); } catch (e) { return {}; } }
   function saveLocalBadges(o) { try { localStorage.setItem('arkat-badges', JSON.stringify(o)); } catch (e) {} }
@@ -1156,6 +1163,18 @@
         '<polygon points="48,68 53,75 48,82 43,75" fill="' + c2 + '"/>' +
         '</svg>';
     }
+    if (id === 'claim_legend') {
+      var l1 = locked ? '#5b5170' : '#ffd23f', l2 = locked ? '#6b6080' : '#ff2bd6', l3 = locked ? '#5b5170' : '#19e6ff';
+      return '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+        '<polygon points="48,2 89,24 89,72 48,94 7,72 7,24" fill="#150c26" stroke="' + l1 + '" stroke-width="5"/>' +
+        '<polygon points="48,10 82,29 82,67 48,86 14,67 14,29" fill="none" stroke="' + l2 + '" stroke-width="2.5"/>' +
+        '<polygon points="48,16 76,32 76,64 48,80 20,64 20,32" fill="none" stroke="' + l3 + '" stroke-width="1.5" opacity=".7"/>' +
+        '<polygon points="26,40 33,24 41,36 48,20 55,36 63,24 70,40 70,46 26,46" fill="' + l1 + '" stroke="#fff" stroke-width="1.2"/>' +
+        '<rect x="30" y="50" width="36" height="24" fill="' + l3 + '" fill-opacity=".3" stroke="' + l3 + '" stroke-width="2.5"/>' +
+        '<polygon points="48,53 55,62 48,71 41,62" fill="' + l2 + '" stroke="#fff" stroke-width="1.3"/>' +
+        '<polygon points="22,78 25,72 28,78 25,84" fill="' + l1 + '"/><polygon points="68,78 71,72 74,78 71,84" fill="' + l1 + '"/>' +
+        '</svg>';
+    }
     if (id === 'claim_master') {
       var k1 = locked ? '#5b5170' : '#19e6ff', k2 = locked ? '#6b6080' : '#ff2bd6', k3 = locked ? '#5b5170' : '#ffd23f';
       return '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
@@ -1192,7 +1211,7 @@
     { id: 'viper', t: 'g_viper_t', icon: 'viper', href: 'games/neon-viper/info.html', play: 'games/neon-viper/play.html', kw: ['neon', 'viper', 'yılan', 'yilan', 'snake', 'ヘビ', 'バイパー'],
       boards: [['u', 'mode_unlimited'], ['c', 'mode_classic'], ['l', 'mode_level']], extra: [['lv', 'lv_done', 10]] },
     { id: 'claim', t: 'g_claim_t', icon: 'claim', href: 'games/neon-claim/info.html', play: 'games/neon-claim/play.html', kw: ['neon', 'claim', 'alan', 'kapat', 'zone', 'エリア'],
-      boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 20]] }
+      boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 200]] }
   ];
   function badgeList(data) {
     var have = (data && data.badges) || {}, ids = Object.keys(BADGES);
@@ -1621,6 +1640,24 @@
   }
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', function () { navigator.serviceWorker.register(rootPath + 'sw.js').catch(function () {}); });
+  }
+
+  // ======= 16b) Oyun sayfalarında yakınlaştırmayı engelle (iPhone çift dokunma, sıkıştırma) =======
+  if (/\/games\//.test(location.pathname)) {
+    var zs = document.createElement('style');
+    zs.textContent = 'html,body{touch-action:manipulation;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}canvas{touch-action:none;-webkit-touch-callout:none}';
+    document.head.appendChild(zs);
+    var lastTap = 0;
+    document.addEventListener('touchend', function (e) {
+      var n = Date.now();
+      // sadece oyun alanında (tuval) hızlı ikinci dokunuşu iptal et; menü düğmeleri etkilenmez
+      if (n - lastTap < 350 && e.target && e.target.tagName === 'CANVAS' && e.cancelable) e.preventDefault();
+      lastTap = n;
+    }, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) {
+      document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
+    });
+    document.addEventListener('dblclick', function (e) { if (e.target && e.target.tagName === 'CANVAS') e.preventDefault(); }, { passive: false });
   }
 
   // ======= 17) Dışarı açılan API =======

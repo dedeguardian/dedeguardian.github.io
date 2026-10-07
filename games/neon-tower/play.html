@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ARKAT">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>NEON TOWER</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#07001a}
@@ -142,7 +142,7 @@ function hud(){
  txt('◆ '+crys,WL+8,46,12,'#cfe','left');{const bt=(hard?hh:hs)[0];if((mode==='classic'||hard)&&score>0&&(!bt||score>bt.s))txt('★ YENİ YÜKSEK SKOR! ★',WL+8,80,10,'#ffd23f','left',200)}
  if(mode==='level')txt(hard?'ZOR MOD':'SEVİYE '+(lv+1)+' · '+TH[lv].n,WL+8,62,10,'#9bd','left');
  const spd=sp();txt('HIZ',W-WL-70,46,10,'#cfe','right');
- x.strokeStyle='#ff2bd6';x.strokeRect(W-WL-66,38,58,8);x.fillStyle='#ff2bd6';x.fillRect(W-WL-66,38,58*Math.min(1,spd/2.1),8);
+ x.strokeStyle='#ff2bd6';x.strokeRect(W-WL-66,38,58,8);x.fillStyle='#ff2bd6';x.fillRect(W-WL-66,38,58*Math.min(1,spd/2.4),8);
  let by=H-18;const bar=(l,v,col)=>{if(v<=0)return;x.fillStyle=col;x.font='10px monospace';x.textAlign='left';x.fillText(l,WL+8,by+8);x.strokeStyle=col;x.strokeRect(WL+30,by,60,8);x.fillRect(WL+30,by,60*v,8);by-=14};
  bar('JET',Math.min(1,P.jet/90),'#ff9d00');bar('2x',P.dj/720,'#39ff14');bar('MIK',Math.min(1,P.mag/600),'#ff2bd6');
  if(P.offer>0){const a=P.offer/200;glow('#ffd23f',16);x.strokeStyle='#ffd23f';x.lineWidth=3;x.beginPath();x.arc(W/2,130,26,-Math.PI/2,-Math.PI/2+6.283*a);x.stroke();x.shadowBlur=0;x.fillStyle='rgba(255,210,63,.12)';x.beginPath();x.arc(W/2,130,26,0,7);x.fill();txt('J',W/2,140,28,'#ffd23f');txt('ÖZEL J!',W/2,176,12,'#ffd23f');txt('DOKUN VEYA J TUŞU',W/2,192,10,'#cfe');if(CH[selCh].pk!=='nova')txt('300 ◆',W/2,210,12,wallet>=300?'#0ff':'#ff3b5c')}
@@ -216,7 +216,7 @@ const TH=[{n:'NEON ŞEHİR',h:290,o:'Engelsiz giriş · yolu öğren'},{n:'SİBE
 function HB(){return mode==='level'?TH[lv].h:(285+fl*2)%360}
 function PB(){return mode==='level'?TH[lv].h+170:170}
 function DF(){const L=lv;return{mv:L>=1?Math.min(.5,.12+.04*(L-1)):0,cr:L>=2?Math.min(.3,.08+.03*(L-2)):0,dr:L>=3?Math.min(.28,.07+.03*(L-3)):0,ls:L>=4?Math.min(.28,.06+.03*(L-4)):0}}
-function sp(){if(fl<3)return 0;if(hard)return Math.min(2.0,1.0+t*.0002);if(mode==='level')return .5+lv*.12+Math.min(.5,t*.00012);return Math.min(1.6,.5+t*.00012)}
+function sp(){if(fl<3)return 0;if(hard)return Math.min(2.4,1.0+t*.0002);if(mode==='level')return .5+lv*.12+Math.min(.5,t*.00012);return Math.min(2.1,.5+t*.00015)}
 function buildMap(){if(mode==='level'){const h=TH[lv].h;buildBl('hsl('+h+',55%,14%)','hsl('+((h+60)%360)+',100%,60%)','hsl('+h+',60%,8%)','hsl('+((h+180)%360)+',100%,60%)')}else buildBl('#1c0b45','#ff2bd6','#0f0630','#19e6ff')}
 function drawObs(){for(const o of obs){
  if(o.k==='dr'){const sy=(o.yy||o.y)-camY;if(sy<-20||sy>H+20)continue;glow('#ff3b5c',14);x.fillStyle='#2a0010';x.strokeStyle='#ff3b5c';x.lineWidth=2;x.beginPath();x.arc(o.x,sy,9,0,7);x.fill();x.stroke();x.fillStyle='#ff3b5c';x.fillRect(o.x-5,sy-1.5,10,3);x.fillStyle='#fff';x.fillRect(o.x+(o.vx>0?2:-4),sy-1,2,2)}
@@ -366,6 +366,7 @@ function pause(){conf=0;go('pause')}
 function resume(){conf=0;go('play')}
 function toMenu(){conf=0;mode='classic';hard=0;reset();go('menu')}
 function togSnd(){snd=!snd;setMusGain();try{localStorage.setItem('nt_snd',snd?1:0)}catch(e){}beep(700,.1)}
+(function retroSolo(){try{const hasNova=own.some(i=>CH[i]&&CH[i].pk==='nova');if(!hasNova){let ch=false;for(let i=0;i<10;i++)if(done[i]&&!dn[i]){dn[i]=1;ch=true}if(ch)localStorage.setItem('nt_dn',JSON.stringify(dn))}}catch(e){}})();
 function setAdmin(on){if(on&&!adminOn){adminOn=true;realWallet=wallet;wallet=Math.max(wallet,1e9)}else if(!on&&adminOn){adminOn=false;wallet=realWallet}}
 function chkAdmin(){try{setAdmin(!!(window.ARKAT&&ARKAT.isAdmin()))}catch(e){}}
 document.addEventListener('arkat:auth',chkAdmin);
@@ -415,7 +416,7 @@ function ov(){
  else if(S==='win'){glow('#39ff14',22);txt('SEVİYE TAMAM!',W/2,180,34,'#39ff14');x.shadowBlur=0;txt('SEVİYE '+(lv+1)+' · '+TH[lv].n,W/2,222,15,'#cfe');txt('+'+crys+' ◆ cüzdana eklendi',W/2,256,16,'#0ff');
   if(bonus)txt('İLK GEÇİŞ BONUSU +'+bonus+' ◆',W/2,286,14,'#ffd23f');
   if(lv===9)txt('TÜM SEVİYELERİ BİTİRDİN!',W/2,316,16,'#ff2bd6');else txt('SEVİYE '+(lv+2)+' AÇILDI',W/2,316,13,'#9bd');my0=345}
- else if(S==='levels'){glow('#19e6ff',16);txt('SEVİYE MODU',W/2,70,28,'#19e6ff');x.shadowBlur=0;
+ else if(S==='levels'){glow('#19e6ff',16);txt('SEVİYE MODU',W/2,70,28,'#19e6ff');x.shadowBlur=0;txt('NOVA ✕  '+dn.filter(Boolean).length+'/10',W/2,300,12,dn.filter(Boolean).length>=10?'#39ff14':'#9bd');
   for(let i=0;i<10;i++){const cx=39+(i%5)*70,cy=120+((i/5)|0)*76,lk=i>=prog,on=i===lvSel,col=lk?'#556':done[i]?'#39ff14':'#19e6ff';
    x.fillStyle=on?'rgba(25,230,255,.16)':'rgba(255,255,255,.03)';x.fillRect(cx,cy,62,62);glow(col,on?14:3);x.strokeStyle=col;x.lineWidth=2;x.strokeRect(cx,cy,62,62);x.shadowBlur=0;
    txt(String(i+1),cx+31,cy+30,24,col);txt(lk?'KİLİTLİ':done[i]?'✓ TAMAM':'AÇIK',cx+31,cy+50,9,col,'center',58)}

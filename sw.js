@@ -1,5 +1,5 @@
 /* ARKAT service worker: önce ağ (hep güncel), internet yoksa önbellek */
-const V = 'arkat-v4';
+const V = 'arkat-v5';
 const CORE = [
   './', 'index.html', 'profile.html', 'user.html', 'badges.html', 'arkat.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png',
