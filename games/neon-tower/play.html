@@ -58,7 +58,7 @@ function gen(){
  if(n>2&&!p.mv&&!p.cr&&Math.random()<(mode==='level'?.04:.14))items.push({x:px+16+Math.random()*(w-32),y:y-8,k:'sp',a:0});
  if(mode==='level'&&n>2&&n<goal){const D=DF(),m=y+44;
   if(Math.random()<D.dr)obs.push({k:'dr',x:WL+20+Math.random()*(W-2*WL-40),y:m,vx:(Math.random()<.5?-1:1)*(1.2+lv*.15),ph:Math.random()*6});
-  else if(Math.random()<D.ls)obs.push({k:'ls',y:m,ph:Math.random()*200|0})}
+  else if(!hard&&Math.random()<D.ls)obs.push({k:'ls',y:m,ph:Math.random()*200|0})}
 }
 function burst(px,py,col,n){for(let i=0;i<n;i++)parts.push({x:px,y:py,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,l:25+Math.random()*15,c:col})}
 function jump(){
@@ -377,7 +377,7 @@ function quit(){try{location.href='../../index.html'}catch(e){go('bye')}}
 function addScore(){lastRank=-1;if(score>0){try{window.ARKAT&&ARKAT.saveScore('tower',hard?'h':'c',score)}catch(e){}const e={s:score,f:fl,c:crys};let a=hard?hh:hs;a.push(e);a.sort((p,q)=>q.s-p.s);lastRank=a.indexOf(e);a=a.slice(0,5);if(lastRank>4)lastRank=-1;if(hard)hh=a;else hs=a;try{localStorage.setItem(hard?'nt_hhs':'nt_hs',JSON.stringify(a))}catch(e){}}}
 function items_(){
  const sn=['SES: '+(snd?'AÇIK':'KAPALI'),togSnd];
- if(S==='menu')return[['KLASİK MOD',start],[done[9]?'ZOR MOD':'ZOR MOD · KİLİTLİ',()=>{if(done[9])go('hard');else{go('warn');beep(150,.2,'square')}}],['SEVİYE MODU',()=>{lvSel=Math.min(prog-1,9);go('levels')}],['KARAKTERLER',()=>{cv=selCh;go('chars')}],['YÜKSEK SKORLAR',()=>go('scores')],sn,['ÇIKIŞ',quit]];
+ if(S==='menu')return[['KLASİK MOD',start],['ZOR MOD',()=>go('hard')],['SEVİYE MODU',()=>{lvSel=Math.min(prog-1,9);go('levels')}],['KARAKTERLER',()=>{cv=selCh;go('chars')}],['YÜKSEK SKORLAR',()=>go('scores')],sn,['ÇIKIŞ',quit]];
  if(S==='pause')return conf?[['EVET, ANA MENÜYE DÖN',toMenu],['HAYIR, DEVAM ET',()=>{conf=0;sel=0}]]:[['DEVAM ET',resume],sn,['ANA MENÜYE DÖN',()=>{conf=1;sel=1}]];
  if(S==='over')return mode==='level'&&!hard?[['TEKRAR DENE',()=>startLevel(lv)],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['TEKRAR OYNA',hard?startHard:start],['ANA MENÜ',toMenu]];
  if(S==='win')return lv<9?[['SONRAKİ SEVİYE',()=>startLevel(lv+1)],['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]]:[['SEVİYELER',()=>go('levels')],['ANA MENÜ',toMenu]];

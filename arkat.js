@@ -197,6 +197,92 @@
       bd_of: 'kazanıldı',
       bd_none: 'Henüz rozet kazanılmadı.',
       admin_tag: 'ADMİN',
+      // Online oyunlar
+      on_nav: 'ONLINE',
+      on_title: 'ONLINE OYUNLAR',
+      on_sub: 'Arkadaşlarınla oda kur, birlikte oyna.',
+      on_need_login: 'Online oyunlar için Google ile giriş yap.',
+      g_pis7_t: 'PİS YEDİLİ',
+      g_pis7_d: 'Eşleştir, ceza ver, elini ilk bitir. 2-4 kişilik online kart oyunu.',
+      on_create: 'ODA KUR',
+      on_join_code: 'KODLA KATIL',
+      on_code_ph: 'ODA KODU',
+      on_join: 'KATIL',
+      on_rooms: 'AÇIK ODALAR',
+      on_no_rooms: 'Şu an açık oda yok. İlk odayı sen kur!',
+      on_invites: 'DAVETLER',
+      on_no_invites: 'Davet yok.',
+      on_invited: '{0} seni davet etti',
+      on_room_title: 'ODA ADI (İSTEĞE BAĞLI)',
+      on_players: 'OYUNCU SAYISI',
+      on_pw: 'ŞİFRE (İSTEĞE BAĞLI)',
+      on_pw_hint: 'Boş bırakırsan oda şifresiz olur.',
+      on_scoring: 'PUAN TABLOSU',
+      on_scoring_hint: 'Oyun bitince sıralamana göre dünya sıralamasındaki Online Puanın değişir.',
+      on_preset_classic: 'Klasik',
+      on_preset_light: 'Hafif',
+      on_preset_high: 'Yüksek',
+      on_preset_winner: 'Kazanan alır',
+      on_preset_friendly: 'Dostluk (puansız)',
+      on_make: 'ODAYI KUR',
+      on_wrong_pw: 'Şifre yanlış.',
+      on_pw_ask: 'Bu oda şifreli. Şifreyi yaz:',
+      on_room_missing: 'Oda bulunamadı.',
+      on_room_full: 'Oda dolu.',
+      on_started: 'Oyun başlamış, katılamazsın.',
+      on_closed: 'Oda kapandı.',
+      on_rules_h: 'NASIL OYNANIR',
+      on_r1: 'Aynı renkten ya da aynı sayıdan kart at. Atamazsan 1 kart çek; çektiğin oynanabiliyorsa atabilir ya da pas geçebilirsin.',
+      on_r2: '<b>7:</b> sıradaki 2 kart çeker. O da 7 atarsa ceza büyür (+2). Atamayan hepsini çeker.',
+      on_r3: '<b>8:</b> bir kart daha oynarsın. <b>10:</b> yön değişir. <b>As:</b> sıradaki oyuncu atlanır. (2 kişilikte 10 ve As bir kart daha oynatır.)',
+      on_r4: '<b>Vale (J):</b> ceza yokken her kartın üstüne atılır ve rengi sen seçersin.',
+      on_r5: 'Eli ilk biten 1. olur. Oyun son oyuncu kalana kadar sürer, herkes sırasına göre puan alır ya da kaybeder.',
+      on_r6: 'Sıra başına 45 saniyen var, süre dolarsa otomatik oynanır.',
+      on_room: 'ODA',
+      on_code: 'ODA KODU',
+      on_copy_code: 'KODU KOPYALA',
+      on_copy_link: 'BAĞLANTIYI KOPYALA',
+      on_copied: 'Kopyalandı!',
+      on_host: 'KURUCU',
+      on_waiting: 'Oyuncular bekleniyor…',
+      on_start: 'OYUNU BAŞLAT',
+      on_need2: 'Başlamak için en az 2 oyuncu gerekir.',
+      on_leave: 'AYRIL',
+      on_close: 'ODAYI KAPAT',
+      on_kick: 'AT',
+      on_empty_slot: 'boş',
+      on_invite_friends: 'ARKADAŞ DAVET ET',
+      on_invite_btn: 'DAVET ET',
+      on_invited_ok: 'DAVET EDİLDİ',
+      on_no_friends: 'Davet edilecek arkadaşın yok. Önce arkadaş ekle.',
+      on_your_turn: 'SIRA SENDE',
+      on_wait_turn: '{0} oynuyor…',
+      on_draw: 'KART ÇEK',
+      on_pass: 'PAS',
+      on_draw_n: '{0} KART ÇEK',
+      on_pick_suit: 'RENK SEÇ',
+      on_penalty: 'Ceza: +{0}',
+      on_cards: '{0} kart',
+      on_deck: 'DESTE',
+      on_dir: 'YÖN',
+      on_ev_play: '{0} oynadı',
+      on_ev_draw: '{0} kart çekti',
+      on_ev_pen: '{0} ceza olarak {1} kart çekti',
+      on_ev_pass: '{0} pas geçti',
+      on_ev_fin: '{0} elini bitirdi!',
+      on_ev_auto: '(otomatik)',
+      on_result: 'SONUÇ',
+      on_pts: 'puan',
+      on_rematch: 'YENİ OYUN',
+      on_back_hub: 'ODALARA DÖN',
+      on_applied: 'Online puanın güncellendi: {0}',
+      on_friendly_note: 'Dostluk maçı, puan yok.',
+      on_host_lost: 'Kurucunun bağlantısı koptu. Oyun durmuş olabilir.',
+      on_stalled: 'Kimse oynayamadı, oyun eldeki kart sayısına göre bitti.',
+      mode_online: 'Online puan',
+      on_wins: 'Galibiyet',
+      on_games: 'Oyun',
+      on_loading: 'Yükleniyor…',
       // profil
       prof_title: 'ARKAT — Profil',
       back_home: '◂ ANA SAYFA',
@@ -389,6 +475,92 @@
       bd_of: 'earned',
       bd_none: 'No badges earned yet.',
       admin_tag: 'ADMIN',
+      // Online oyunlar
+      on_nav: 'ONLINE',
+      on_title: 'ONLINE GAMES',
+      on_sub: 'Create a room and play with your friends.',
+      on_need_login: 'Sign in with Google to play online.',
+      g_pis7_t: 'PIS YEDILI',
+      g_pis7_d: 'Match, punish, empty your hand first. Online card game for 2–4 players.',
+      on_create: 'CREATE ROOM',
+      on_join_code: 'JOIN WITH CODE',
+      on_code_ph: 'ROOM CODE',
+      on_join: 'JOIN',
+      on_rooms: 'OPEN ROOMS',
+      on_no_rooms: 'No open rooms right now. Create the first one!',
+      on_invites: 'INVITES',
+      on_no_invites: 'No invites.',
+      on_invited: '{0} invited you',
+      on_room_title: 'ROOM NAME (OPTIONAL)',
+      on_players: 'PLAYERS',
+      on_pw: 'PASSWORD (OPTIONAL)',
+      on_pw_hint: 'Leave empty for an open room.',
+      on_scoring: 'SCORING',
+      on_scoring_hint: 'When the game ends, your Online Points on the world ranking change by your finishing place.',
+      on_preset_classic: 'Classic',
+      on_preset_light: 'Light',
+      on_preset_high: 'High stakes',
+      on_preset_winner: 'Winner takes',
+      on_preset_friendly: 'Friendly (no points)',
+      on_make: 'CREATE ROOM',
+      on_wrong_pw: 'Wrong password.',
+      on_pw_ask: 'This room is password protected. Enter the password:',
+      on_room_missing: 'Room not found.',
+      on_room_full: 'Room is full.',
+      on_started: 'The game has already started.',
+      on_closed: 'The room was closed.',
+      on_rules_h: 'HOW TO PLAY',
+      on_r1: 'Play a card of the same suit or the same rank. If you can\'t, draw 1 card; if it can be played you may play it or pass.',
+      on_r2: '<b>7:</b> the next player draws 2. If they play a 7 too, the penalty grows (+2). Whoever can\'t answer draws it all.',
+      on_r3: '<b>8:</b> you play again. <b>10:</b> reverses direction. <b>Ace:</b> the next player is skipped. (With 2 players, 10 and Ace let you play again.)',
+      on_r4: '<b>Jack:</b> can be played on any card when there is no penalty, and you pick the suit.',
+      on_r5: 'The first to empty their hand is 1st. The game goes on until one player is left, and everyone gains or loses points by place.',
+      on_r6: 'You have 45 seconds per turn, then a move is played automatically.',
+      on_room: 'ROOM',
+      on_code: 'ROOM CODE',
+      on_copy_code: 'COPY CODE',
+      on_copy_link: 'COPY LINK',
+      on_copied: 'Copied!',
+      on_host: 'HOST',
+      on_waiting: 'Waiting for players…',
+      on_start: 'START GAME',
+      on_need2: 'At least 2 players are needed to start.',
+      on_leave: 'LEAVE',
+      on_close: 'CLOSE ROOM',
+      on_kick: 'KICK',
+      on_empty_slot: 'empty',
+      on_invite_friends: 'INVITE FRIENDS',
+      on_invite_btn: 'INVITE',
+      on_invited_ok: 'INVITED',
+      on_no_friends: 'No friends to invite yet. Add some first.',
+      on_your_turn: 'YOUR TURN',
+      on_wait_turn: '{0} is playing…',
+      on_draw: 'DRAW',
+      on_pass: 'PASS',
+      on_draw_n: 'DRAW {0}',
+      on_pick_suit: 'PICK A SUIT',
+      on_penalty: 'Penalty: +{0}',
+      on_cards: '{0} cards',
+      on_deck: 'DECK',
+      on_dir: 'DIRECTION',
+      on_ev_play: '{0} played',
+      on_ev_draw: '{0} drew a card',
+      on_ev_pen: '{0} drew {1} cards (penalty)',
+      on_ev_pass: '{0} passed',
+      on_ev_fin: '{0} emptied their hand!',
+      on_ev_auto: '(auto)',
+      on_result: 'RESULTS',
+      on_pts: 'pts',
+      on_rematch: 'REMATCH',
+      on_back_hub: 'BACK TO ROOMS',
+      on_applied: 'Online points updated: {0}',
+      on_friendly_note: 'Friendly match, no points.',
+      on_host_lost: 'The host seems disconnected. The game may be stalled.',
+      on_stalled: 'Nobody could play, so the game ended by cards left in hand.',
+      mode_online: 'Online points',
+      on_wins: 'Wins',
+      on_games: 'Games',
+      on_loading: 'Loading…',
       prof_title: 'ARKAT — Profile',
       back_home: '◂ HOME',
       prof_h: 'PROFILE',
@@ -580,6 +752,92 @@
       bd_of: '獲得',
       bd_none: 'まだバッジを獲得していません。',
       admin_tag: '管理者',
+      // Online oyunlar
+      on_nav: 'オンライン',
+      on_title: 'オンラインゲーム',
+      on_sub: '部屋を作ってフレンドと一緒に遊ぼう。',
+      on_need_login: 'オンラインで遊ぶにはGoogleでログインしてください。',
+      g_pis7_t: 'ピス・イェディリ',
+      g_pis7_d: 'マッチして、ペナルティを与えて、最初に手札を出し切ろう。2〜4人用オンラインカードゲーム。',
+      on_create: '部屋を作る',
+      on_join_code: 'コードで参加',
+      on_code_ph: 'ルームコード',
+      on_join: '参加',
+      on_rooms: '公開ルーム',
+      on_no_rooms: '今は公開ルームがありません。最初の部屋を作ろう！',
+      on_invites: '招待',
+      on_no_invites: '招待はありません。',
+      on_invited: '{0}さんから招待されました',
+      on_room_title: 'ルーム名（任意）',
+      on_players: 'プレイヤー数',
+      on_pw: 'パスワード（任意）',
+      on_pw_hint: '空欄ならパスワードなしの部屋になります。',
+      on_scoring: '得点表',
+      on_scoring_hint: 'ゲーム終了後、順位に応じて世界ランキングのオンラインポイントが変動します。',
+      on_preset_classic: 'クラシック',
+      on_preset_light: 'ライト',
+      on_preset_high: 'ハイステークス',
+      on_preset_winner: '勝者総取り',
+      on_preset_friendly: 'フレンドリー（ポイントなし）',
+      on_make: '部屋を作る',
+      on_wrong_pw: 'パスワードが違います。',
+      on_pw_ask: 'このルームにはパスワードがあります。入力してください：',
+      on_room_missing: 'ルームが見つかりません。',
+      on_room_full: 'ルームは満員です。',
+      on_started: 'ゲームはすでに始まっています。',
+      on_closed: 'ルームは閉じられました。',
+      on_rules_h: '遊び方',
+      on_r1: '同じスートか同じ数字のカードを出す。出せなければ1枚引き、引いたカードが出せるなら出すかパスできる。',
+      on_r2: '<b>7：</b>次の人が2枚引く。その人も7を出すとペナルティが増える（+2）。返せない人が全部引く。',
+      on_r3: '<b>8：</b>もう一度出せる。<b>10：</b>向きが逆になる。<b>エース：</b>次の人を飛ばす。（2人のときは10とエースでもう一度出せる。）',
+      on_r4: '<b>ジャック：</b>ペナルティがないときはどのカードにも出せて、スートを選べる。',
+      on_r5: '最初に手札を出し切った人が1位。最後の1人になるまで続き、順位に応じてポイントが増減する。',
+      on_r6: '1ターン45秒。時間切れになると自動で出される。',
+      on_room: 'ルーム',
+      on_code: 'ルームコード',
+      on_copy_code: 'コードをコピー',
+      on_copy_link: 'リンクをコピー',
+      on_copied: 'コピーしました！',
+      on_host: 'ホスト',
+      on_waiting: 'プレイヤーを待っています…',
+      on_start: 'ゲーム開始',
+      on_need2: '開始には2人以上必要です。',
+      on_leave: '退出',
+      on_close: 'ルームを閉じる',
+      on_kick: 'キック',
+      on_empty_slot: '空き',
+      on_invite_friends: 'フレンドを招待',
+      on_invite_btn: '招待',
+      on_invited_ok: '招待済み',
+      on_no_friends: '招待できるフレンドがいません。先にフレンドを追加しましょう。',
+      on_your_turn: 'あなたの番',
+      on_wait_turn: '{0}の番です…',
+      on_draw: '引く',
+      on_pass: 'パス',
+      on_draw_n: '{0}枚引く',
+      on_pick_suit: 'スートを選択',
+      on_penalty: 'ペナルティ：+{0}',
+      on_cards: '{0}枚',
+      on_deck: '山札',
+      on_dir: '向き',
+      on_ev_play: '{0}が出した',
+      on_ev_draw: '{0}が1枚引いた',
+      on_ev_pen: '{0}がペナルティで{1}枚引いた',
+      on_ev_pass: '{0}がパスした',
+      on_ev_fin: '{0}が手札を出し切った！',
+      on_ev_auto: '（自動）',
+      on_result: '結果',
+      on_pts: 'pt',
+      on_rematch: 'もう一度',
+      on_back_hub: 'ルーム一覧へ',
+      on_applied: 'オンラインポイントを更新しました：{0}',
+      on_friendly_note: 'フレンドリーマッチ、ポイントなし。',
+      on_host_lost: 'ホストの接続が切れたようです。ゲームが止まっている可能性があります。',
+      on_stalled: '誰も出せなかったため、手札の枚数でゲームが終了しました。',
+      mode_online: 'オンラインポイント',
+      on_wins: '勝利',
+      on_games: '試合',
+      on_loading: '読み込み中…',
       prof_title: 'ARKAT — プロフィール',
       back_home: '◂ ホーム',
       prof_h: 'プロフィール',
@@ -841,6 +1099,7 @@
             document.dispatchEvent(new CustomEvent('arkat:profile', { detail: profile }));
             maybePromptUsername();
             loadFriendships(true).then(renderAuth);
+            loadInvites(true).then(renderAuth);
           });
         });
         auth.getRedirectResult().catch(function () {});
@@ -922,7 +1181,7 @@
 
   // ======= 8) Dünya sıralaması =======
   // Tablo kimlikleri: oyun_zorluk (neon_e = Neon Düşüş Kolay, tower_h = Neon Tower Zor mod ...)
-  var BOARDS = { neon_e: 1, neon_m: 1, neon_d: 1, tower_c: 1, tower_h: 1, viper_u: 1, viper_c: 1, viper_l: 1, claim_l: 1, claim_e: 1 };
+  var BOARDS = { neon_e: 1, neon_m: 1, neon_d: 1, tower_c: 1, tower_h: 1, viper_u: 1, viper_c: 1, viper_l: 1, claim_l: 1, claim_e: 1, online_pis7: 1 };
   var boardCache = {};
   function shortName(n) {
     n = (n || '').trim(); if (!n) return 'Player';
@@ -1100,6 +1359,12 @@
         '<g transform="translate(23 55) scale(.78)">' + heroSvg('#ffe3d6', '#ff2bd6', '#19e6ff') + '</g>' +
         '<polygon points="44,10 50,19 44,28 38,19" fill="#19e6ff" stroke="#fff" stroke-width="1"/></svg>';
     }
+    if (name === 'pis7') {
+      return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
+        '<g transform="rotate(-18 22 50)"><rect x="8" y="14" width="26" height="38" rx="3" fill="#150c26" stroke="#19e6ff" stroke-width="2"/><text x="12" y="28" font-family="Arial" font-weight="700" font-size="12" fill="#19e6ff">A</text><text x="21" y="44" font-family="Arial" font-size="16" fill="#19e6ff" text-anchor="middle">♠</text></g>' +
+        '<g transform="rotate(12 40 50)"><rect x="28" y="12" width="26" height="38" rx="3" fill="#150c26" stroke="#ff2bd6" stroke-width="2"/><text x="32" y="26" font-family="Arial" font-weight="700" font-size="12" fill="#ff2bd6">7</text><text x="41" y="42" font-family="Arial" font-size="16" fill="#ff2bd6" text-anchor="middle">♥</text></g>' +
+        '</svg>';
+    }
     if (name === 'claim') {
       return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#0d0818"/>' +
         '<rect x="3" y="3" width="58" height="58" fill="none" stroke="#19e6ff" stroke-width="2"/>' +
@@ -1211,7 +1476,9 @@
     { id: 'viper', t: 'g_viper_t', icon: 'viper', href: 'games/neon-viper/info.html', play: 'games/neon-viper/play.html', kw: ['neon', 'viper', 'yılan', 'yilan', 'snake', 'ヘビ', 'バイパー'],
       boards: [['u', 'mode_unlimited'], ['c', 'mode_classic'], ['l', 'mode_level']], extra: [['lv', 'lv_done', 10]] },
     { id: 'claim', t: 'g_claim_t', icon: 'claim', href: 'games/neon-claim/info.html', play: 'games/neon-claim/play.html', kw: ['neon', 'claim', 'alan', 'kapat', 'zone', 'エリア'],
-      boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 200]] }
+      boards: [['l', 'mode_level'], ['e', 'mode_endless']], extra: [['lv', 'lv_done', 200]] },
+    { id: 'pis7', t: 'g_pis7_t', icon: 'pis7', href: 'online-games/index.html', play: 'online-games/index.html', src: 'online', kw: ['pis', 'yedili', 'yedi', 'kart', 'card', 'online', 'ピス', 'カード'],
+      boards: [['p', 'mode_online', 'online_pis7']], extra: [['w', 'on_wins', null], ['g', 'on_games', null]] }
   ];
   function badgeList(data) {
     var have = (data && data.badges) || {}, ids = Object.keys(BADGES);
@@ -1248,9 +1515,9 @@
       var head = el('button', 'ghead'); head.type = 'button';
       var ic = el('div', 'gicon'); ic.innerHTML = icon(g.icon);
       head.appendChild(ic); head.appendChild(el('div', 'gname', t(g.t)));
-      var mine = best[g.id] || {};
+      var mine = g.src === 'online' ? (((data && data.online) || {})[g.id] || {}) : (best[g.id] || {});
       var first = g.boards[0] && mine[g.boards[0][0]];
-      head.appendChild(el('span', 'gsum', first ? String(first) : '—'));
+      head.appendChild(el('span', 'gsum', (first || first === 0 && g.src === 'online') ? String(first) : '—'));
       var ch = el('span', 'chev', open ? '▾' : '▸'); head.appendChild(ch);
       card.appendChild(head);
       var body = el('div', 'gbody'); body.hidden = !open; card.appendChild(body);
@@ -1258,18 +1525,19 @@
       function build() {
         if (built) return; built = true;
         g.boards.forEach(function (bd) {
-          var id = g.id + '_' + bd[0], score = mine[bd[0]] || 0;
+          var id = bd[2] || (g.id + '_' + bd[0]), score = mine[bd[0]] || 0;
+          var has = g.src === 'online' ? (typeof mine[bd[0]] === 'number') : !!score;
           var row = el('button', 'srow'); row.type = 'button';
           row.appendChild(el('span', 'sl', t(bd[1])));
           var sv = el('span', 'sv');
-          sv.appendChild(el('b', null, score ? String(score) : '—'));
+          sv.appendChild(el('b', null, has ? String(score) : '—'));
           var rk = el('i', 'rk'); rk.appendChild(el('small', null, t('world')));
-          var rv = el('span', null, score ? '…' : '—'); rk.appendChild(rv); sv.appendChild(rk);
+          var rv = el('span', null, has ? '…' : '—'); rk.appendChild(rv); sv.appendChild(rk);
           sv.appendChild(el('span', 'go', '›'));
           row.appendChild(sv);
           row.addEventListener('click', function () { showBoard(id, t(g.t) + ' · ' + t(bd[1]), uid); });
           body.appendChild(row);
-          if (score) {
+          if (has) {
             getBoard(id, 100).then(function (list) {
               var r = rankOf(list, uid);
               rv.textContent = r ? '#' + r : (list.length >= 100 ? '100+' : '—');
@@ -1280,7 +1548,7 @@
           var v = mine[ex[0]] || 0;
           var row = el('div', 'srow');
           row.appendChild(el('span', 'sl', t(ex[1])));
-          var sv = el('span', 'sv'); sv.appendChild(el('b', null, v + ' / ' + ex[2]));
+          var sv = el('span', 'sv'); sv.appendChild(el('b', null, ex[2] ? (v + ' / ' + ex[2]) : String(v)));
           row.appendChild(sv); body.appendChild(row);
         });
       }
@@ -1425,7 +1693,7 @@
 
   // ======= 14) Arkadaşlar =======
   function pendingCount() {
-    return (friendCache || []).filter(function (f) { return f.status === 'pending' && f.from !== (fbUser && fbUser.uid); }).length;
+    return (friendCache || []).filter(function (f) { return f.status === 'pending' && f.from !== (fbUser && fbUser.uid); }).length + (inviteCache || []).length;
   }
   function loadFriendships(force) {
     if (!fbUser || !db) return Promise.resolve([]);
@@ -1525,6 +1793,70 @@
     function apply() { body.hidden = !open; ch.textContent = open ? '▾' : '▸'; }
     h2.addEventListener('click', function () { open = !open; apply(); try { localStorage.setItem('arkat-cs-' + key, open ? '1' : '0'); } catch (e) {} });
     apply();
+  }
+
+
+  // ======= 14c) Online oyunlar: davetler, şifre özeti, puan işleme =======
+  var inviteCache = null;
+  function loadInvites(force) {
+    if (!fbUser || !db) return Promise.resolve([]);
+    if (inviteCache && !force) return Promise.resolve(inviteCache);
+    return db.collection('invites').where('to', '==', fbUser.uid).get().then(function (q) {
+      inviteCache = q.docs.map(function (d) { var x = d.data(); x.id = d.id; return x; });
+      return inviteCache;
+    }).catch(function () { inviteCache = []; return inviteCache; });
+  }
+  function sendInvite(toUid, room) {
+    return db.collection('invites').doc(toUid + '_' + room.code).set({
+      to: toUid, from: fbUser.uid, fromName: (profile && profile.username) || shortName(fbUser.displayName),
+      code: room.code, title: room.title || '', private: !!room.private, proof: room.proof || '', t: Date.now()
+    });
+  }
+  function removeInvite(id) {
+    return db.collection('invites').doc(id).delete().then(function () {
+      inviteCache = (inviteCache || []).filter(function (i) { return i.id !== id; }); renderAuth();
+    });
+  }
+  function pwHash(code, pw) {
+    var str = 'arkat:' + code + ':' + pw;
+    try {
+      if (window.crypto && crypto.subtle && window.TextEncoder) {
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+          return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+        });
+      }
+    } catch (e) {}
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (var i = 0; i < str.length; i++) { var ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return Promise.resolve((h2 >>> 0).toString(16) + (h1 >>> 0).toString(16));
+  }
+  // Oyun sonucunu (host'un yazdığı puan) bir kez uygular: tabloya, profile ve işaret belgesine yazar
+  function applyOnlineResult(game, code, gameNo, pts, place) {
+    if (!fbUser || !db || typeof pts !== 'number') return Promise.resolve(null);
+    var key = code + '_' + gameNo, uid = fbUser.uid, id = key + '_' + uid, bid = 'online_' + game;
+    var aref = db.collection('applied').doc(id);
+    var eref = db.collection('boards').doc(bid).collection('entries').doc(uid);
+    var pref = db.collection('profiles').doc(uid);
+    return aref.get().then(function (a) {
+      if (a.exists) return null;
+      return Promise.all([eref.get(), pref.get()]).then(function (r) {
+        var old = r[0].exists ? (r[0].data().score || 0) : 0, np = old + pts;
+        var o = (r[1].exists && r[1].data().online && r[1].data().online[game]) || {};
+        var who = boardIdentity(), batch = db.batch();
+        batch.set(aref, { uid: uid, room: code, game: gameNo, pts: pts });
+        batch.set(eref, { uid: uid, name: who.name, photo: who.photo, score: np, t: serverTs(), lastRoom: key });
+        var upd = { online: {} };
+        upd.online[game] = { p: np, w: (o.w || 0) + (place === 1 ? 1 : 0), g: (o.g || 0) + 1 };
+        batch.set(pref, upd, { merge: true });
+        return batch.commit().then(function () {
+          delete boardCache[bid];
+          if (profile) { profile.online = profile.online || {}; profile.online[game] = upd.online[game]; }
+          return np;
+        });
+      });
+    }).catch(function () { return null; });
   }
 
   // ======= 15) Arama (oyun + kişi) =======
@@ -1681,6 +2013,7 @@
     getFriendList: function () { return friendCache || []; },
     openSearch: openSearch,
     isAdmin: isAdmin, isAdminUid: isAdminUid,
+    loadInvites: loadInvites, getInvites: function () { return inviteCache || []; }, sendInvite: sendInvite, removeInvite: removeInvite, pwHash: pwHash, applyOnlineResult: applyOnlineResult, shortName: shortName,
     getFavs: getFavs, isFav: isFav, toggleFav: toggleFav, refreshFavButtons: refreshFavButtons, renderFavs: renderFavs, collapsible: collapsible,
     badgeList: badgeList, badgeCard: badgeCard, BADGE_IDS: function () { return Object.keys(BADGES); },
     canInstall: canInstall, install: install

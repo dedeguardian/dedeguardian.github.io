@@ -141,6 +141,9 @@
   @keyframes twtw{50%{opacity:.25}}
   .tw-float{animation:twfl 2.4s steps(6) infinite}
   .vp-snake{animation:vpmove 3s steps(12) infinite alternate}
+  .pk-a{animation:pka 3.2s steps(8) infinite alternate}.pk-c{animation:pkc 3.2s steps(8) infinite alternate}
+  @keyframes pka{from{transform:translate(110px,70px) rotate(-16deg)}to{transform:translate(96px,64px) rotate(-24deg)}}
+  @keyframes pkc{from{transform:translate(250px,70px) rotate(16deg)}to{transform:translate(264px,64px) rotate(24deg)}}
   .cl-draw{animation:cldraw 2.6s steps(10) infinite alternate}
   @keyframes cldraw{from{opacity:.2;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
   .cl-spark{animation:clspark 3.4s steps(20) infinite}
@@ -184,7 +187,7 @@
 
 <header>
   <div class="brand"><span class="dot"></span>ARKAT</div>
-  <nav style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end"><button class="inst" id="install-btn" hidden data-i18n-title="inst_hint"><img src="icons/icon-192.png" alt=""><span data-i18n="install_short">YÜKLE</span></button><a href="#oyunlar" data-i18n="nav_games">OYUNLAR</a><div id="arkat-bar"></div></nav>
+  <nav style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:flex-end"><button class="inst" id="install-btn" hidden data-i18n-title="inst_hint"><img src="icons/icon-192.png" alt=""><span data-i18n="install_short">YÜKLE</span></button><a href="#oyunlar" data-i18n="nav_games">OYUNLAR</a><a href="online-games/index.html" data-i18n="on_nav" style="color:var(--cyan)">ONLINE</a><div id="arkat-bar"></div></nav>
 </header>
 
 <div class="hero">
@@ -313,6 +316,31 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<section id="online">
+  <div class="section-head">
+    <h2 data-i18n="on_title">ONLINE OYUNLAR</h2>
+    <span data-i18n="on_sub"></span>
+  </div>
+  <div class="grid">
+    <a class="card c5" href="online-games/index.html">
+      <div class="thumb"><button class="fav" type="button" data-fav="pis7" aria-label="favorite"></button>
+        <svg class="scene" viewBox="0 0 360 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="360" height="140" fill="#0d0818"/>
+          <g class="pk-a" transform="translate(110 70) rotate(-16)"><rect x="-30" y="-48" width="60" height="92" rx="6" fill="#150c26" stroke="#19e6ff" stroke-width="3"/><text x="-22" y="-24" font-family="Arial" font-weight="700" font-size="20" fill="#19e6ff">A</text><text x="0" y="22" text-anchor="middle" font-family="Arial" font-size="40" fill="#19e6ff">♠</text></g>
+          <g class="pk-b" transform="translate(180 66) rotate(0)"><rect x="-30" y="-52" width="60" height="92" rx="6" fill="#150c26" stroke="#ffd23f" stroke-width="3"/><text x="-22" y="-28" font-family="Arial" font-weight="700" font-size="20" fill="#ffd23f">J</text><text x="0" y="18" text-anchor="middle" font-family="Arial" font-size="40" fill="#ffd23f">♦</text></g>
+          <g class="pk-c" transform="translate(250 70) rotate(16)"><rect x="-30" y="-48" width="60" height="92" rx="6" fill="#150c26" stroke="#ff2bd6" stroke-width="3"/><text x="-22" y="-24" font-family="Arial" font-weight="700" font-size="20" fill="#ff2bd6">7</text><text x="0" y="22" text-anchor="middle" font-family="Arial" font-size="40" fill="#ff2bd6">♥</text></g>
+          <g class="tw-twinkle"><circle cx="60" cy="30" r="4" fill="#39ff14"/></g><g class="tw-twinkle d2"><circle cx="300" cy="28" r="4" fill="#19e6ff"/></g>
+        </svg>
+      </div>
+      <div class="body">
+        <h3 data-i18n="g_pis7_t">PİS YEDİLİ</h3>
+        <p data-i18n="g_pis7_d">Eşleştir, ceza ver, elini ilk bitir. 2-4 kişilik online kart oyunu.</p>
+        <span class="tag" data-i18n="on_nav" style="background:var(--cyan)">ONLINE</span>
+      </div>
+    </a>
   </div>
 </section>
 

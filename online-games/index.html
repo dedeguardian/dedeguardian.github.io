@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr" data-title="on_title">
+<head>
+<meta charset="utf-8">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#0a0612">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ARKAT">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARKAT — Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0612;--panel:#150c26;--line:#3a2a5c;--ink:#f5f0ff;--dim:#9c8fc4;--cyan:#00fff2;--magenta:#ff2a6d;--amber:#ffb000;--green:#39ff14}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'VT323','DotGothic16',monospace;font-size:20px;line-height:1.35}
+  h1,h2,.btn{font-family:'Press Start 2P','DotGothic16',system-ui;line-height:1.6}
+  .crt{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.16) 2px 4px);mix-blend-mode:multiply}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 160px 40px rgba(0,0,0,.75)}
+  .backdrop{position:fixed;inset:0;z-index:-1;background:radial-gradient(60vw 40vh at 15% -10%, rgba(47,139,255,.14), transparent 60%),radial-gradient(55vw 40vh at 95% 10%, rgba(255,42,109,.12), transparent 60%), var(--bg)}
+  main{max-width:640px;margin:0 auto;padding:36px 22px 70px}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:26px}
+  a.back{color:var(--dim);text-decoration:none;font-size:13px}
+  a.back:hover{color:var(--ink)}
+  h1{font-size:clamp(20px,5vw,30px);margin:0 0 10px;text-shadow:-2px 0 var(--magenta),2px 0 var(--cyan)}
+  .sub2{color:var(--dim);font-size:22px;margin:0 0 26px}
+  h2.section{font-size:12px;color:var(--amber);margin:34px 0 16px;border-bottom:3px solid var(--line);padding-bottom:12px}
+  .msg{color:var(--dim);background:var(--panel);border:3px dashed var(--line);padding:22px;text-align:center}
+  .msg p{margin:0 0 14px}
+  .gamecard{background:var(--panel);border:3px solid var(--cyan);box-shadow:6px 6px 0 var(--magenta);padding:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .gicon{width:84px;height:84px;border:3px solid var(--cyan);background:#0d0818;overflow:hidden;flex:0 0 auto}
+  .gicon svg{display:block;width:100%;height:100%}
+  .gtxt{flex:1;min-width:180px}
+  .gname{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:14px;margin:0 0 6px}
+  .gdesc{color:var(--dim);font-size:19px;margin:0}
+  .gbtns{display:flex;gap:10px;flex-wrap:wrap;width:100%}
+  .gbtns .abtn{flex:1;min-width:140px}
+  .panel{background:var(--panel);border:3px solid var(--amber);padding:18px;margin-top:18px}
+  .panel[hidden]{display:none}
+  .panel h3{font-family:'Press Start 2P','DotGothic16',system-ui;font-size:10px;color:var(--amber);margin:16px 0 8px;line-height:1.6}
+  .panel h3:first-child{margin-top:0}
+  .fld{width:100%;background:#0a0612;color:var(--ink);border:3px solid var(--line);padding:10px 12px;font:22px 'VT323','DotGothic16',monospace;outline:none}
+  .fld:focus{border-color:var(--cyan)}
+  .note{color:var(--dim);font-size:17px;margin:6px 0 0;line-height:1.25}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:56px;background:var(--bg);color:var(--dim);border:3px solid var(--line);padding:10px 8px;font:12px/1.4 'Press Start 2P','DotGothic16',system-ui;cursor:pointer}
+  .seg button.on{background:var(--cyan);color:#0a0612;border-color:var(--cyan)}
+  .presets{display:flex;flex-direction:column;gap:8px}
+  .presets button{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg);color:var(--ink);border:3px solid var(--line);padding:10px 12px;font:inherit;font-size:21px;text-align:left;cursor:pointer}
+  .presets button.on{border-color:var(--cyan);background:#10143a}
+  .presets .pv{color:var(--amber);font-size:19px;white-space:nowrap}
+  .rrow{display:flex;align-items:center;gap:12px;background:var(--panel);border:3px solid var(--line);padding:10px 12px;margin-bottom:10px}
+  .rrow .rn{flex:1;min-width:0;font-size:22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rrow .rn small{display:block;color:var(--dim);font-size:16px;line-height:1.1}
+  .rrow .lk{color:var(--amber);font-size:18px}
+  .rules p{margin:0 0 10px;color:var(--ink);font-size:20px;line-height:1.25}
+  .rules b{color:var(--cyan);font-weight:400}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="backdrop"></div><div class="vignette"></div><div class="crt"></div>
+<main>
+  <div class="top"><a class="back" href="../index.html" data-i18n="back_home">◂ ANA SAYFA</a><div id="arkat-bar"></div></div>
+  <h1 data-i18n="on_title">ONLINE OYUNLAR</h1>
+  <p class="sub2" data-i18n="on_sub">Arkadaşlarınla oda kur, birlikte oyna.</p>
+
+  <div id="guest" class="msg" hidden>
+    <p data-i18n="on_need_login">Online oyunlar için Google ile giriş yap.</p>
+    <button class="abtn" id="gbtn" type="button"><span data-i18n="login">GİRİŞ YAP</span></button>
+  </div>
+
+  <div id="app" hidden>
+    <div class="gamecard">
+      <div class="gicon" id="gic"></div>
+      <div class="gtxt"><div class="gname" data-i18n="g_pis7_t">PİS YEDİLİ</div><p class="gdesc" data-i18n="g_pis7_d"></p></div>
+      <div class="gbtns">
+        <button class="abtn" id="bcreate" type="button"><span data-i18n="on_create">ODA KUR</span></button>
+        <button class="abtn ghost" id="bjoin" type="button"><span data-i18n="on_join_code">KODLA KATIL</span></button>
+      </div>
+    </div>
+
+    <div class="panel" id="pcreate" hidden>
+      <h3 data-i18n="on_room_title">ODA ADI (İSTEĞE BAĞLI)</h3>
+      <input class="fld" id="ctitle" maxlength="24" autocomplete="off">
+      <h3 data-i18n="on_players">OYUNCU SAYISI</h3>
+      <div class="seg" id="cmax"></div>
+      <h3 data-i18n="on_pw">ŞİFRE (İSTEĞE BAĞLI)</h3>
+      <input class="fld" id="cpw" maxlength="20" autocomplete="off" type="text">
+      <p class="note" data-i18n="on_pw_hint"></p>
+      <h3 data-i18n="on_scoring">PUAN TABLOSU</h3>
+      <div class="presets" id="cpre"></div>
+      <p class="note" data-i18n="on_scoring_hint"></p>
+      <div style="margin-top:18px"><button class="abtn" id="cmake" type="button"><span data-i18n="on_make">ODAYI KUR</span></button></div>
+      <p class="note" id="cerr" style="color:var(--magenta)"></p>
+    </div>
+
+    <div class="panel" id="pjoin" hidden>
+      <h3 data-i18n="on_join_code">KODLA KATIL</h3>
+      <div style="display:flex;gap:10px">
+        <input class="fld" id="jcode" maxlength="5" autocomplete="off" autocapitalize="characters" data-i18n-ph="on_code_ph" style="text-transform:uppercase;letter-spacing:4px;text-align:center">
+        <button class="abtn" id="jgo" type="button"><span data-i18n="on_join">KATIL</span></button>
+      </div>
+    </div>
+
+    <h2 class="section"><span data-i18n="on_invites">DAVETLER</span></h2>
+    <div id="invites"></div>
+
+    <h2 class="section"><span data-i18n="on_rooms">AÇIK ODALAR</span></h2>
+    <div id="rooms"></div>
+
+    <h2 class="section"><span data-i18n="on_rules_h">NASIL OYNANIR</span></h2>
+    <div class="rules" id="rules">
+      <p data-i18n="on_r1"></p><p data-i18n="on_r2"></p><p data-i18n="on_r3"></p><p data-i18n="on_r4"></p><p data-i18n="on_r5"></p><p data-i18n="on_r6"></p>
+    </div>
+  </div>
+</main>
+
+<script src="pis-yedili/engine.js"></script>
+<script src="../arkat.js" data-root="../"></script>
+<script>
+(function(){
+  var A=ARKAT, E=Pis7, el=A.el, $=function(i){return document.getElementById(i)};
+  var db=null, unsubRooms=null, maxP=4, preset='classic', ready=false;
+  var CODE_CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+  function genCode(){var s='';for(var i=0;i<5;i++)s+=CODE_CH.charAt(Math.floor(Math.random()*CODE_CH.length));return s}
+  function presetLabel(p){return A.t('on_preset_'+p)}
+  function preview(p,n){return E.payoutFor(p,n).map(function(v){return v>0?'+'+v:String(v).replace('-','−')}).join(' / ')}
+
+  function buildCreate(){
+    var seg=$('cmax');seg.innerHTML='';
+    [2,3,4].forEach(function(n){var b=el('button',n===maxP?'on':'',String(n));b.type='button';b.addEventListener('click',function(){maxP=n;buildCreate()});seg.appendChild(b)});
+    var box=$('cpre');box.innerHTML='';
+    E.PRESETS.forEach(function(p){
+      var b=el('button',p===preset?'on':'');b.type='button';
+      b.appendChild(el('span',null,presetLabel(p)));
+      b.appendChild(el('span','pv',p==='friendly'?'—':preview(p,maxP)));
+      b.addEventListener('click',function(){preset=p;buildCreate()});
+      box.appendChild(b);
+    });
+  }
+
+  async function createRoom(){
+    $('cerr').textContent='';
+    var u=A.getUser(),p=A.getProfile();
+    if(!u||!p||!p.username){$('cerr').textContent=A.t('un_title');return}
+    var btn=$('cmake');btn.disabled=true;
+    try{
+      var title=$('ctitle').value.trim(),pw=$('cpw').value;
+      var code=null,i=0;
+      while(i++<8){var c=genCode();var s=await db.collection('rooms').doc(c).get();if(!s.exists){code=c;break}}
+      if(!code)throw new Error('code');
+      var proof=pw?await A.pwHash(code,pw):'';
+      var rref=db.collection('rooms').doc(code),now=Date.now(),b=db.batch();
+      var players={};players[u.uid]={name:p.username,photo:p.photo||'',t:now};
+      b.set(rref,{code:code,game:'pis7',hostUid:u.uid,hostName:p.username,title:title,private:!!pw,max:maxP,preset:preset,status:'lobby',players:players,hb:now,gameNo:0,createdAt:now});
+      if(pw)b.set(rref.collection('secret').doc('pw'),{hash:proof});
+      b.set(rref.collection('members').doc(u.uid),{uid:u.uid,name:p.username,photo:p.photo||'',proof:proof});
+      await b.commit();
+      location.href='pis-yedili/room.html?r='+code;
+    }catch(e){$('cerr').textContent=A.t('set_err');btn.disabled=false}
+  }
+
+  function roomRow(r){
+    var row=el('div','rrow');
+    var nm=el('span','rn',r.title||('@'+r.hostName));
+    nm.appendChild(el('small',null,'@'+r.hostName+' · '+Object.keys(r.players||{}).length+'/'+r.max+' · '+presetLabel(r.preset)));
+    row.appendChild(nm);
+    if(r.private)row.appendChild(el('span','lk','🔒'));
+    var b=el('a','abtn sm',A.t('on_join'));b.href='pis-yedili/room.html?r='+r.code;
+    row.appendChild(b);
+    return row;
+  }
+  function watchRooms(){
+    if(unsubRooms)return;
+    unsubRooms=db.collection('rooms').where('status','==','lobby').where('game','==','pis7').limit(30).onSnapshot(function(snap){
+      var box=$('rooms');box.innerHTML='';
+      var now=Date.now();
+      var list=snap.docs.map(function(d){return d.data()}).filter(function(r){return r.hb&&now-r.hb<150000&&Object.keys(r.players||{}).length<r.max});
+      if(!list.length){box.appendChild(el('div','msg',A.t('on_no_rooms')));return}
+      list.sort(function(a,b){return (b.hb||0)-(a.hb||0)});
+      list.forEach(function(r){box.appendChild(roomRow(r))});
+    },function(){$('rooms').innerHTML='';$('rooms').appendChild(el('div','msg',A.t('on_no_rooms')))});
+  }
+  function renderInvites(){
+    var box=$('invites');box.innerHTML='';
+    var list=A.getInvites();
+    if(!list.length){box.appendChild(el('div','msg',A.t('on_no_invites')));return}
+    list.forEach(function(iv){
+      var row=el('div','rrow');
+      var nm=el('span','rn',A.t('on_invited').replace('{0}','@'+iv.fromName));
+      nm.appendChild(el('small',null,(iv.title||'')+' · '+iv.code));
+      row.appendChild(nm);
+      var ok=el('a','abtn sm',A.t('on_join'));ok.href='pis-yedili/room.html?r='+iv.code+(iv.proof?'&k='+encodeURIComponent(iv.proof):'');
+      ok.addEventListener('click',function(){A.removeInvite(iv.id).catch(function(){})});
+      var no=el('button','abtn sm ghost',A.t('fr_decline'));no.type='button';
+      no.addEventListener('click',function(){A.removeInvite(iv.id).then(renderInvites)});
+      row.appendChild(ok);row.appendChild(no);box.appendChild(row);
+    });
+  }
+
+  function showApp(){
+    var u=A.getUser();
+    $('guest').hidden=!!u;$('app').hidden=!u;
+    if(!u)return;
+    db=A.getDb();if(!db)return;
+    if(!ready){
+      ready=true;
+      $('gic').innerHTML=A.icon('pis7');
+      buildCreate();
+      $('bcreate').addEventListener('click',function(){$('pcreate').hidden=!$('pcreate').hidden;$('pjoin').hidden=true});
+      $('bjoin').addEventListener('click',function(){$('pjoin').hidden=!$('pjoin').hidden;$('pcreate').hidden=true;$('jcode').focus()});
+      $('cmake').addEventListener('click',createRoom);
+      function go(){var c=$('jcode').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length>=4)location.href='pis-yedili/room.html?r='+c}
+      $('jgo').addEventListener('click',go);
+      $('jcode').addEventListener('keydown',function(e){if(e.key==='Enter')go()});
+      watchRooms();
+    }
+    A.loadInvites(true).then(renderInvites);
+  }
+  $('gbtn').addEventListener('click',function(){A.signIn()});
+  document.addEventListener('arkat:auth',showApp);
+  document.addEventListener('arkat:lang',function(){if(ready){buildCreate();renderInvites();$('gic').innerHTML=A.icon('pis7')}});
+  if(!A.isConfigured())$('guest').hidden=false;
+})();
+</script>
+</body>
+</html>
