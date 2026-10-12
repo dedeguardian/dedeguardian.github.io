@@ -89,6 +89,8 @@
       <input class="fld" id="ctitle" maxlength="24" autocomplete="off">
       <h3 data-i18n="on_players">OYUNCU SAYISI</h3>
       <div class="seg" id="cmax"></div>
+      <h3 data-i18n="on_rounds">EL SAYISI</h3>
+      <div class="seg" id="crounds"></div>
       <h3 data-i18n="on_pw">ŞİFRE (İSTEĞE BAĞLI)</h3>
       <input class="fld" id="cpw" maxlength="20" autocomplete="off" type="text">
       <p class="note" data-i18n="on_pw_hint"></p>
@@ -115,7 +117,7 @@
 
     <h2 class="section"><span data-i18n="on_rules_h">NASIL OYNANIR</span></h2>
     <div class="rules" id="rules">
-      <p data-i18n="on_r1"></p><p data-i18n="on_r2"></p><p data-i18n="on_r3"></p><p data-i18n="on_r4"></p><p data-i18n="on_r5"></p><p data-i18n="on_r6"></p>
+      <p data-i18n="on_r1"></p><p data-i18n="on_r2"></p><p data-i18n="on_r3"></p><p data-i18n="on_r4"></p><p data-i18n="on_r5"></p><p data-i18n="on_r6"></p><p data-i18n="on_r7"></p>
     </div>
   </div>
 </main>
@@ -125,7 +127,7 @@
 <script>
 (function(){
   var A=ARKAT, E=Pis7, el=A.el, $=function(i){return document.getElementById(i)};
-  var db=null, unsubRooms=null, maxP=4, preset='classic', ready=false;
+  var db=null, unsubRooms=null, maxP=4, rounds=7, preset='classic', ready=false;
   var CODE_CH='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 
   function genCode(){var s='';for(var i=0;i<5;i++)s+=CODE_CH.charAt(Math.floor(Math.random()*CODE_CH.length));return s}
@@ -135,6 +137,8 @@
   function buildCreate(){
     var seg=$('cmax');seg.innerHTML='';
     [2,3,4].forEach(function(n){var b=el('button',n===maxP?'on':'',String(n));b.type='button';b.addEventListener('click',function(){maxP=n;buildCreate()});seg.appendChild(b)});
+    var rs=$('crounds');rs.innerHTML='';
+    [3,7,10].forEach(function(n){var b=el('button',n===rounds?'on':'',String(n));b.type='button';b.addEventListener('click',function(){rounds=n;buildCreate()});rs.appendChild(b)});
     var box=$('cpre');box.innerHTML='';
     E.PRESETS.forEach(function(p){
       var b=el('button',p===preset?'on':'');b.type='button';
@@ -158,7 +162,7 @@
       var proof=pw?await A.pwHash(code,pw):'';
       var rref=db.collection('rooms').doc(code),now=Date.now(),b=db.batch();
       var players={};players[u.uid]={name:p.username,photo:p.photo||'',t:now};
-      b.set(rref,{code:code,game:'pis7',hostUid:u.uid,hostName:p.username,title:title,private:!!pw,max:maxP,preset:preset,status:'lobby',players:players,hb:now,gameNo:0,createdAt:now});
+      b.set(rref,{code:code,game:'pis7',hostUid:u.uid,hostName:p.username,title:title,private:!!pw,max:maxP,rounds:rounds,preset:preset,status:'lobby',players:players,hb:now,gameNo:0,createdAt:now});
       if(pw)b.set(rref.collection('secret').doc('pw'),{hash:proof});
       b.set(rref.collection('members').doc(u.uid),{uid:u.uid,name:p.username,photo:p.photo||'',proof:proof});
       await b.commit();
@@ -169,7 +173,7 @@
   function roomRow(r){
     var row=el('div','rrow');
     var nm=el('span','rn',r.title||('@'+r.hostName));
-    nm.appendChild(el('small',null,'@'+r.hostName+' · '+Object.keys(r.players||{}).length+'/'+r.max+' · '+presetLabel(r.preset)));
+    nm.appendChild(el('small',null,'@'+r.hostName+' · '+Object.keys(r.players||{}).length+'/'+r.max+' · '+(r.rounds||7)+' '+A.t('on_rounds').toLowerCase()+' · '+presetLabel(r.preset)));
     row.appendChild(nm);
     if(r.private)row.appendChild(el('span','lk','🔒'));
     var b=el('a','abtn sm',A.t('on_join'));b.href='pis-yedili/room.html?r='+r.code;

@@ -49,6 +49,11 @@
   .pc{position:relative;width:54px;height:78px;flex:0 0 auto;background:#150c26;border:3px solid var(--line);font-family:'Press Start 2P',system-ui;display:flex;flex-direction:column;justify-content:space-between;padding:4px 5px;color:#cfe}
   .pc.red{color:#ff4d8d;border-color:#ff2a6d}.pc.blk{color:#19e6ff;border-color:#19e6ff}
   .pc .r{font-size:12px}.pc .s{font-size:22px;text-align:center;line-height:1}.pc .b{font-size:11px;align-self:flex-end;transform:rotate(180deg)}
+  .pc.jk{color:#ffd23f;border-color:#ffd23f}
+  #round{text-align:center;font:10px/1.6 'Press Start 2P',system-ui;color:var(--amber);margin-top:4px}
+  #totals{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:18px;color:var(--dim);margin:2px 0 6px}
+  #totals b{color:var(--ink);font-weight:400}
+  .res .t{font-size:18px;color:var(--dim);margin-right:6px}
   .pc.back{background:repeating-linear-gradient(45deg,#1b1040 0 6px,#2a1760 6px 12px);border-color:#7850ff}
   .pc.can{transform:translateY(-12px);box-shadow:0 0 14px currentColor;cursor:pointer}
   .pc.dim{opacity:.4}
@@ -111,6 +116,8 @@
   <div id="table" hidden>
     <div id="opps"></div>
     <div id="center"></div>
+    <div id="round"></div>
+    <div id="totals"></div>
     <div id="status"></div>
     <div id="bar"><i id="barfill"></i></div>
     <div id="log"></div>
@@ -129,7 +136,7 @@
 var A=ARKAT,E=Pis7,el=A.el,$=function(i){return document.getElementById(i)};
 var q=new URLSearchParams(location.search);
 var CODE=(q.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,''),KEY=q.get('k')||'';
-var TURN_MS=45000,SYM={S:'♠',H:'♥',D:'♦',C:'♣'};
+var TURN_MS=45000,PAUSE=window.__ROUND_PAUSE||9000,SYM={S:'♠',H:'♥',D:'♦',C:'♣','*':'★'};
 var db=null,me=null,rref=null,room=null,hand=[],G=null,isHost=false,subs=[],started=false,joined=false,applied=false;
 var seq=0,pending=false,queue=[],working=false,loadingEngine=false,closed=false,appliedNote='',friendsLoaded=false,myProof='';
 
@@ -143,7 +150,7 @@ function isRed(s){return s==='H'||s==='D'}
 /* ---------- şifre penceresi ---------- */
 function askPassword(err){
   return new Promise(function(res){
-    var o=$('ovl');o.hidden=false;o.innerHTML='';
+    var o=$('ovl');o.hidden=false;o.innerHTML='';o.dataset.mode='pw';
     var b=el('div','box');b.appendChild(el('h3',null,A.t('on_pw_ask')));
     var inp=el('input','fld');inp.type='password';inp.maxLength=20;b.appendChild(inp);
     if(err)b.appendChild(el('p','warn',A.t('on_wrong_pw')));
@@ -222,6 +229,7 @@ function onRoom(){
     show('table');
     if(isHost&&!G&&!loadingEngine)loadEngine();
     if(room.state&&room.state.v!==undefined)pending=false;
+    if(room.status==='playing'&&room.state&&room.state.phase==='play'&&$('ovl').dataset.mode==='round'){$('ovl').hidden=true;$('ovl').dataset.mode=''}
     renderTable();
     if(room.status==='finished')afterFinish();
   }
@@ -248,7 +256,7 @@ function renderLobby(){
   });
   for(var i=ids.length;i<room.max;i++){var e=el('div','pl empty');e.appendChild(el('span','n','… '+A.t('on_empty_slot')));box.appendChild(e)}
   var sc=A.t('on_preset_'+room.preset);
-  $('linfo').textContent=sc+(room.private?' · 🔒':'');
+  $('linfo').textContent=sc+' · '+A.t('on_rounds')+' '+(room.rounds||7)+(room.private?' · 🔒':'');
   var acts=$('lacts');acts.innerHTML='';
   if(isHost){
     var st=el('button','abtn',A.t('on_start'));st.type='button';st.disabled=ids.length<2;st.addEventListener('click',startGame);acts.appendChild(st);
@@ -302,14 +310,12 @@ async function closeRoom(){
 }
 
 /* ---------- host: oyun motoru ---------- */
-function pubState(){var p=E.publicState(G);p.deadline=G.deadline;p.left=G.left;p.turnStart=G.turnStart;return J(p)}
-function deckData(){
-  return J({G:{seats:G.seats,active:G.active,finished:G.finished,turn:G.turn,dir:G.dir,top:G.top,suit:G.suit,pend:G.pend,drawnFor:G.drawnFor,drawnCard:G.drawnCard,stall:G.stall,v:G.v,done:G.done,draw:G.draw,discard:G.discard,left:G.left,miss:G.miss,seqs:G.seqs,turnStart:G.turnStart,deadline:G.deadline,last:G.last,stalled:!!G.stalled,startedAt:G.startedAt}});
-}
+function pubState(){var p=E.publicState(G);p.deadline=G.deadline;p.left=G.left;p.turnStart=G.turnStart;p.nextAt=G.nextAt||0;return J(p)}
+function deckData(){var o={};Object.keys(G).forEach(function(k){if(k!=='hands')o[k]=G[k]});return J({G:o})}
 async function startGame(){
   var seats=Object.keys(room.players).sort(function(a,b){return room.players[a].t-room.players[b].t});
   if(seats.length<2)return;
-  G=E.newGame(seats);G.left={};G.miss={};G.seqs={};G.turnStart=Date.now();G.deadline=G.turnStart+TURN_MS;G.startedAt=Date.now();
+  G=E.newGame(seats,undefined,room.rounds||7);G.left={};G.miss={};G.seqs={};G.turnStart=Date.now();G.deadline=G.turnStart+TURN_MS;G.startedAt=Date.now();
   var b=db.batch();
   b.update(rref,{status:'playing',gameNo:(room.gameNo||0)+1,order:seats,results:firebase.firestore.FieldValue.delete(),state:pubState(),hb:Date.now()});
   seats.forEach(function(u){b.set(rref.collection('hands').doc(u),{cards:G.hands[u]})});
@@ -329,11 +335,12 @@ async function loadEngine(){
   loadingEngine=false;
 }
 async function commit(uids,extra){
-  if(!G.done){G.turnStart=Date.now();G.deadline=G.turnStart+TURN_MS}
+  if(G.phase==='play'){G.turnStart=Date.now();G.deadline=G.turnStart+TURN_MS}
+  if(G.phase==='roundEnd')G.nextAt=Date.now()+PAUSE;
   var b=db.batch(),upd={state:pubState(),hb:Date.now()};
   if(G.done){
     var places=G.finished,pay=E.payoutFor(room.preset,places.length),results={};
-    places.forEach(function(u,i){results[u]={place:i+1,pts:pay[i]||0,name:nameOf(u)}});
+    places.forEach(function(u,i){results[u]={place:i+1,pts:pay[i]||0,name:nameOf(u),total:G.totals[u]}});
     upd.status='finished';upd.results=results;
   }
   b.update(rref,upd);
@@ -354,7 +361,8 @@ async function handleAction(a){
   else if(a.type==='leave'){G.left[u]=1;await commit([]);return}
   if(!res||!res.ok){return}
   G.miss[u]=0;
-  await commit(changed);
+  var all=res.roundEnd||(G.last&&G.last.all);
+  await commit(all?G.seats:changed);
 }
 async function drain(){
   if(working||!G)return;working=true;
@@ -362,8 +370,11 @@ async function drain(){
   working=false;
 }
 async function tick(){
-  if(!isHost||!G||G.done||!room||room.status!=='playing'||working||loadingEngine)return;
-  var now=Date.now(),u=G.turn;if(!u)return;
+  if(!isHost||!G||!room||room.status!=='playing'||working||loadingEngine)return;
+  var now=Date.now();
+  if(G.phase==='roundEnd'){if(now>=G.nextAt)startNextRound();return}
+  if(G.done)return;
+  var u=G.turn;if(!u)return;
   var left=G.left[u];
   var due=left?(now-G.turnStart>1500):(now>G.deadline);
   if(!due)return;
@@ -371,10 +382,17 @@ async function tick(){
   try{
     if(!left){G.miss[u]=(G.miss[u]||0)+1;if(G.miss[u]>=2)G.left[u]=1}
     var r=E.autoMove(G,u);
-    if(r.ok){if(G.last)G.last.auto=true;await commit([u])}
+    if(r.ok){if(G.last)G.last.auto=true;await commit((r.roundEnd||(G.last&&G.last.all))?G.seats:[u])}
   }catch(e){}
   working=false;
   drain();
+}
+
+async function startNextRound(){
+  if(!isHost||!G||G.phase!=='roundEnd'||working)return;
+  working=true;
+  try{E.nextRound(G);G.nextAt=0;await commit(G.seats)}catch(e){}
+  working=false;drain();
 }
 
 /* ---------- oyuncu hamleleri ---------- */
@@ -388,14 +406,14 @@ async function sendAction(a){
   renderTable();
 }
 function legalSet(){
-  var s=room.state;if(!s||s.turn!==me.uid||room.status!=='playing')return [];
-  var g={top:s.top,suit:s.suit,pend:s.pend};
+  var s=room.state;if(!s||s.turn!==me.uid||room.status!=='playing'||s.phase!=='play')return [];
+  var g={top:s.top,suit:s.suit,pend:s.pend,pendType:s.pendType};
   if(s.drawnFor===me.uid){var c=hand[hand.length-1];return c&&E.isLegal(g,c)?[c]:[]}
   return hand.filter(function(c){return E.isLegal(g,c)});
 }
 function pickSuit(){
   return new Promise(function(res){
-    var o=$('ovl');o.hidden=false;o.innerHTML='';
+    var o=$('ovl');o.hidden=false;o.innerHTML='';o.dataset.mode='suit';
     var b=el('div','box');b.appendChild(el('h3',null,A.t('on_pick_suit')));
     var row=el('div','suits');
     E.SUITS.forEach(function(s){var x=el('button',isRed(s)?'red':'blk',SYM[s]);x.type='button';x.addEventListener('click',function(){o.hidden=true;o.innerHTML='';res(s)});row.appendChild(x)});
@@ -411,15 +429,15 @@ async function playCard(c){
 
 /* ---------- masa çizimi ---------- */
 function cardEl(c,cls){
-  var p=E.parse(c),d=el('div','pc '+(isRed(p.s)?'red':'blk')+(cls?' '+cls:''));
-  d.appendChild(el('span','r',p.r));d.appendChild(el('span','s',SYM[p.s]));d.appendChild(el('span','b',SYM[p.s]));
+  var p=E.parse(c),jk=p.s==='*',d=el('div','pc '+(jk?'jk':(isRed(p.s)?'red':'blk'))+(cls?' '+cls:''));
+  d.appendChild(el('span','r',jk?'JK':p.r));d.appendChild(el('span','s',SYM[p.s]));d.appendChild(el('span','b',SYM[p.s]));
   return d;
 }
 function backEl(){return el('div','pc back')}
 function evText(s){
   var l=s.last;if(!l)return '';
   var n='@'+nameOf(l.uid),t='';
-  if(l.type==='play')t=fmt('on_ev_play',n)+' '+SYM[E.parse(l.card).s]+E.parse(l.card).r;
+  if(l.type==='play')t=(l.all?fmt('on_ev_ace',n):fmt('on_ev_play',n)+' '+SYM[E.parse(l.card).s]+(E.parse(l.card).s==='*'?'':E.parse(l.card).r));
   else if(l.type==='draw')t=fmt('on_ev_draw',n);
   else if(l.type==='penalty')t=fmt('on_ev_pen',n,l.n);
   else if(l.type==='pass')t=fmt('on_ev_pass',n);
@@ -429,16 +447,15 @@ function evText(s){
 function renderTable(){
   if(!room||!room.state||room.status==='lobby')return;
   var s=room.state,seats=room.order||Object.keys(s.counts);
-  var myTurn=s.turn===me.uid&&room.status==='playing';
+  var myTurn=s.turn===me.uid&&room.status==='playing'&&s.phase==='play';
   // rakipler
   var opps=$('opps');opps.innerHTML='';
   seats.forEach(function(u){
     if(u===me.uid)return;
-    var o=el('div','op'+(s.turn===u?' turn':'')+(s.finished.indexOf(u)>=0?' out':''));
+    var o=el('div','op'+(s.turn===u?' turn':''));
     var pl=room.players[u]||{};o.appendChild(A.avatar(pl.photo,30));
     var nm=el('div');nm.appendChild(el('div','n','@'+(pl.name||'?')));
-    var pos=s.finished.indexOf(u);
-    nm.appendChild(el('div','c',pos>=0?('#'+(pos+1)):fmt('on_cards',s.counts[u])));
+    nm.appendChild(el('div','c',fmt('on_cards',s.counts[u])+' · Σ'+((s.totals||{})[u]||0)));
     o.appendChild(nm);opps.appendChild(o);
   });
   // orta
@@ -455,7 +472,10 @@ function renderTable(){
   center.appendChild(side);
   // durum
   var st=$('status');st.className=myTurn?'me':'';
-  st.textContent=room.status==='finished'?'':(myTurn?A.t('on_your_turn'):(s.turn?fmt('on_wait_turn','@'+nameOf(s.turn)):''));
+  st.textContent=room.status==='finished'?'':(s.phase==='roundEnd'?A.t('on_round_over'):(myTurn?A.t('on_your_turn'):(s.turn?fmt('on_wait_turn','@'+nameOf(s.turn)):'')));
+  $('round').textContent=fmt('on_round_n',s.round||1,s.rounds||room.rounds||7);
+  var tt=$('totals');tt.innerHTML='';
+  (room.order||[]).forEach(function(u){var sp=el('span');sp.appendChild(document.createTextNode('@'+nameOf(u)+' '));sp.appendChild(el('b',null,String((s.totals||{})[u]||0)));tt.appendChild(sp)});
   $('log').textContent=evText(s);
   // el
   var hb=$('hand');hb.innerHTML='';hb.className=hand.length<=7?'few':'';
@@ -470,13 +490,35 @@ function renderTable(){
   var acts=$('acts');acts.innerHTML='';
   if(myTurn&&s.drawnFor===me.uid&&!pending){var ps=el('button','abtn',A.t('on_pass'));ps.type='button';ps.addEventListener('click',function(){sendAction({type:'pass'})});acts.appendChild(ps)}
   else if(canDraw){var dr=el('button','abtn',s.pend>0?fmt('on_draw_n',s.pend):A.t('on_draw'));dr.type='button';dr.addEventListener('click',function(){sendAction({type:'draw'})});acts.appendChild(dr)}
+  if(s.phase==='roundEnd'&&room.status==='playing')renderRoundEnd();
   // bağlantı uyarısı
   var stale=!isHost&&room.status==='playing'&&room.hb&&Date.now()-room.hb>75000;
   $('twarn').textContent=stale?A.t('on_host_lost'):'';
   drawBar();
 }
+function renderRoundEnd(){
+  var s=room.state,rr=s.roundRes;if(!rr)return;
+  var o=$('ovl');o.hidden=false;o.dataset.mode='round';o.innerHTML='';
+  var b=el('div','box');b.appendChild(el('h3',null,A.t('on_round_over')+' · '+fmt('on_round_n',rr.round,s.rounds)));
+  if(rr.finisher)b.appendChild(el('p','warn',A.t('on_finisher')+': @'+nameOf(rr.finisher)+(rr.mult>1?' · '+fmt('on_mult',rr.mult):'')));
+  var ids=(room.order||Object.keys(rr.pts)).slice().sort(function(a,c){return rr.totals[a]-rr.totals[c]});
+  ids.forEach(function(u){
+    var row=el('div','res'+(u===me.uid?' me':''));
+    row.appendChild(A.avatar((room.players[u]||{}).photo,28));
+    row.appendChild(el('span','n','@'+nameOf(u)));
+    var d=(rr.drew||{})[u];if(d)row.appendChild(el('span','t',fmt('on_drew7',d)));
+    row.appendChild(el('span','t','+'+rr.pts[u]));
+    row.appendChild(el('span','v',String(rr.totals[u])));
+    b.appendChild(row);
+  });
+  b.appendChild(el('p','note',A.t('on_low_wins')));
+  var rc=el('p','warn');rc.id='rcount';b.appendChild(rc);
+  if(isHost){var nx=el('button','abtn',A.t('on_next_round'));nx.type='button';nx.addEventListener('click',startNextRound);b.appendChild(nx)}
+  o.appendChild(b);drawBar();
+}
 function drawBar(){
-  if(!room||!room.state||room.status!=='playing'){$('barfill').style.width='0%';return}
+  var rc=$('rcount');if(rc&&room&&room.state&&room.state.phase==='roundEnd')rc.textContent=fmt('on_next_in',Math.max(0,Math.ceil((room.state.nextAt-Date.now())/1000)));
+  if(!room||!room.state||room.status!=='playing'||room.state.phase!=='play'){$('barfill').style.width='0%';return}
   var s=room.state,rem=Math.max(0,s.deadline-Date.now());
   $('barfill').style.width=Math.min(100,rem/TURN_MS*100)+'%';
 }
@@ -494,7 +536,7 @@ function afterFinish(){
 }
 function renderResult(){
   if(room.status!=='finished'||!room.results)return;
-  var o=$('ovl');o.hidden=false;o.innerHTML='';
+  var o=$('ovl');o.hidden=false;o.dataset.mode='result';o.innerHTML='';
   var b=el('div','box');b.appendChild(el('h3',null,A.t('on_result')));
   var ids=Object.keys(room.results).sort(function(a,c){return room.results[a].place-room.results[c].place});
   ids.forEach(function(u){
@@ -502,6 +544,7 @@ function renderResult(){
     row.appendChild(el('span','p','#'+r.place));
     row.appendChild(A.avatar((room.players[u]||{}).photo,30));
     row.appendChild(el('span','n','@'+nameOf(u)));
+    if(r.total!==undefined)row.appendChild(el('span','t','Σ'+r.total));
     if(room.preset!=='friendly'){var v=el('span','v '+(r.pts>0?'pos':(r.pts<0?'neg':'')),(r.pts>0?'+':(r.pts<0?'−':''))+Math.abs(r.pts));row.appendChild(v)}
     b.appendChild(row);
   });
