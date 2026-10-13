@@ -136,13 +136,18 @@
 var A=ARKAT,E=Pis7,el=A.el,$=function(i){return document.getElementById(i)};
 var q=new URLSearchParams(location.search);
 var CODE=(q.get('r')||'').toUpperCase().replace(/[^A-Z0-9]/g,''),KEY=q.get('k')||'';
-var TURN_MS=45000,PAUSE=window.__ROUND_PAUSE||9000,SYM={S:'♠',H:'♥',D:'♦',C:'♣','*':'★'};
+var BOT_MS=window.__BOT_MS||10000,BOT_AV='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#150c26"/><rect x="14" y="20" width="36" height="28" rx="4" fill="#1b1040" stroke="#19e6ff" stroke-width="3"/><rect x="21" y="29" width="7" height="7" fill="#ff2bd6"/><rect x="36" y="29" width="7" height="7" fill="#ff2bd6"/><rect x="24" y="40" width="16" height="3" fill="#19e6ff"/><path d="M32 20V12" stroke="#19e6ff" stroke-width="3"/><circle cx="32" cy="10" r="3" fill="#ffd23f"/></svg>'),TURN_MS=45000,PAUSE=window.__ROUND_PAUSE||9000,SYM={S:'♠',H:'♥',D:'♦',C:'♣','*':'★'};
 var db=null,me=null,rref=null,room=null,hand=[],G=null,isHost=false,subs=[],started=false,joined=false,applied=false;
-var seq=0,pending=false,queue=[],working=false,loadingEngine=false,closed=false,appliedNote='',friendsLoaded=false,myProof='';
+var lastSig='',lastChange=0,seq=0,pending=false,queue=[],working=false,loadingEngine=false,closed=false,appliedNote='',friendsLoaded=false,myProof='';
 
 function fmt(k){var s=A.t(k);for(var i=1;i<arguments.length;i++)s=s.replace('{'+(i-1)+'}',arguments[i]);return s}
 function J(o){return JSON.parse(JSON.stringify(o))}
-function nameOf(u){var p=room&&room.players&&room.players[u];return p?p.name:'?'}
+function isBot(u){return typeof u==='string'&&u.indexOf('bot_')===0}
+function pinfo(u){var p=room&&room.players&&room.players[u];if(p)return p;var b=room&&room.bots&&room.bots[u];return b?{name:b.name,photo:BOT_AV,bot:true}:{name:'?',photo:''}}
+function nameOf(u){return pinfo(u).name}
+function botCount(){return room&&room.bots?Object.keys(room.bots).length:0}
+function humanIds(){return Object.keys(room.players||{}).sort(function(a,b){return room.players[a].t-room.players[b].t})}
+function seatIds(){return humanIds().concat(Object.keys(room.bots||{}).sort())}
 function show(id){['loading','guest','fatal','lobby','table'].forEach(function(x){$(x).hidden=x!==id})}
 function fatal(key){closed=true;$('ftxt').textContent=A.t(key);show('fatal');$('ovl').hidden=true}
 function isRed(s){return s==='H'||s==='D'}
@@ -216,7 +221,8 @@ function subscribe(){
   setInterval(function(){
     if(isHost&&room&&!closed)rref.update({hb:Date.now()}).catch(function(){});
   },25000);
-  setInterval(tick,1000);
+  setInterval(tick,700);
+  setInterval(botTick,1000);
   setInterval(drawBar,250);
 }
 
@@ -243,15 +249,16 @@ function copyText(t,btn){
 }
 function renderLobby(){
   $('lcode').textContent=CODE;
-  var ids=Object.keys(room.players).sort(function(a,b){return room.players[a].t-room.players[b].t});
+  var ids=seatIds();
   $('lph').textContent=A.t('on_players')+' '+ids.length+'/'+room.max;
   var box=$('players');box.innerHTML='';
   ids.forEach(function(u){
-    var p=room.players[u],row=el('div','pl');
+    var p=pinfo(u),row=el('div','pl');
     row.appendChild(A.avatar(p.photo,38));
-    row.appendChild(el('span','n','@'+p.name+(u===me.uid?' ◂':'')));
+    row.appendChild(el('span','n',p.bot?('🤖 '+p.name):('@'+p.name+(u===me.uid?' ◂':''))));
+    if(p.bot)row.appendChild(el('span','tag',A.t('on_bot')));
     if(u===room.hostUid)row.appendChild(el('span','tag',A.t('on_host')));
-    else if(isHost){var k=el('button','abtn sm warn',A.t('on_kick'));k.type='button';k.addEventListener('click',function(){kick(u)});row.appendChild(k)}
+    else if(isHost){var k=el('button','abtn sm warn',A.t('on_kick'));k.type='button';k.addEventListener('click',function(){p.bot?kickBot(u):kick(u)});row.appendChild(k)}
     box.appendChild(row);
   });
   for(var i=ids.length;i<room.max;i++){var e=el('div','pl empty');e.appendChild(el('span','n','… '+A.t('on_empty_slot')));box.appendChild(e)}
@@ -260,6 +267,7 @@ function renderLobby(){
   var acts=$('lacts');acts.innerHTML='';
   if(isHost){
     var st=el('button','abtn',A.t('on_start'));st.type='button';st.disabled=ids.length<2;st.addEventListener('click',startGame);acts.appendChild(st);
+    if(!room.private){var bt=el('button','abtn ghost',A.t(room.autoBots===false?'on_bots_off':'on_bots_on'));bt.type='button';bt.addEventListener('click',function(){rref.update({autoBots:room.autoBots===false})});acts.appendChild(bt)}
     var cl=el('button','abtn ghost warn',A.t('on_close'));cl.type='button';cl.addEventListener('click',closeRoom);acts.appendChild(cl);
     $('lwarn').textContent=ids.length<2?A.t('on_need2'):'';
     $('invp').hidden=false;if(!friendsLoaded){friendsLoaded=true;loadFriends()}
@@ -286,6 +294,20 @@ async function loadFriends(){
     });
   });
 }
+async function kickBot(id){var upd={};upd['bots.'+id]=firebase.firestore.FieldValue.delete();try{await rref.update(upd)}catch(e){}}
+async function botTick(){
+  if(!isHost||!room||room.status!=='lobby'||closed)return;
+  var humans=humanIds().length,bots=botCount(),sig=humans+':'+bots;
+  if(sig!==lastSig){lastSig=sig;lastChange=Date.now()}
+  if(humans+bots>room.max&&bots>0){var ids=Object.keys(room.bots).sort();await kickBot(ids[ids.length-1]);return}
+  if(room.private||room.autoBots===false)return;
+  if(humans+bots<room.max&&Date.now()-lastChange>=BOT_MS){
+    lastChange=Date.now();
+    var id='bot_'+Math.random().toString(36).slice(2,6),upd={};
+    upd['bots.'+id]={name:'BOT '+(bots+1)};
+    try{await rref.update(upd)}catch(e){}
+  }
+}
 async function kick(u){
   try{var b=db.batch();b.delete(rref.collection('members').doc(u));var upd={};upd['players.'+u]=firebase.firestore.FieldValue.delete();b.update(rref,upd);await b.commit()}catch(e){A.toast(A.t('set_err'))}
 }
@@ -311,14 +333,15 @@ async function closeRoom(){
 
 /* ---------- host: oyun motoru ---------- */
 function pubState(){var p=E.publicState(G);p.deadline=G.deadline;p.left=G.left;p.turnStart=G.turnStart;p.nextAt=G.nextAt||0;return J(p)}
-function deckData(){var o={};Object.keys(G).forEach(function(k){if(k!=='hands')o[k]=G[k]});return J({G:o})}
+function deckData(){var o={},bh={};Object.keys(G).forEach(function(k){if(k!=='hands')o[k]=G[k]});G.seats.forEach(function(u){if(isBot(u))bh[u]=G.hands[u]});return J({G:o,botHands:bh})}
 async function startGame(){
-  var seats=Object.keys(room.players).sort(function(a,b){return room.players[a].t-room.players[b].t});
+  var seats=seatIds();
   if(seats.length<2)return;
+  var hasBots=seats.some(isBot);
   G=E.newGame(seats,undefined,room.rounds||7);G.left={};G.miss={};G.seqs={};G.turnStart=Date.now();G.deadline=G.turnStart+TURN_MS;G.startedAt=Date.now();
   var b=db.batch();
-  b.update(rref,{status:'playing',gameNo:(room.gameNo||0)+1,order:seats,results:firebase.firestore.FieldValue.delete(),state:pubState(),hb:Date.now()});
-  seats.forEach(function(u){b.set(rref.collection('hands').doc(u),{cards:G.hands[u]})});
+  b.update(rref,{status:'playing',botGame:hasBots,gameNo:(room.gameNo||0)+1,order:seats,results:firebase.firestore.FieldValue.delete(),state:pubState(),hb:Date.now()});
+  seats.forEach(function(u){if(!isBot(u))b.set(rref.collection('hands').doc(u),{cards:G.hands[u]})});
   b.set(rref.collection('deck').doc('state'),deckData());
   await b.commit();
 }
@@ -327,8 +350,8 @@ async function loadEngine(){
   try{
     var d=await rref.collection('deck').doc('state').get();
     if(!d.exists){loadingEngine=false;return}
-    G=d.data().G;G.hands={};
-    for(var i=0;i<G.seats.length;i++){var h=await rref.collection('hands').doc(G.seats[i]).get();G.hands[G.seats[i]]=h.exists?(h.data().cards||[]):[]}
+    var dd=d.data();G=dd.G;G.hands={};
+    for(var i=0;i<G.seats.length;i++){var sid=G.seats[i];if(isBot(sid)){G.hands[sid]=(dd.botHands||{})[sid]||[];continue}var h=await rref.collection('hands').doc(sid).get();G.hands[sid]=h.exists?(h.data().cards||[]):[]}
     G.left=G.left||{};G.miss=G.miss||{};G.seqs=G.seqs||{};
     drain();
   }catch(e){G=null}
@@ -339,13 +362,13 @@ async function commit(uids,extra){
   if(G.phase==='roundEnd')G.nextAt=Date.now()+PAUSE;
   var b=db.batch(),upd={state:pubState(),hb:Date.now()};
   if(G.done){
-    var places=G.finished,pay=E.payoutFor(room.preset,places.length),results={};
+    var places=G.finished,pay=room.botGame?places.map(function(){return 0}):E.payoutFor(room.preset,places.length),results={};
     places.forEach(function(u,i){results[u]={place:i+1,pts:pay[i]||0,name:nameOf(u),total:G.totals[u]}});
     upd.status='finished';upd.results=results;
   }
   b.update(rref,upd);
   b.set(rref.collection('deck').doc('state'),deckData());
-  J(uids).forEach(function(u){b.set(rref.collection('hands').doc(u),{cards:G.hands[u]})});
+  J(uids).forEach(function(u){if(!isBot(u))b.set(rref.collection('hands').doc(u),{cards:G.hands[u]})});
   await b.commit();
 }
 async function handleAction(a){
@@ -375,8 +398,8 @@ async function tick(){
   if(G.phase==='roundEnd'){if(now>=G.nextAt)startNextRound();return}
   if(G.done)return;
   var u=G.turn;if(!u)return;
-  var left=G.left[u];
-  var due=left?(now-G.turnStart>1500):(now>G.deadline);
+  var left=G.left[u]||isBot(u);
+  var due=left?(now-G.turnStart>(isBot(u)?1300:1500)):(now>G.deadline);
   if(!due)return;
   working=true;
   try{
@@ -453,8 +476,8 @@ function renderTable(){
   seats.forEach(function(u){
     if(u===me.uid)return;
     var o=el('div','op'+(s.turn===u?' turn':''));
-    var pl=room.players[u]||{};o.appendChild(A.avatar(pl.photo,30));
-    var nm=el('div');nm.appendChild(el('div','n','@'+(pl.name||'?')));
+    var pl=pinfo(u);o.appendChild(A.avatar(pl.photo,30));
+    var nm=el('div');nm.appendChild(el('div','n',(pl.bot?'🤖 ':'@')+(pl.name||'?')));
     nm.appendChild(el('div','c',fmt('on_cards',s.counts[u])+' · Σ'+((s.totals||{})[u]||0)));
     o.appendChild(nm);opps.appendChild(o);
   });
@@ -504,8 +527,8 @@ function renderRoundEnd(){
   var ids=(room.order||Object.keys(rr.pts)).slice().sort(function(a,c){return rr.totals[a]-rr.totals[c]});
   ids.forEach(function(u){
     var row=el('div','res'+(u===me.uid?' me':''));
-    row.appendChild(A.avatar((room.players[u]||{}).photo,28));
-    row.appendChild(el('span','n','@'+nameOf(u)));
+    row.appendChild(A.avatar(pinfo(u).photo,28));
+    row.appendChild(el('span','n',(pinfo(u).bot?'🤖 ':'@')+nameOf(u)));
     var d=(rr.drew||{})[u];if(d)row.appendChild(el('span','t',fmt('on_drew7',d)));
     row.appendChild(el('span','t','+'+rr.pts[u]));
     row.appendChild(el('span','v',String(rr.totals[u])));
@@ -528,7 +551,7 @@ function afterFinish(){
   if(!applied&&room.results&&room.results[me.uid]){
     applied=true;
     var r=room.results[me.uid];
-    if(room.preset!=='friendly'){
+    if(room.preset!=='friendly'&&!room.botGame){
       A.applyOnlineResult('pis7',CODE,room.gameNo,r.pts,r.place).then(function(np){if(np!==null){appliedNote=fmt('on_applied',np);renderResult()}});
     }
   }
@@ -542,13 +565,14 @@ function renderResult(){
   ids.forEach(function(u){
     var r=room.results[u],row=el('div','res'+(u===me.uid?' me':''));
     row.appendChild(el('span','p','#'+r.place));
-    row.appendChild(A.avatar((room.players[u]||{}).photo,30));
-    row.appendChild(el('span','n','@'+nameOf(u)));
+    row.appendChild(A.avatar(pinfo(u).photo,30));
+    row.appendChild(el('span','n',(pinfo(u).bot?'🤖 ':'@')+nameOf(u)));
     if(r.total!==undefined)row.appendChild(el('span','t','Σ'+r.total));
-    if(room.preset!=='friendly'){var v=el('span','v '+(r.pts>0?'pos':(r.pts<0?'neg':'')),(r.pts>0?'+':(r.pts<0?'−':''))+Math.abs(r.pts));row.appendChild(v)}
+    if(room.preset!=='friendly'&&!room.botGame){var v=el('span','v '+(r.pts>0?'pos':(r.pts<0?'neg':'')),(r.pts>0?'+':(r.pts<0?'−':''))+Math.abs(r.pts));row.appendChild(v)}
     b.appendChild(row);
   });
-  if(room.preset==='friendly')b.appendChild(el('p','warn',A.t('on_friendly_note')));
+  if(room.botGame)b.appendChild(el('p','warn',A.t('on_bot_note')));
+  else if(room.preset==='friendly')b.appendChild(el('p','warn',A.t('on_friendly_note')));
   if(room.state&&room.state.stalled)b.appendChild(el('p','warn',A.t('on_stalled')));
   if(appliedNote)b.appendChild(el('p','warn',appliedNote));
   var row2=el('div','row2');
